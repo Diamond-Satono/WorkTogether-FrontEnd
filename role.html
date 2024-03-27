@@ -78,15 +78,103 @@
             </td>
         `;
                 tbody.appendChild(row);
+                //编辑
+                // 重新选择编辑按钮并添加点击事件监听器
+                var editButtons = document.querySelectorAll('.edit_button');
+                editButtons.forEach(button => {
+                    button.addEventListener('click', function () {
+                        openEditModal(this.closest('tr')); // 传递当前行作为参数
+                    });
+                });
+
+                // 打开编辑弹窗
+                function openEditModal(row) {
+                    // 获取当前行的数据
+                    var id = row.querySelector('td:first-child').textContent.trim();
+                    var roleName = row.querySelector('td:nth-child(2)').textContent.trim();
+                    var description = row.querySelector('td:nth-child(3)').textContent.trim();
+
+
+                    // 将数据填充到新的编辑弹窗中
+                    document.querySelector('#editModal .rolenameinput').value = roleName;
+                    document.querySelector('#editModal .describtioninput').value = description;
+
+                    // 显示新的编辑弹窗
+                    var editModal = document.getElementById('editModal');
+                    var modalBackground = document.querySelector('.modal-background');
+                    editModal.style.display = 'block';
+                    modalBackground.style.display = 'block';
+
+                    setTimeout(function () {
+                        editModal.style.opacity = '1';
+                        modalBackground.style.opacity = '1';
+                    }, 50); // 设置一个小延迟以确保动画生效
+                }
+                // 点击编辑后弹窗的关闭按钮
+                var editCloseButton = document.querySelector('#editModal .close');
+                editCloseButton.addEventListener('click', function () {
+                    closeEditModal();
+                });
+
+                // 点击编辑后弹窗的确定按钮
+                var editConfirmButton = document.querySelector('#editModal .confirmEdit');
+                editConfirmButton.addEventListener('click', function () {
+                    // 获取编辑后的角色名称和描述
+                    var roleName = document.querySelector('#editModal .rolenameinput').value;
+                    var description = document.querySelector('#editModal .describtioninput').value;
+
+                    // 根据你的具体需求发送更新数据的请求，这里以PUT方法为例
+                    var updateUrl = 'https://your-api-endpoint.com/roles/' + data.ID; // 替换成你的API端点
+                    fetch(updateUrl, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            name: roleName,
+                            describe: description
+                            // 添加其他需要更新的字段
+                        })
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                // 数据成功更新
+                                console.log('Data updated successfully.');
+                                // 关闭编辑弹窗
+                                closeEditModal();
+                            } else {
+                                // 更新失败
+                                console.error('Failed to update data.');
+                            }
+                        })
+                        .catch(error => {
+                            // 捕获网络错误或其他错误
+                            console.error('Error:', error);
+                        });
+                });
+
+                // 关闭编辑弹窗的函数
+                function closeEditModal() {
+                    var editModal = document.getElementById('editModal');
+                    var modalBackground = document.querySelector('.modal-background');
+                    editModal.style.opacity = '0';
+                    modalBackground.style.opacity = '0';
+
+                    setTimeout(function () {
+                        editModal.style.display = 'none';
+                        modalBackground.style.display = 'none';
+                    }, 300); // 与动画时间保持一致
+                }
+
+
+
             })
             .catch(error => {
                 console.error('发生错误:', error);
             });
 
-    });
 
-    //点击添加后弹窗
-    document.addEventListener('DOMContentLoaded', function () {
+        //点击添加后添加弹窗
         var addButton = document.querySelector('.btn-secondary');
         var modal = document.querySelector('.modal');
         var modalBackground = document.querySelector('.modal-background');
@@ -95,7 +183,7 @@
 
         // 打开弹窗
         addButton.addEventListener('click', function () {
-            openModal();
+            openAddModal();
         });
 
         // 关闭弹窗（点击关闭按钮）
@@ -103,12 +191,15 @@
             closeModal();
         });
 
-        // 关闭弹窗（点击确认按钮）
-        confirmButton.addEventListener('click', function () {
-            closeModal();
-        });
+        // // 关闭弹窗（点击确认按钮）
+        // confirmButton.addEventListener('click', function () {
+        //     closeModal();
+        // });
 
-        function openModal() {
+        // 打开添加弹窗
+        function openAddModal() {
+            var modal = document.querySelector('.modal');
+            var modalBackground = document.querySelector('.modal-background');
             modal.style.display = 'block';
             modalBackground.style.display = 'block';
 
@@ -117,6 +208,7 @@
                 modalBackground.style.opacity = '1';
             }, 50); // 设置一个小延迟以确保动画生效
         }
+
 
         function closeModal() {
             modal.style.opacity = '0';
@@ -154,8 +246,8 @@
 
             // 创建要发送的数据对象
             var data = {
-                roleName: roleName,
-                description: description,
+                name: roleName,
+                describe: description,
                 status: status,
                 dateTime: formattedDateTime
             };
@@ -183,7 +275,13 @@
                     console.error('Error:', error);
                 });
         });
+
+
+
+
     });
+
+
 
 
 </script>
@@ -271,6 +369,7 @@
             </tbody>
         </table>
     </div>
+    <!-- 点击添加后弹窗 -->
     <div class="modal-background"></div>
     <div class="modal">
         <div class="modal-content">
@@ -292,6 +391,26 @@
             </div>
             <div class="confirmbutton">
                 <button class="confirm">确定</button>
+            </div>
+        </div>
+    </div>
+    <!-- 点击编辑后弹窗 -->
+    <div class="modal-background"></div>
+    <div class="modal" id="editModal"> <!-- 新的唯一标识符 -->
+        <div class="modal-content">
+            <!-- 在这里放置弹窗内容 -->
+            <span class="close">&times;</span>
+            <p class="edit_title">编辑角色</p>
+            <div class="rolename">
+                <span>角色名称:</span>
+                <input type="text" class="rolenameinput">
+            </div>
+            <div class="role_describtion">
+                <span>描述:</span>
+                <textarea type="text" class="describtioninput"></textarea>
+            </div>
+            <div class="confirmbuttonEdit">
+                <button class="confirmEdit">确定</button> <!-- 修改按钮类名 -->
             </div>
         </div>
     </div>

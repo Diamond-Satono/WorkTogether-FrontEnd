@@ -527,3 +527,17 @@ label[for="no"] {
     border-radius: 4px;
     cursor: pointer;
 }
+.confirmEdit {
+    width: 60px;
+    height: 32px;
+    background-color: #409EFF;
+    color: white;
+    border: 2px solid #409EFF;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.confirmbuttonEdit {
+    margin-left: 620px;
+    margin-top: 100px;
+}
