@@ -128,7 +128,7 @@
                     var description = document.querySelector('#editModal .describtioninput').value;
 
                     // 根据你的具体需求发送更新数据的请求，这里以PUT方法为例
-                    var updateUrl = 'https://your-api-endpoint.com/roles/' + data.ID; // 替换成你的API端点
+                    var updateUrl = 'http://localhost:8080/api/auth' + role.id; // 替换成你的API端点
                     fetch(updateUrl, {
                         method: 'PUT',
                         headers: {
