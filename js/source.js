@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // 为按钮添加查看详情的点击事件
             checkBtn.addEventListener('click', function() {
               // 更新模态框内容
-              document.getElementById('modalResourceName').textContent = resource.id;
+              document.getElementById('modalResourceId').textContent = resource.id;
               document.getElementById('modalResourceName').textContent = resource.name;
               document.getElementById('modalResourcePath').textContent = resource.url;
               document.getElementById('modalResourceDescription').textContent = resource.describe;
