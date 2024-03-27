@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="../css/userList.css">
     <script src="https://kit.fontawesome.com/d9129f72c7.js" crossorigin="anonymous"></script>
     <script src="../js/userList.js"></script>
-    <script src="../js/selectMultip.js"></script>
+    <!-- <script src="../js/selectMultip.js"></script> -->
 </head>
 
 <body>
@@ -104,6 +104,8 @@
                         <option value="1">角色1</option>
                         <option value="2">角色2</option>
                         <option value="3">角色3</option>
+                        <option value="4">角色4</option>
+                        <option value="5">角色5</option>
                         <option hidden="" value=""></option>
                     </select>
                     <!-- <select id="22" multip="" style="width:180px;height: 30px;margin-left: 200px" tip="">
@@ -114,22 +116,9 @@
                         <option hidden="" value=""></option>
                     </select> -->
                     <script>
-                        var data = [{
-                            value: "",
-                            text: "---请选择---"
-                        }, {
-                            value: 1,
-                            text: "角色1"
-                        }, {
-                            value: 2,
-                            text: "角色2"
-                        }, {
-                            value: 3,
-                            text: "角色3"
-                        }]
                         selectMultip.register();
                         //动态渲染
-                        selectMultip.reload("roles", data);
+                        // selectMultip.reload("roles", data);
                     </script>
                 </div>
                 <!-- <div class="popbutton"> -->
