@@ -170,7 +170,44 @@
                     }, 300); // 与动画时间保持一致
                 }
 
+                //状态切换
 
+                // 添加change事件监听器来更新状态
+                var checkbox = row.querySelector('.ios-switch');
+                checkbox.addEventListener('change', function () {
+                    // 构建要发送的数据对象
+                    var newData = {
+                        id: role.id,
+                        name: role.name,
+                        describe: role.describe,
+                        userNum: role.userNum,
+                        createTime: role.createTime,
+                        status: this.checked
+                    };
+
+                    // 使用Fetch API发送PUT请求到API端点更新状态
+                    fetch('http://localhost:8080/api/auth' + role.id, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(newData)
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                // 数据成功发送到服务器
+                                console.log(data);
+                                console.log('Status updated successfully.');
+                            } else {
+                                // 数据发送失败
+                                console.error('Failed to update status.');
+                            }
+                        })
+                        .catch(error => {
+                            // 捕获网络错误或其他错误
+                            console.error('Error:', error);
+                        });
+                });
 
             })
             .catch(error => {
