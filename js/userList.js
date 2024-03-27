@@ -108,6 +108,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     //get selector option
+    // 声明一个空数组用来保存id数据
+    let idList = [];
+    
     // 发送GET请求获取id和name
     fetch('http://localhost:8080/api/auth', {
         method: 'GET',
@@ -120,6 +123,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // 获取返回的id和name数据
         const id = data.id;
         const name = data.name;
+
+        // 将id保存到idList数组中
+        idList.push(id);
 
         // 查找select元素
         const selectElement = document.getElementById('roles'); // 假设select的id为roles
