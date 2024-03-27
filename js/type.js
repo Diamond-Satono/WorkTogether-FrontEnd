@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Now we fetch the menu names using the menuIds
   menuIds.forEach(menuId => {
-    fetch(`http://localhost:8081/menu/${menuId}`)
+    fetch('http://localhost:8080/api/menu/company/${menuId}')
       .then(response => response.json())
       .then(data => {
         // Assuming that the menu data returned has a property 'name' that stores the menu name

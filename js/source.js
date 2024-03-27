@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function() {
       fetch('http://localhost:8081/resource/selectAllResources')
         .then(response => response.json())
         .then(data => {
-          // 假设资源列表中包含menuId
+          // 资源列表中包含menuId
           const menuIds = data.data.map(resource => resource.menuId);
 
           // 跳转到新页面并传递menuIds
@@ -149,15 +149,15 @@ document.addEventListener('DOMContentLoaded', function() {
       var categoryDropdown = document.querySelector('.category-dropdown');
 
       // Fetch the categories from the API
-      fetch('http://localhost:8081/menu/')
+      fetch('http://localhost:8080/api/menu/company/')
         .then(response => response.json())
         .then(data => {
           // Assume that the response is an array of categories
           data.forEach(category => {
             // Create a new option element
             var option = document.createElement('option');
-            option.value = category.menuId;
-            option.textContent = category.menu; // Use the property that has the category name
+            option.value = category.id;
+            option.textContent = category.name; // Use the property that has the category name
             // Append the option to the dropdown
             categoryDropdown.appendChild(option);
           });
@@ -170,7 +170,6 @@ document.addEventListener('DOMContentLoaded', function() {
       var dropdownStyle = categoryDropdown.style.display;
       categoryDropdown.style.display = dropdownStyle === 'block' ? 'none' : 'block';
       });
-      // ...other code...
 
       // Add event listener for the search button
       document.querySelector('.search-btn').addEventListener('click', function() {
