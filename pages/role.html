@@ -12,16 +12,22 @@
     document.addEventListener('DOMContentLoaded', function () {
         // Select the submenu parent link
         var submenuParent = document.querySelector('.submenu > a');
-        // Find the nested submenu
-        var submenu = submenuParent.nextElementSibling;
+        submenuParent.addEventListener('click', function() {
+            // Find the nested submenu
+            var submenu = this.nextElementSibling;
+            // Toggle the 'active' class on the parent li
+            this.parentElement.classList.toggle('active');
 
-        // Add 'active' class to parent li
-        submenuParent.parentElement.classList.add('active');
-
-        // Rotate the arrow icon
-        var arrow = submenuParent.querySelector('.arrow');
-        arrow.classList.remove('fa-chevron-right');
-        arrow.classList.add('fa-chevron-down');
+            // Rotate the arrow icon
+            var arrow = this.querySelector('.arrow');
+            if (this.parentElement.classList.contains('active')) {
+                arrow.classList.remove('fa-chevron-right');
+                arrow.classList.add('fa-chevron-down');
+            } else {
+                arrow.classList.remove('fa-chevron-down');
+                arrow.classList.add('fa-chevron-right');
+            }
+        });
 
         // 选择查询按钮
         var queryButton = document.querySelector('.btn-primary');
@@ -398,6 +404,7 @@
         });
 
 
+
     });
 
 
@@ -411,10 +418,10 @@
         <li class="submenu">
             <a href="#"><i class="fas fa-shield-alt"></i> 权限 <i class="fas fa-chevron-right arrow"></i></a>
             <ul class="nested">
-                <li><a href="#"><i class="fas fa-users"></i> 用户列表</a></li>
-                <li><a href="#"><i class="fas fa-user-tag"></i> 角色列表</a></li>
-                <li><a href="#"><i class="fas fa-list"></i> 菜单列表</a></li>
-                <li><a href="#"><i class="fas fa-server"></i> 资源列表</a></li>
+                <li><a href="userList.html"><i class="fas fa-users"></i> 用户列表</a></li>
+                <li><a href="role.html"><i class="fas fa-user-tag"></i> 角色列表</a></li>
+                <li><a href="list.html"><i class="fas fa-list"></i> 菜单列表</a></li>
+                <li><a href="source.html"><i class="fas fa-server"></i> 资源列表</a></li>
             </ul>
         </li>
         <!-- Add other submenu items here -->
@@ -453,36 +460,7 @@
         </thead>
         <tbody>
         <!-- Sample row -->
-        <tr>
-            <td>1</td>
-            <td>管理员</td>
-            <td>查看及管理团队成员</td>
-            <td>1</td>
-            <td>2024-3-25 16:06:35</td>
-            <td>
-                <input class="ios-switch" type="checkbox" checked>
-            </td>
-            <td class="button-container">
-                <button class="assign_menu">分配菜单</button>
-                <button class="assign_resource">分配资源</button>
-                <button class="edit_button">编辑</button>
-                <button class="delete_button">删除</button>
-            </td>
-        </tr>
-        <tr>
-            <td>2</td>
-            <td>活动管理员</td>
-            <td>发布及管理活动</td>
-            <td>2</td>
-            <td>2024-3-25 16:44:35</td>
-            <td><input class="ios-switch" type="checkbox"></td>
-            <td class="button-container">
-                <button class="assign_menu">分配菜单</button>
-                <button class="assign_resource">分配资源</button>
-                <button class="edit_button">编辑</button>
-                <button class="delete_button">删除</button>
-            </td>
-        </tr>
+
         </tbody>
     </table>
 </div>
