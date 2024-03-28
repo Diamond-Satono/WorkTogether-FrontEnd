@@ -127,7 +127,7 @@
   
   .search-box input[type="text"] {
     /* border: none; */
-    //border-color: #dcdfe6;
+    /*border-color: #dcdfe6;*/
     padding: 5px 10px;
     width: 200px !important;
   }
