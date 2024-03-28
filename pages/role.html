@@ -12,16 +12,22 @@
     document.addEventListener('DOMContentLoaded', function () {
         // Select the submenu parent link
         var submenuParent = document.querySelector('.submenu > a');
-        // Find the nested submenu
-        var submenu = submenuParent.nextElementSibling;
+        submenuParent.addEventListener('click', function() {
+            // Find the nested submenu
+            var submenu = this.nextElementSibling;
+            // Toggle the 'active' class on the parent li
+            this.parentElement.classList.toggle('active');
 
-        // Add 'active' class to parent li
-        submenuParent.parentElement.classList.add('active');
-
-        // Rotate the arrow icon
-        var arrow = submenuParent.querySelector('.arrow');
-        arrow.classList.remove('fa-chevron-right');
-        arrow.classList.add('fa-chevron-down');
+            // Rotate the arrow icon
+            var arrow = this.querySelector('.arrow');
+            if (this.parentElement.classList.contains('active')) {
+                arrow.classList.remove('fa-chevron-right');
+                arrow.classList.add('fa-chevron-down');
+            } else {
+                arrow.classList.remove('fa-chevron-down');
+                arrow.classList.add('fa-chevron-right');
+            }
+        });
 
         // 选择查询按钮
         var queryButton = document.querySelector('.btn-primary');
@@ -60,6 +66,7 @@
                 return response.json();
             })
             .then(data => {
+                window.roleData = data.data;
                 var tbody = document.querySelector('tbody');
                 console.log(data);
 
@@ -82,6 +89,7 @@
             `;
                     tbody.appendChild(row);
                 });
+
                 //编辑
                 // 重新选择编辑按钮并添加点击事件监听器
                 var editButtons = document.querySelectorAll('.edit_button');
@@ -93,18 +101,33 @@
 
                 // 打开编辑弹窗
                 function openEditModal(row) {
+                    if (!row) {
+                        console.error("Row is null or undefined.");
+                        return;
+                    }
+
                     // 获取当前行的数据
                     var id = row.querySelector('td:first-child').textContent.trim();
                     var roleName = row.querySelector('td:nth-child(2)').textContent.trim();
                     var description = row.querySelector('td:nth-child(3)').textContent.trim();
+                    var userNum = row.querySelector('td:nth-child(4)').textContent.trim();
+                    var createTime = row.querySelector('td:nth-child(5)').textContent.trim();
+                    var status = row.querySelector('.ios-switch').checked;
 
+                    // 将数据存储在编辑弹窗的属性中
+                    var editModal = document.getElementById('editModal');
+                    editModal.setAttribute('data-id', id);
+                    editModal.setAttribute('data-role-name', roleName);
+                    editModal.setAttribute('data-description', description);
+                    editModal.setAttribute('data-user-num', userNum);
+                    editModal.setAttribute('data-create-time', createTime);
+                    editModal.setAttribute('data-status', status);
 
                     // 将数据填充到新的编辑弹窗中
-                    document.querySelector('#editModal .rolenameinput').value = roleName;
-                    document.querySelector('#editModal .describtioninput').value = description;
+                    editModal.querySelector('.rolenameinput').value = roleName;
+                    editModal.querySelector('.describtioninput').value = description;
 
                     // 显示新的编辑弹窗
-                    var editModal = document.getElementById('editModal');
                     var modalBackground = document.querySelector('.modal-background');
                     editModal.style.display = 'block';
                     modalBackground.style.display = 'block';
@@ -114,6 +137,11 @@
                         modalBackground.style.opacity = '1';
                     }, 50); // 设置一个小延迟以确保动画生效
                 }
+
+
+
+
+
                 // 点击编辑后弹窗的关闭按钮
                 var editCloseButton = document.querySelector('#editModal .close');
                 editCloseButton.addEventListener('click', function () {
@@ -127,18 +155,31 @@
                     var roleName = document.querySelector('#editModal .rolenameinput').value;
                     var description = document.querySelector('#editModal .describtioninput').value;
 
-                    // 根据你的具体需求发送更新数据的请求，这里以PUT方法为例
-                    var updateUrl = 'http://localhost:8080/api/auth' + role.id; // 替换成你的API端点
+                    // 从编辑弹窗中获取其他字段值
+                    var id = document.getElementById('editModal').getAttribute('data-id');
+                    var userNum = document.getElementById('editModal').getAttribute('data-user-num');
+                    var createTime = document.getElementById('editModal').getAttribute('data-create-time');
+                    var status = document.getElementById('editModal').getAttribute('data-status');
+
+                    // 构建要发送的数据对象
+                    var Data = {
+                        id: id,
+                        name: roleName,
+                        describe: description,
+                        userNum: userNum,
+                        createTime: createTime,
+                        status: status
+                    };
+
+                    console.log(Data);
+                    // 根据你的具体需求发送更新数据的请求，这里以 PUT 方法为例
+                    var updateUrl = 'http://localhost:8080/api/auth/';
                     fetch(updateUrl, {
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({
-                            name: roleName,
-                            describe: description
-                            // 添加其他需要更新的字段
-                        })
+                        body: JSON.stringify(Data)
                     })
                         .then(response => {
                             if (response.ok) {
@@ -146,6 +187,7 @@
                                 console.log('Data updated successfully.');
                                 // 关闭编辑弹窗
                                 closeEditModal();
+                                location.reload();
                             } else {
                                 // 更新失败
                                 console.error('Failed to update data.');
@@ -156,6 +198,10 @@
                             console.error('Error:', error);
                         });
                 });
+
+
+
+
 
                 // 关闭编辑弹窗的函数
                 function closeEditModal() {
@@ -170,44 +216,95 @@
                     }, 300); // 与动画时间保持一致
                 }
 
-                //状态切换
+                // 状态切换
+                // 遍历每一行，添加事件监听器
+                var checkboxes = document.querySelectorAll('.ios-switch');
+                checkboxes.forEach(function (checkbox) {
+                    checkbox.addEventListener('change', function () {
+                        console.log("clicked");
 
-                // 添加change事件监听器来更新状态
-                var checkbox = row.querySelector('.ios-switch');
-                checkbox.addEventListener('change', function () {
-                    // 构建要发送的数据对象
-                    var newData = {
-                        id: role.id,
-                        name: role.name,
-                        describe: role.describe,
-                        userNum: role.userNum,
-                        createTime: role.createTime,
-                        status: this.checked
-                    };
+                        // 获取当前行的数据
+                        var row = this.closest('tr'); // 获取当前checkbox所在的行
+                        var role = {
+                            id: row.querySelector('td:first-child').textContent.trim(),
+                            name: row.querySelector('td:nth-child(2)').textContent.trim(),
+                            describe: row.querySelector('td:nth-child(3)').textContent.trim(),
+                            userNum: row.querySelector('td:nth-child(4)').textContent.trim(),
+                            createTime: row.querySelector('td:nth-child(5)').textContent.trim(),
+                            status: this.checked
+                        };
 
-                    // 使用Fetch API发送PUT请求到API端点更新状态
-                    fetch('http://localhost:8080/api/auth' + role.id, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(newData)
-                    })
-                        .then(response => {
-                            if (response.ok) {
-                                // 数据成功发送到服务器
-                                console.log(data);
-                                console.log('Status updated successfully.');
-                            } else {
-                                // 数据发送失败
-                                console.error('Failed to update status.');
-                            }
+                        // 构建要发送的数据对象
+                        var newData = {
+                            id: role.id,
+                            name: role.name,
+                            describe: role.describe,
+                            userNum: role.userNum,
+                            createTime: role.createTime,
+                            status: role.status
+                        };
+
+                        // 使用Fetch API发送PUT请求到API端点更新状态
+                        fetch('http://localhost:8080/api/auth/', {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(newData)
                         })
-                        .catch(error => {
-                            // 捕获网络错误或其他错误
-                            console.error('Error:', error);
-                        });
+                            .then(response => {
+                                if (response.ok) {
+                                    // 数据成功发送到服务器
+                                    console.log(role);
+                                    console.log('Status updated successfully.');
+                                } else {
+                                    // 数据发送失败
+                                    console.error('Failed to update status.');
+                                }
+                            })
+                            .catch(error => {
+                                // 捕获网络错误或其他错误
+                                console.error('Error:', error);
+                            });
+                    });
                 });
+
+
+
+                // 删除角色
+                var deleteButtons = document.querySelectorAll('.delete_button');
+                deleteButtons.forEach(button => {
+                    button.addEventListener('click', function () {
+                        // 获取当前行的角色ID
+                        var roleId = this.closest('tr').querySelector('td:first-child').textContent.trim();
+
+                        // 构建删除角色的URL，将roleId作为参数传递
+                        var deleteUrl = 'http://localhost:8080/api/auth/' + roleId;
+
+                        // 发送DELETE请求到API端点
+                        fetch(deleteUrl, {
+                            method: 'DELETE',
+                        })
+                            .then(response => {
+                                if (response.ok) {
+                                    // 删除成功
+                                    console.log('Role deleted successfully.');
+                                    location.reload();
+                                } else {
+                                    // 删除失败
+                                    console.error('Failed to delete role.');
+                                }
+                            })
+                            .catch(error => {
+                                // 捕获网络错误或其他错误
+                                console.error('Error:', error);
+                            });
+                    });
+                });
+
+
+
+
 
             })
             .catch(error => {
@@ -268,33 +365,22 @@
 
         // 添加点击事件监听器
         confirmButton.addEventListener('click', function () {
-            // 获取当前日期时间
-            var currentDate = new Date();
-            var year = currentDate.getFullYear();
-            var month = ('0' + (currentDate.getMonth() + 1)).slice(-2);
-            var day = ('0' + currentDate.getDate()).slice(-2);
-            var hours = ('0' + currentDate.getHours()).slice(-2);
-            var minutes = ('0' + currentDate.getMinutes()).slice(-2);
-            var seconds = ('0' + currentDate.getSeconds()).slice(-2);
 
-            // 构建日期时间字符串
-            var formattedDateTime = year + '-' + month + '-' + day + ' ' + hours + ':' + minutes + ':' + seconds;
 
             // 获取角色名称、描述和状态的输入值
             var roleName = document.querySelector('.rolenameinput').value;
             var description = document.querySelector('.describtioninput').value;
-            var status = document.querySelector('input[name="1"]:checked').value;
 
             // 创建要发送的数据对象
             var data = {
                 name: roleName,
                 describe: description,
-                status: status,
-                dateTime: formattedDateTime
+                // status: status,
+                // dateTime: formattedDateTime
             };
 
             // 使用Fetch API发送POST请求到API端点
-            fetch('api-url', {
+            fetch('http://localhost:8080/api/auth', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -319,142 +405,110 @@
 
 
 
-
     });
-
-
 
 
 </script>
 
 
 <body>
-    <div class="sidebar">
-        <!-- Sidebar content as previous with icons using Font Awesome -->
-        <ul>
-            <li class="submenu">
-                <a href="#"><i class="fas fa-shield-alt"></i> 权限 <i class="fas fa-chevron-right arrow"></i></a>
-                <ul class="nested">
-                    <li><a href="#"><i class="fas fa-users"></i> 用户列表</a></li>
-                    <li><a href="#"><i class="fas fa-user-tag"></i> 角色列表</a></li>
-                    <li><a href="#"><i class="fas fa-list"></i> 菜单列表</a></li>
-                    <li><a href="#"><i class="fas fa-server"></i> 资源列表</a></li>
-                </ul>
-            </li>
-            <!-- Add other submenu items here -->
-        </ul>
-    </div>
-    <div class="top-bar">
-        <div class="breadcrumbs">首页 / 权限 / 角色列表</div>
-        <div class="teamwork-icon"><i class="fas fa-users-cog"></i></div>
-    </div>
-    <div class="content">
-        <div class="search-filter-box">
-            <div class="search-box">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="输入角色名">
-            </div>
-            <button class="btn-primary">查询</button>
+<div class="sidebar">
+    <!-- Sidebar content as previous with icons using Font Awesome -->
+    <ul>
+        <li class="submenu">
+            <a href="#"><i class="fas fa-shield-alt"></i> 权限 <i class="fas fa-chevron-right arrow"></i></a>
+            <ul class="nested">
+                <li><a href="userList.html"><i class="fas fa-users"></i> 用户列表</a></li>
+                <li><a href="role.html"><i class="fas fa-user-tag"></i> 角色列表</a></li>
+                <li><a href="list.html"><i class="fas fa-list"></i> 菜单列表</a></li>
+                <li><a href="source.html"><i class="fas fa-server"></i> 资源列表</a></li>
+            </ul>
+        </li>
+        <!-- Add other submenu items here -->
+    </ul>
+</div>
+<div class="top-bar">
+    <div class="breadcrumbs">首页 / 权限 / 角色列表</div>
+    <div class="teamwork-icon"><i class="fas fa-users-cog"></i></div>
+</div>
+<div class="content">
+    <div class="search-filter-box">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="输入角色名">
         </div>
-        <div class="separator"></div>
-        <div class="data-list-box">
-            <div class="data-list-title"><i class="fas fa-list"></i> 数据列表</div>
-            <button class="btn-secondary">添加</button>
-        </div>
-        <div class="separator"></div>
-        <table>
-            <!-- Table structure and data -->
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>角色名称</th>
-                    <th>描述</th>
-                    <th>用户数</th>
-                    <th>添加时间</th>
-                    <th>状态</th>
-                    <th>操作</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Sample row -->
-                <tr>
-                    <td>1</td>
-                    <td>管理员</td>
-                    <td>查看及管理团队成员</td>
-                    <td>1</td>
-                    <td>2024-3-25 16:06:35</td>
-                    <td>
-                        <input class="ios-switch" type="checkbox" checked>
-                    </td>
-                    <td class="button-container">
-                        <button class="assign_menu">分配菜单</button>
-                        <button class="assign_resource">分配资源</button>
-                        <button class="edit_button">编辑</button>
-                        <button class="delete_button">删除</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>活动管理员</td>
-                    <td>发布及管理活动</td>
-                    <td>2</td>
-                    <td>2024-3-25 16:44:35</td>
-                    <td><input class="ios-switch" type="checkbox"></td>
-                    <td class="button-container">
-                        <button class="assign_menu">分配菜单</button>
-                        <button class="assign_resource">分配资源</button>
-                        <button class="edit_button">编辑</button>
-                        <button class="delete_button">删除</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <button class="btn-primary">查询</button>
     </div>
-    <!-- 点击添加后弹窗 -->
-    <div class="modal-background"></div>
-    <div class="modal">
-        <div class="modal-content">
-            <!-- 在这里放置弹窗内容 -->
-            <span class="close">&times;</span>
-            <p class="add_title">添加角色</p>
-            <div class="rolename">
-                <span>角色名称:</span>
-                <input type="text" class="rolenameinput">
-            </div>
-            <div class="role_describtion">
-                <span>描述:</span>
-                <textarea type="text" class="describtioninput"></textarea>
-            </div>
-            <div class="choosestatus">
-                <span>是否启用:</span>
-                <input id="yes" type="radio" checked="checked" name="1" /><label for="yes">是</label>
-                <input id="no" type="radio" name="1" /><label for="no">否</label>
-            </div>
-            <div class="confirmbutton">
-                <button class="confirm">确定</button>
-            </div>
+    <div class="separator"></div>
+    <div class="data-list-box">
+        <div class="data-list-title"><i class="fas fa-list"></i> 数据列表</div>
+        <button class="btn-secondary">添加</button>
+    </div>
+    <div class="separator"></div>
+    <table>
+        <!-- Table structure and data -->
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>角色名称</th>
+            <th>描述</th>
+            <th>用户数</th>
+            <th>添加时间</th>
+            <th>状态</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Sample row -->
+
+        </tbody>
+    </table>
+</div>
+<!-- 点击添加后弹窗 -->
+<div class="modal-background"></div>
+<div class="modal">
+    <div class="modal-content">
+        <!-- 在这里放置弹窗内容 -->
+        <span class="close">&times;</span>
+        <p class="add_title">添加角色</p>
+        <div class="rolename">
+            <span>角色名称:</span>
+            <input type="text" class="rolenameinput">
+        </div>
+        <div class="role_describtion">
+            <span>描述:</span>
+            <textarea type="text" class="describtioninput"></textarea>
+        </div>
+        <div class="choosestatus">
+            <span>是否启用:</span>
+            <input id="yes" type="radio" checked="checked" name="1"/><label for="yes">是</label>
+            <input id="no" type="radio" name="1"/><label for="no">否</label>
+        </div>
+        <div class="confirmbutton">
+            <button class="confirm">确定</button>
         </div>
     </div>
-    <!-- 点击编辑后弹窗 -->
-    <div class="modal-background"></div>
-    <div class="modal" id="editModal"> <!-- 新的唯一标识符 -->
-        <div class="modal-content">
-            <!-- 在这里放置弹窗内容 -->
-            <span class="close">&times;</span>
-            <p class="edit_title">编辑角色</p>
-            <div class="rolename">
-                <span>角色名称:</span>
-                <input type="text" class="rolenameinput">
-            </div>
-            <div class="role_describtion">
-                <span>描述:</span>
-                <textarea type="text" class="describtioninput"></textarea>
-            </div>
-            <div class="confirmbuttonEdit">
-                <button class="confirmEdit">确定</button> <!-- 修改按钮类名 -->
-            </div>
+</div>
+<!-- 点击编辑后弹窗 -->
+<div class="modal-background"></div>
+<div class="modal" id="editModal"> <!-- 新的唯一标识符 -->
+    <div class="modal-content">
+        <!-- 在这里放置弹窗内容 -->
+        <span class="close">&times;</span>
+        <p class="edit_title">编辑角色</p>
+        <div class="rolename">
+            <span>角色名称:</span>
+            <input type="text" class="rolenameinput">
+        </div>
+        <div class="role_describtion">
+            <span>描述:</span>
+            <textarea type="text" class="describtioninput"></textarea>
+        </div>
+        <div class="confirmbuttonEdit">
+            <button class="confirmEdit">确定</button> <!-- 修改按钮类名 -->
         </div>
     </div>
+</div>
 
 </body>
 
