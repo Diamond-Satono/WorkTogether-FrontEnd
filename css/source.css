@@ -273,12 +273,16 @@ table, th, td {
 }
 
 th {
+  justify-content: center;
+  align-content: center;
   background-color: #0f6096ed;
   color: white;
   padding: 10px;
 }
 
 td {
+  justify-content: center;
+  align-content: center;
   padding: 10px;
 }
 
@@ -310,8 +314,8 @@ tr:nth-child(even) {
   margin-right: 0px;
   margin: auto;
   padding: 5px 10px;
-  background-color: #3498db;
-  color: white;
+   background-color:white;
+  color: #3498db;
   border: none;
   cursor: pointer;
 }
