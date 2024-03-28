@@ -134,7 +134,8 @@
   
   .btn-primary {
     padding: 5px 10px;
-    background-color: #409EFF;
+    /*background-color: #409EFF;*/
+    background-color: #3498db;
     color: #fff;
     border: none;
     cursor: pointer;
@@ -163,7 +164,7 @@
   
   .btn-secondary {
     padding: 5px 10px;
-    background-color: #6c757d;
+    background-color: #3498db;
     color: white;
     border: none;
     cursor: pointer;
