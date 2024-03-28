@@ -18,10 +18,10 @@
             <li class="submenu">
                 <a href="#"><i class="fas fa-shield-alt"></i> 权限 <i class="fas fa-chevron-right arrow"></i></a>
                 <ul class="nested">
-                    <li><a href="#"><i class="fas fa-users"></i> 用户列表</a></li>
-                    <li><a href="#"><i class="fas fa-user-tag"></i> 角色列表</a></li>
-                    <li><a href="#"><i class="fas fa-list"></i> 菜单列表</a></li>
-                    <li><a href="#"><i class="fas fa-server"></i> 资源列表</a></li>
+                    <li><a href="userList.html"><i class="fas fa-users"></i> 用户列表</a></li>
+                    <li><a href="role.html"><i class="fas fa-user-tag"></i> 角色列表</a></li>
+                    <li><a href="list.html"><i class="fas fa-list"></i> 菜单列表</a></li>
+                    <li><a href="source.html"><i class="fas fa-server"></i> 资源列表</a></li>
                 </ul>
             </li>
             <!-- Add other submenu items here -->
@@ -138,6 +138,10 @@
     const shadowElement = document.querySelector('.shadow');
     //点击取消按钮时，shadow元素将被隐藏，用户输入的内容将保留在输入框中
     document.querySelector('.popcancel').addEventListener('click', function () {
+        // 隐藏shadow元素
+        shadowElement.style.display = 'none';
+    });
+    document.querySelector('.popconfig').addEventListener('click', function () {
         // 隐藏shadow元素
         shadowElement.style.display = 'none';
     });
