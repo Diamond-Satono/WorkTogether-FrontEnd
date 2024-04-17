@@ -55,7 +55,7 @@
         <div class="successtitle">您已成功注册！</div>
       </div>
       <!-- 下一步按钮 -->
-      <button class="nextstep" @click="Login">去办公 →</button>
+      <button class="nextstep" @click="Login">开始办公 →</button>
     </div>
   </div>
 </template>
