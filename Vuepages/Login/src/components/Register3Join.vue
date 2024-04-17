@@ -63,25 +63,52 @@
             style="width: 19px; margin-right: 8%"
           />邀请码
         </div>
-        <input type="text" class="CodeInput" placeholder="请输入企业邀请码" />
+        <input
+          type="text"
+          class="CodeInput"
+          placeholder="请输入企业邀请码"
+          v-model="invitecode"
+        />
         <!-- 校验按钮 -->
-        <button class="vertifybutton">验证</button>
+        <button class="vertifybutton" @click="VertifyCode">验证</button>
         <!--企业信息 -->
-        <div class="companytitle">
+        <div class="companytitle" v-if="vertified">
           <img
             src="@/assets/companymessage.svg"
             style="width: 19px; margin-right: 8%"
           />企业信息
         </div>
-        <div class="companydetails">
+        <div class="companydetails" v-if="vertified">
           <div class="companyinitialground">
-            <div class="initialletter">深</div>
+            <div class="initialletter">{{ CompanyNameFirstLetter }}</div>
           </div>
-          <div class="details">
-
+          <div class="companyname">
+            <img src="@/assets/number1.png" />企业名称<span
+              class="concretename"
+              >{{ CompanyName }}</span
+            >
+          </div>
+          <div class="companyaddress">
+            <img src="@/assets/number2.png" />企业地址<span
+              class="concreteaddress"
+              >{{ CompanyAddress }}</span
+            >
+          </div>
+          <div class="companysize">
+            <img src="@/assets/number3.png" />企业规模<span
+              class="concretesize"
+              >{{ CompanySize }}</span
+            >
           </div>
         </div>
+        <!-- 核对企业信息提示 -->
+        <div class="sendtips2" v-if="vertified">
+          <img src="@/assets/tips.svg" class="tipsimg" />
+          <span class="tipswords">请在确认企业信息以后进行下一步操作</span>
+        </div>
       </div>
+      <!-- 下一步按钮 -->
+      <button class="nextstep" @click="JoinCompany">下一步</button>
     </div>
   </div>
 </template>
@@ -89,19 +116,83 @@
       <script setup lang="ts">
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
-
+import useStore from "@/store/store";
 const router = useRouter();
 
-const GotoCreate = () => {
+//使用令牌
+const { Authorization } = useStore();
+const invitecode = ref("");
+const CompanyNameFirstLetter = ref("");
+const CompanyName = ref("");
+const CompanySize = ref("");
+const CompanyAddress = ref("");
+const vertified = ref(false);
+const requestBody = computed(() => ({
+  code: invitecode.value,
+}));
+function VertifyCode() {
+  fetch(
+    "http://localhost:8080/api/company_user/getCompanyInfo?code=" +
+      invitecode.value,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  )
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      console.log(data);
+      console.log(invitecode.value);
+      console.log(data.msg);
+      vertified.value = true;
+      CompanyNameFirstLetter.value = data.data.name[0];
+      CompanyName.value = data.data.name;
+      CompanySize.value = data.data.size;
+      CompanyAddress.value = data.data.address;
+    })
+    .catch((error) => {
+      console.error("There was a problem with the creation:", error);
+    });
+}
+
+function JoinCompany() {
+  console.log(requestBody.value);
+  //创建公司
+  fetch("http://localhost:8080/api/company_user/joinCompany", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: Authorization.value,
+    },
+    body: JSON.stringify(requestBody.value),
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      console.log(data);
+      console.log(requestBody.value);
+      console.log(data.msg);
+      GotoSuccess();
+    })
+    .catch((error) => {
+      console.error("There was a problem with the join:", error);
+    });
+}
+
+const GotoSuccess = () => {
   if (router) {
-    router.push({ name: "Register3Create" });
-  } else {
-    console.error("Router is not initialized.");
-  }
-};
-const GotoJoin = () => {
-  if (router) {
-    router.push({ name: "Register3Join" });
+    router.push({ name: "RegisterSuccess" });
   } else {
     console.error("Router is not initialized.");
   }
@@ -278,6 +369,14 @@ const GotoJoin = () => {
   border-radius: 20px;
   top: 600%;
 }
+.sendtips2 {
+  position: absolute;
+  width: 425px;
+  height: 70px;
+  background-color: rgba(255, 98, 0, 0.15);
+  border-radius: 20px;
+  top: 2200%;
+}
 .tipsimg {
   margin-left: 3%;
   margin-top: 3%;
@@ -330,18 +429,90 @@ const GotoJoin = () => {
   border-radius: 4px;
   width: 70px;
   height: 30px;
-  left: 300%;
+  left: 350%;
   top: 1180%;
   cursor: pointer;
+  font-family: "PingFang";
+  font-weight: bold;
 }
-.companydetails{
+.companydetails {
   width: 425px;
-  height: 200px;
+  height: 160px;
   background-color: rgba(136, 136, 136, 0.15);
   position: absolute;
   border-radius: 20px;
   border: 1.5px solid #7d8592;
-  
+  top: 1570%;
+}
+.companyinitialground {
+  width: 80px;
+  height: 80px;
+  background-color: #fb5b1d;
+  border-radius: 20px;
+  border: 1.5px solid #7d8592;
+  margin-left: 4%;
+  margin-top: 4%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.initialletter {
+  font-size: 30px;
+  color: white;
+}
+.companyname {
+  font-size: 20px;
+  font-family: "PingFang";
+  font-weight: bold;
+  color: #888888;
+  margin-left: 28%;
+  margin-top: -20%;
+}
+.companyaddress {
+  font-size: 20px;
+  font-family: "PingFang";
+  font-weight: bold;
+  color: #888888;
+  margin-left: 28%;
+  margin-top: 5%;
+}
+.companysize {
+  font-size: 20px;
+  font-family: "PingFang";
+  font-weight: bold;
+  color: #888888;
+  margin-left: 28%;
+  margin-top: 5%;
+}
+.companyname img {
+  width: 21px;
+  position: relative;
+  left: -5px;
+  top: 3.3px;
+}
+.companyaddress img {
+  width: 21px;
+  position: relative;
+  left: -5px;
+  top: 3.3px;
+}
+.companysize img {
+  width: 21px;
+  position: relative;
+  left: -5px;
+  top: 3.3px;
+}
+.companyname span {
+  color: black;
+  margin-left: 5%;
+}
+.companyaddress span {
+  color: black;
+  margin-left: 5%;
+}
+.companysize span {
+  color: black;
+  margin-left: 5%;
 }
 .nextstep {
   position: absolute;
