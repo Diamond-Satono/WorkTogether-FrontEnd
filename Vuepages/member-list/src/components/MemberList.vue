@@ -79,7 +79,7 @@
                 <tbody>
                 <!-- Sample row -->
                 <tr v-for="user in users" :key="user.id">
-                    <td><input type="checkbox" class="row-selector" @change="selectUser(user)" v-model="user.selected"></td>
+                    <td><input type="checkbox" class="row-selector" @click="selectUser(user)" v-model="user.selected"></td>
                     <td class="memName">{{ user.name }}</td>
                     <td>{{ user.position }}</td>
                     <td>{{ user.email }}</td>
@@ -375,7 +375,7 @@ export default {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'eyJhbGciOiJIUzUxMiIsInppcCI6IkdaSVAifQ.H4sIAAAAAAAAABWLQQ7CIBBF7zLrkjAwdJiew8T1tKBWY9oUujDGuwvL__57X3jWFSYIgllHUYNzZEO0LEbtjQ1adAkdBkwMA6xaYUJG70mCjwOUc251-ZSa3_0vpc3rdrwu2z3XRz4a1DM1qPvehdR7lkCjkxgDC1rH9PsDzfelNYgAAAA.cleJLUcEULIe_tHvsZOeBuvnHVS_stp6PEivnKFVTY-U0MNqqza7sWk26xV5eJIT4f8xgKhJ3ZW4oARaylAuoA', // 设置 Authorization 请求头，用于身份验证
+                    'Authorization': 'eyJhbGciOiJIUzUxMiIsInppcCI6IkdaSVAifQ.H4sIAAAAAAAAABWLQQ7CIBBF7zLrkgDDMNBzmLgehGo1pk2hC2O8u7D877_3hWdbYYZAHrUsrKyVrBylRUXSSbGIDx7xFkTDBKs0mA0bdBqRwgT1TL2un9rKe_y19nndjtdlu5f2KEeHcuYOZd-HkEfPkZy3MQTiaLRl9_sDvTIS7IgAAAA.mUCEDwZmF6gbUx3XILikOf9maeZk8NRBQZEaYv1pe4CN-_KhvDHqU_b33D7ilxsRmT6mVrygm5KZy1buVUTFAg', // 设置 Authorization 请求头，用于身份验证
                     'companyId': 1
                 },
                 body: JSON.stringify(data)
@@ -406,7 +406,7 @@ export default {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json', // 设置 Content-Type 请求头为 JSON
-                    'Authorization': 'eyJhbGciOiJIUzUxMiIsInppcCI6IkdaSVAifQ.H4sIAAAAAAAAABWLQQ7CIBBF7zLrkjAwdJiew8T1tKBWY9oUujDGuwvL__57X3jWFSYIgllHUYNzZEO0LEbtjQ1adAkdBkwMA6xaYUJG70mCjwOUc251-ZSa3_0vpc3rdrwu2z3XRz4a1DM1qPvehdR7lkCjkxgDC1rH9PsDzfelNYgAAAA.cleJLUcEULIe_tHvsZOeBuvnHVS_stp6PEivnKFVTY-U0MNqqza7sWk26xV5eJIT4f8xgKhJ3ZW4oARaylAuoA', // 设置 Authorization 请求头，用于身份验证
+                    'Authorization': 'eyJhbGciOiJIUzUxMiIsInppcCI6IkdaSVAifQ.H4sIAAAAAAAAABWLQQ7CIBBF7zLrkgDDMNBzmLgehGo1pk2hC2O8u7D877_3hWdbYYZAHrUsrKyVrBylRUXSSbGIDx7xFkTDBKs0mA0bdBqRwgT1TL2un9rKe_y19nndjtdlu5f2KEeHcuYOZd-HkEfPkZy3MQTiaLRl9_sDvTIS7IgAAAA.mUCEDwZmF6gbUx3XILikOf9maeZk8NRBQZEaYv1pe4CN-_KhvDHqU_b33D7ilxsRmT6mVrygm5KZy1buVUTFAg', // 设置 Authorization 请求头，用于身份验证
                     'companyId': 1 // 设置 companyId 请求头，用于传递公司 ID
                 }
             })
@@ -528,7 +528,7 @@ export default {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': 'eyJhbGciOiJIUzUxMiIsInppcCI6IkdaSVAifQ.H4sIAAAAAAAAABWLQQ7CIBBF7zLrkjAwdJiew8T1tKBWY9oUujDGuwvL__57X3jWFSYIgllHUYNzZEO0LEbtjQ1adAkdBkwMA6xaYUJG70mCjwOUc251-ZSa3_0vpc3rdrwu2z3XRz4a1DM1qPvehdR7lkCjkxgDC1rH9PsDzfelNYgAAAA.cleJLUcEULIe_tHvsZOeBuvnHVS_stp6PEivnKFVTY-U0MNqqza7sWk26xV5eJIT4f8xgKhJ3ZW4oARaylAuoA'// 设置 Authorization 请求头，用于身份验证
+                        'Authorization': 'eyJhbGciOiJIUzUxMiIsInppcCI6IkdaSVAifQ.H4sIAAAAAAAAABWLQQ7CIBBF7zLrkgDDMNBzmLgehGo1pk2hC2O8u7D877_3hWdbYYZAHrUsrKyVrBylRUXSSbGIDx7xFkTDBKs0mA0bdBqRwgT1TL2un9rKe_y19nndjtdlu5f2KEeHcuYOZd-HkEfPkZy3MQTiaLRl9_sDvTIS7IgAAAA.mUCEDwZmF6gbUx3XILikOf9maeZk8NRBQZEaYv1pe4CN-_KhvDHqU_b33D7ilxsRmT6mVrygm5KZy1buVUTFAg'// 设置 Authorization 请求头，用于身份验证
                     }
                 })
                     .then(response => {
