@@ -138,6 +138,7 @@ function VertifyCode() {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        Authorization: Authorization.value,
       },
     }
   )
@@ -165,13 +166,12 @@ function VertifyCode() {
 function JoinCompany() {
   console.log(requestBody.value);
   //创建公司
-  fetch("http://localhost:8080/api/company_user/joinCompany", {
+  fetch("http://localhost:8080/api/company_user/joinCompany/${requestBody.value}", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: Authorization.value,
     },
-    body: JSON.stringify(requestBody.value),
   })
     .then((response) => {
       if (!response.ok) {
