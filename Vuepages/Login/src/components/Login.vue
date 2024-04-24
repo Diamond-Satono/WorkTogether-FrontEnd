@@ -168,6 +168,8 @@
   border: 1.5px solid #7d8592;
   font-size: 21px;
   margin-top: 3%;
+  box-shadow: 0px 0px 5px  rgba(0, 0, 0, 0.4);
+  padding-left: 3%;
 }
 .EmailInput:focus {
   border-color: #ff8940;
@@ -180,6 +182,8 @@
   border: 1.5px solid #7d8592;
   font-size: 21px;
   margin-top: 3%;
+  box-shadow: 0px 0px 5px  rgba(0, 0, 0, 0.4);
+  padding-left: 3%;
 }
 .PasswordInput:focus {
   border-color: #ff8940;

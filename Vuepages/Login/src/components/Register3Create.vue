@@ -355,6 +355,8 @@ const GotoSuccess = () => {
   border: 1.5px solid #7d8592;
   font-size: 21px;
   top: 740%;
+  box-shadow: 0px 0px 5px  rgba(0, 0, 0, 0.4);
+  text-indent: 10px;
 }
 .companynameinput:focus {
   border-color: #ff8940;
@@ -368,6 +370,8 @@ const GotoSuccess = () => {
   border: 1.5px solid #7d8592;
   font-size: 21px;
   top: 1140%;
+  box-shadow: 0px 0px 5px  rgba(0, 0, 0, 0.4);
+  text-indent: 10px;
 }
 #CompanySize:focus {
   border-color: #ff8940;
@@ -386,6 +390,8 @@ const GotoSuccess = () => {
   border-radius: 20px;
   border: 1.5px solid #7d8592;
   font-size: 21px;
+  box-shadow: 0px 0px 5px  rgba(0, 0, 0, 0.4);
+  text-indent: 10px;
 }
 #Industry:focus {
   border-color: #ff8940;
@@ -397,6 +403,8 @@ const GotoSuccess = () => {
   border-radius: 20px;
   border: 1.5px solid #7d8592;
   font-size: 21px;
+  box-shadow: 0px 0px 5px  rgba(0, 0, 0, 0.4);
+  text-indent: 10px;
 }
 #ConcreteIndustry:focus {
   border-color: #ff8940;

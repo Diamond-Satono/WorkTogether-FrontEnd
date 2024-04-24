@@ -351,6 +351,8 @@ const goToRegister3 = () => {
   border: 1.5px solid #7d8592;
   font-size: 21px;
   top: 720%;
+  box-shadow: 0px 0px 5px  rgba(0, 0, 0, 0.4);
+  text-indent: 10px;
 }
 .PasswordInput:focus {
   border-color: #ff8940;
@@ -420,6 +422,8 @@ const goToRegister3 = () => {
   border: 1.5px solid #7d8592;
   font-size: 21px;
   top: 1220%;
+  box-shadow: 0px 0px 5px  rgba(0, 0, 0, 0.4);
+  text-indent: 10px;
 }
 .ConfirmPasswordInput:focus {
   border-color: #ff8940;

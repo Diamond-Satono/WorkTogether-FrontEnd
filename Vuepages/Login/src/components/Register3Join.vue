@@ -398,6 +398,8 @@ const GotoSuccess = () => {
   border: 1.5px solid #7d8592;
   font-size: 21px;
   top: 1120%;
+  box-shadow: 0px 0px 5px  rgba(0, 0, 0, 0.4);
+  text-indent: 10px;
 }
 .CodeInput:focus {
   border-color: #ff8940;
