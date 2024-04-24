@@ -117,10 +117,11 @@
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import useStore from "@/store/store";
+import {Authorization} from "@/store/token"
 const router = useRouter();
 
 //使用令牌
-const { Authorization } = useStore();
+const token = Authorization();
 const invitecode = ref("");
 const CompanyNameFirstLetter = ref("");
 const CompanyName = ref("");
@@ -138,7 +139,7 @@ function VertifyCode() {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: Authorization.value,
+        Authorization: token.value,
       },
     }
   )
@@ -170,7 +171,7 @@ function JoinCompany() {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: Authorization.value,
+      Authorization: token.value,
     },
   })
     .then((response) => {

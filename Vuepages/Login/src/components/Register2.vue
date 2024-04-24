@@ -95,6 +95,7 @@
 import { ref, computed, provide } from "vue";
 import { useRouter } from "vue-router";
 import useStore from "@/store/store";
+import {Authorization} from "@/store/token";
 const password = ref("");
 
 // const confirmpassword = ref("");
@@ -105,8 +106,10 @@ const confirmpasswordError = ref(false);
 
 const router = useRouter();
 
+const token = Authorization();
+
 //获取已经存储数据用来创建账号
-const { email, code, confirmpassword, Authorization } = useStore();
+const { email, code, confirmpassword} = useStore();
 const requestBodyforcreate = computed(() => ({
   email: email.value,
   password: confirmpassword.value,
@@ -155,8 +158,8 @@ function register() {
       console.log(requestBodyforcreate.value);
       console.log(data.msg);
       // 在这里进行 Authorization 令牌的存储
-      Authorization.value = data.data; // 存储 Authorization
-      console.log("令牌：", Authorization.value);
+      token.value = data.data; // 存储 Authorization
+      console.log("令牌：", token.value);
     })
     .catch((error) => {
       console.error("There was a problem with the creation:", error);

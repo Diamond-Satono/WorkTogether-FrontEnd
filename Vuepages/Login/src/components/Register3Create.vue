@@ -93,6 +93,7 @@
 import { ref, computed, watch, inject } from "vue";
 import { useRouter } from "vue-router";
 import useStore from "@/store/store";
+import {Authorization} from "@/store/token"
 const router = useRouter();
 
 const selectedIndustry = ref("default");
@@ -125,7 +126,7 @@ watch(selectedIndustry, (newValue) => {
   }
 });
 //获取令牌
-const {Authorization} = useStore();
+const token = Authorization();
 //创建公司所需数据
 const companyName = ref('');
 const concreteIndustry = ref('default');
@@ -138,14 +139,14 @@ const requestBodyforcreatecompany = computed(() => ({
 
 //创建公司
 function CreateAccountandCompany() {
-  console.log(Authorization.value);
+  console.log(token.value);
 console.log(requestBodyforcreatecompany.value)
   //创建公司
   fetch("http://localhost:8080/api/company/createCompany", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": Authorization.value
+      "Authorization": token.value
     },
     body: JSON.stringify(requestBodyforcreatecompany.value),
   })
