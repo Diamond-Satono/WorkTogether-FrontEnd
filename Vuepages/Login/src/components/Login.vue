@@ -274,6 +274,7 @@
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import useStore from "@/store/store";
+import {Authorization} from "@/store/token"
 // const email = ref("");
 
 // const password = ref("");
@@ -287,7 +288,8 @@ const passwordError = ref(false);
 const emailError = ref(false);
 const noaccount = ref(false);
 //邮箱、密码、令牌
-const {email,password, Authorization } = useStore();
+const {email,password,} = useStore();
+const token = Authorization();
 const router = useRouter();
 
 //显示密码方法
@@ -344,8 +346,9 @@ function Login() {
         passwordError.value = false;
         console.log(data.msg);
         // 在这里进行 Authorization 令牌的存储
-        Authorization.value = data.data; // 存储 Authorization
-        console.log("令牌：", Authorization.value);
+        token.value = data.data; // 存储 Authorization
+        console.log("令牌：", token.value);
+        alert("登录成功！");
       }
     })
     .catch((error) => {

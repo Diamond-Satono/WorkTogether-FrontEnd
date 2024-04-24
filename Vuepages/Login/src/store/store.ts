@@ -5,8 +5,7 @@ const state = reactive({
   email: '',
   code: '',
   password: '',
-  confirmpassword: '',
-  Authorization: localStorage.getItem('Authorization') || ''
+  confirmpassword: ''
 });
 
 export default function useStore() {
