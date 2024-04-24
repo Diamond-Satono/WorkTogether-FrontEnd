@@ -37,6 +37,11 @@ const routes = [
     name: 'RegisterSuccess',
     component: RegisterSuccess
   },
+  {
+    path: '/retrievepassword',
+    name: 'RetrievePassword',
+    component: RetrievePassword
+  },
 ]
 
 const router = createRouter({

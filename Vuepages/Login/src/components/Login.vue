@@ -53,7 +53,7 @@
       <!-- 账户不存在 -->
       <div v-if="noaccount" class="noaccount">账户不存在</div>
       <!-- 找回密码 -->
-      <div class="FindbackPassword">找回密码</div>
+      <div class="FindbackPassword" @click="goToRetrievePassword">找回密码</div>
       <!-- 登录按钮 -->
       <button class="goLogin" @click="Login">
         <img class="Loginbutton" src="@/assets/Loginbutton.svg" />去工作吧
@@ -364,4 +364,12 @@ const goToRegister = () => {
     console.error("Router is not initialized.");
   }
 };
+
+const goToRetrievePassword = () =>{
+  if (router) {
+    router.push({ name: "RetrievePassword" });
+  } else {
+    console.error("Router is not initialized.");
+  }
+}
 </script>
