@@ -1,14 +1,15 @@
 import './assets/main.css'
 import { createApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
-import Login from './components/Login.vue'
-import Register from './components/Register.vue'
-import Register2 from './components/Register2.vue'
-import Register3 from './components/Register3.vue'
-import Register3Create from './components/Register3Create.vue'
-import Register3Join from './components/Register3Join.vue'
-import RegisterSuccess from './components/RegisterSuccess.vue'
-import RetrievePassword from './components/RetrievePassword.vue'
+import Login from './components/Login/Login.vue'
+import Register from './components/Login/Register.vue'
+import Register2 from './components/Login/Register2.vue'
+import Register3 from './components/Login/Register3.vue'
+import Register3Create from './components/Login/Register3Create.vue'
+import Register3Join from './components/Login/Register3Join.vue'
+import RegisterSuccess from './components/Login/RegisterSuccess.vue'
+import RetrievePassword from './components/Login/RetrievePassword.vue'
+import MemberList from './components/MemberList.vue'
 import App from './App.vue'
 
 
@@ -23,6 +24,7 @@ const router = createRouter({
         { path: '/register3join', name: 'Register3Join', component: Register3Join },
         { path: '/registersuccess', name: 'RegisterSuccess', component: RegisterSuccess },
         { path: '/retrievepassword', name: 'RetrievePassword', component: RetrievePassword },
+        { path: '/memberlist', name: 'MemberList', component: MemberList },
         { path: '/', redirect: '/login' }
     ]
 })
