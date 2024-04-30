@@ -10,7 +10,9 @@ import Register3Join from './components/Login/Register3Join.vue'
 import RegisterSuccess from './components/Login/RegisterSuccess.vue'
 import RetrievePassword from './components/Login/RetrievePassword.vue'
 import MemberList from './components/MemberList.vue'
+import EnterpriseInfo from './components/enterprise/EnterpriseInfo.vue'
 import App from './App.vue'
+
 
 
 const router = createRouter({
@@ -25,6 +27,7 @@ const router = createRouter({
         { path: '/registersuccess', name: 'RegisterSuccess', component: RegisterSuccess },
         { path: '/retrievepassword', name: 'RetrievePassword', component: RetrievePassword },
         { path: '/memberlist', name: 'MemberList', component: MemberList },
+        { path: '/enterpriseinfo', name: 'EnterpriseInfo', component: EnterpriseInfo },
         { path: '/', redirect: '/login' }
     ]
 })
