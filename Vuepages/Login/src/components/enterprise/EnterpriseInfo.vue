@@ -1,7 +1,7 @@
 <template>
   <div id="sidebar">
     <!-- Logo -->
-    <img :src="require('@/assets/img/wt_logo.png')" alt="Logo" class="logo">
+    <img src="@/assets/img/wt_logo.png" alt="Icon">
     <!-- Sidebar-->
     <ul>
       <li id="home" @click="toggleSubMenu('home')">
