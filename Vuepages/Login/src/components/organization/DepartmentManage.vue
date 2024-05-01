@@ -431,7 +431,7 @@
     height:93%;
     width: 100%;
     top:6px;
-    background-color: #ff7f50;
+    background-color: #fff;
   }
 
   </style>
