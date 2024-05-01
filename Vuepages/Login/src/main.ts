@@ -1,5 +1,8 @@
 import './assets/main.css'
 import { createApp } from 'vue'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { fas } from '@fortawesome/free-solid-svg-icons'
 import { createRouter, createWebHistory } from 'vue-router'
 import Login from './components/Login/Login.vue'
 import Register from './components/Login/Register.vue'
@@ -11,9 +14,10 @@ import RegisterSuccess from './components/Login/RegisterSuccess.vue'
 import RetrievePassword from './components/Login/RetrievePassword.vue'
 import MemberList from './components/MemberList.vue'
 import EnterpriseInfo from './components/enterprise/EnterpriseInfo.vue'
+import DepartmentManage from './components/organization/DepartmentManage.vue'
 import App from './App.vue'
 
-
+library.add(fas);
 
 const router = createRouter({
     history: createWebHistory(),
@@ -28,9 +32,11 @@ const router = createRouter({
         { path: '/retrievepassword', name: 'RetrievePassword', component: RetrievePassword },
         { path: '/memberlist', name: 'MemberList', component: MemberList },
         { path: '/enterpriseinfo', name: 'EnterpriseInfo', component: EnterpriseInfo },
+        { path: '/departmentmanage', name: 'DepartmentManage', component: DepartmentManage },
         { path: '/', redirect: '/login' }
     ]
 })
 const app = createApp(App);
 app.use(router);
+app.component('fa', FontAwesomeIcon);
 app.mount('#app');

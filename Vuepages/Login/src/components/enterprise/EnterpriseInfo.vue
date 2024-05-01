@@ -78,19 +78,19 @@
     </div>
     <div id="info-mode">
       <button 
-      :class="{ active: selectedOption === 'basic' }" 
-      @click="selectOption('basic')"
-      id="mode1"
-    >
-      基础信息
-    </button>
-    <button 
-      :class="{ active: selectedOption === 'development' }" 
-      @click="selectOption('development')"
-      id="mode2"
-    >
-      企业发展
-    </button>
+        :class="{ active: selectedOption === 'basic' }" 
+        @click="selectOption('basic')"
+        id="mode1"
+      >
+        基础信息
+      </button>
+      <button 
+        :class="{ active: selectedOption === 'development' }" 
+        @click="selectOption('development')"
+        id="mode2"
+      >
+        企业发展
+      </button>
     </div>
 
     <div id="maininfo-en">
