@@ -349,6 +349,7 @@ function Login() {
         token.value = data.data; // 存储 Authorization
         console.log("令牌：", token.value);
         alert("登录成功！");
+        goToHomePage();
       }
     })
     .catch((error) => {
@@ -372,4 +373,12 @@ const goToRetrievePassword = () =>{
     console.error("Router is not initialized.");
   }
 }
+
+const goToHomePage = () => {
+  if (router) {
+    router.push({ name: "HomePage" });
+  } else {
+    console.error("Router is not initialized.");
+  }
+};
 </script>

@@ -61,21 +61,14 @@
 </template>
       
       <script setup lang="ts">
-import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
-import useStore from "@/store/store";
 const router = useRouter();
-const { email,confirmpassword,Authorization } = useStore();
-const requestBodyforlogin = computed(() => ({
-  email: email.value,
-  password: confirmpassword.value,
-}));
 function Login() {
-  GoLogin();
+  goToHomePage();
 }
-const GoLogin = () => {
+const goToHomePage = () => {
   if (router) {
-    router.push({ name: "Register3Join" });//待修改
+    router.push({ name: "HomePage" });
   } else {
     console.error("Router is not initialized.");
   }

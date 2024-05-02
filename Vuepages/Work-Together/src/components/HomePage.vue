@@ -6,14 +6,14 @@
       <ul>
         <li id="home" @click="toggleSubMenu('home')">
           <i class="fas fa-file"></i> 
-          <a href="/HomePage"><fa icon="folder-open" />  首页</a>
+          <a href="/HomePage" style="color: #ff7f50;"><fa icon="folder-open" />  首页</a>
         </li>
         <li id="organization">
           <i class="fas fa-file"></i>  
           <a @click="toggleSubMenu('organization')"><fa icon="folder-open" /> 组织架构</a>
           <ul class="submenu" v-show="subMenuStatus.organization">
             <li><i class="fas fa-file"></i> <a><fa icon="file" />  团队管理</a></li>
-            <li><i class="fas fa-file"></i> <a style="color: #ff7f50;"><fa icon="file" />  成员与部门</a></li>
+            <li><i class="fas fa-file"></i> <a href="/departmentmanage"><fa icon="file" />  成员与部门</a></li>
           </ul>
         </li>
         <li id="enterprise">
@@ -44,8 +44,7 @@
           <div id="symbol">深</div>
           <div id="page-info">
               <span id="name-en">深圳大学/</span>
-              <span id="name-list">组织架构/</span>
-              <span id="name-page">成员与部门</span>
+              <span id="name-list">首页</span>
           </div>   
         </div>
 
@@ -77,25 +76,9 @@
 
       <div id="main-content">
           <!-- 这里放置页面的主要内容 -->
-        <div id="info-mode">
-            <button :class="{ active: selectedOption === 'basic' }" 
-            @click="showComponent1() ;selectOption('basic')"
-            id="mode1">
-            成员
-          </button>
-          <button :class="{ active: selectedOption === 'development' }" 
-            @click="showComponent2() ; selectOption('development')"
-            id="mode2">
-            部门
-          </button>
-        </div>
+        
 
-        <div id="bottom-line"></div> <!-- 下方的线 -->
-        <div id="list-content">
-          <component :is="componentToShow"></component>
-
-        </div>
-
+      
       </div>
 
 
@@ -107,11 +90,8 @@
   </template>
   
   <script>
-  import member from './member.vue';
-  import department from './department.vue';
-
   export default {
-    name: 'DepartmentManage',
+    name: 'HomePage',
     data() {
       return {
         subMenuStatus: {
@@ -122,21 +102,9 @@
         },
         isMenuOpen: false, // 用于控制气泡菜单的显示与隐藏
         selectedOption: 'basic',
-        showChild1: true, // 控制显示子组件1还是子组件2的标志
-        child1Component: member, // 子组件1
-        child2Component: department  // 子组件2
       }
     },
-    components: {
-      member,
-      department
-    },
-    computed: {
-      // 将 showChild1 改为计算属性
-      componentToShow() {
-        return this.showChild1 ? 'member' : 'department';
-      }
-    },
+   
     methods: {
       toggleSubMenu(item) {
         this.subMenuStatus[item] = !this.subMenuStatus[item];
@@ -146,12 +114,6 @@
       },
       selectOption(option) {
         this.selectedOption = option;
-      },
-      showComponent1() {
-        this.showChild1 = true; // 点击按钮1时显示子组件1
-      },
-      showComponent2() {
-        this.showChild1 = false; // 点击按钮2时显示子组件2
       }
       
       
@@ -276,14 +238,15 @@
     font-size: 140%;
     font-weight: 800;
     margin-top: auto;
+    color: #ff7f50;
   }
-  #name-page{
+  /* #name-page{
     margin-left: 3px;
     font-size: 100%;
     font-weight: 600;
     color: #ff7f50;
     margin-top: auto;
-  }
+  } */
   
   .topbar-right {
     display: flex;
