@@ -63,6 +63,7 @@
         还没有账号，去注册<img src="@/assets/loginimgs/register.svg" />
       </div>
     </div>
+    <LoginSuccess ref="alert"/>
   </div>
 </template>
 
@@ -275,6 +276,7 @@ import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import useStore from "@/store/store";
 import {Authorization} from "@/store/token"
+import LoginSuccess from './LoginSuccess.vue';
 // const email = ref("");
 
 // const password = ref("");
@@ -291,6 +293,8 @@ const noaccount = ref(false);
 const {email,password,} = useStore();
 const token = Authorization();
 const router = useRouter();
+
+const alert = ref();
 
 //显示密码方法
 function togglePasswordVisibility() {
@@ -348,13 +352,11 @@ function Login() {
         // 在这里进行 Authorization 令牌的存储
         token.value = data.data; // 存储 Authorization
         console.log("令牌：", token.value);
-        alert("登录成功！");
-        goToHomePage();
+        showAlert();
       }
     })
     .catch((error) => {
       console.error("There was a problem with the login:", error);
-      alert("未知错误");
     });
 }
 
@@ -380,5 +382,11 @@ const goToHomePage = () => {
   } else {
     console.error("Router is not initialized.");
   }
+};
+
+const showAlert = () => {
+  alert.value.displayAlert('登录成功', 1500);
+  console.log("弹窗显示");
+  setTimeout(goToHomePage, 1500); // 延迟1.5秒后跳转到HomePage页面
 };
 </script>
