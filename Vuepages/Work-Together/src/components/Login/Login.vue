@@ -1,10 +1,10 @@
 <template>
   <div class="background">
-    <img src="@/assets/LoginMain.png" class="LoginPic" />
+    <img src="@/assets/loginimgs/LoginMain.png" class="LoginPic" />
     <div class="loginbackground">
       <!-- 标题 -->
       <div class="title">
-        <img src="@/assets/TitleIcon.svg" class="TitleIcon" />
+        <img src="@/assets/loginimgs/TitleIcon.svg" class="TitleIcon" />
         <div class="titlewords">
           <div class="titleChn">
             我们<span class="titleChndevide">一起工作吧</span>
@@ -20,7 +20,7 @@
       <!-- 邮箱和密码输入 -->
       <div class="input">
         <div class="Email">
-          <img src="@/assets/LoginMail.svg" class="EmailImg" />
+          <img src="@/assets/loginimgs/LoginMail.svg" class="EmailImg" />
           <span class="Emailword">邮箱</span>
           <input
             type="text"
@@ -31,7 +31,7 @@
           />
         </div>
         <div class="Password">
-          <img src="@/assets/LoginPassword.svg" class="PasswordImg" />
+          <img src="@/assets/loginimgs/LoginPassword.svg" class="PasswordImg" />
           <span class="Passwordword">密码</span>
           <input
             type="password"
@@ -56,11 +56,11 @@
       <div class="FindbackPassword" @click="goToRetrievePassword">找回密码</div>
       <!-- 登录按钮 -->
       <button class="goLogin" @click="Login">
-        <img class="Loginbutton" src="@/assets/Loginbutton.svg" />去工作吧
+        <img class="Loginbutton" src="@/assets/loginimgs/Loginbutton.svg" />去工作吧
       </button>
       <!--注册账号 -->
       <div class="register" @click="goToRegister">
-        还没有账号，去注册<img src="@/assets/register.svg" />
+        还没有账号，去注册<img src="@/assets/loginimgs/register.svg" />
       </div>
     </div>
   </div>

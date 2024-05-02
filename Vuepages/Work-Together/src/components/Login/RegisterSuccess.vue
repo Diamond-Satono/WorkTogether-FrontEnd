@@ -8,28 +8,28 @@
       <!-- 第一步 -->
       <div class="step1">
         <div class="firststep">
-          <img class="step1pic" src="@/assets/stepselected.svg" />邮箱验证
+          <img class="step1pic" src="@/assets/loginimgs/stepselected.svg" />邮箱验证
         </div>
-        <img src="@/assets/whitelink.png" class="link1" />
+        <img src="@/assets/loginimgs/whitelink.png" class="link1" />
       </div>
       <!--第二步 -->
       <div class="step2">
         <div class="secondstep">
-          <img class="step2pic" src="@/assets/stepselected.svg" />输入/确认密码
+          <img class="step2pic" src="@/assets/loginimgs/stepselected.svg" />输入/确认密码
         </div>
-        <img src="@/assets/whitelink.png" class="link2" />
+        <img src="@/assets/loginimgs/whitelink.png" class="link2" />
       </div>
       <!-- 第三步 -->
       <div class="step3">
         <div class="thirdstep">
-          <img class="step3pic" src="@/assets/stepselected.svg" />创建/加入团队
+          <img class="step3pic" src="@/assets/loginimgs/stepselected.svg" />创建/加入团队
         </div>
-        <img src="@/assets/whitelink.png" class="link3" />
+        <img src="@/assets/loginimgs/whitelink.png" class="link3" />
       </div>
       <!-- 第四步 -->
       <div class="step4">
         <div class="fourthstep">
-          <img class="step4pic" src="@/assets/stepselecting.svg" />注册成功
+          <img class="step4pic" src="@/assets/loginimgs/stepselecting.svg" />注册成功
         </div>
       </div>
     </div>
@@ -37,7 +37,7 @@
     <div class="Registerbackground">
       <!-- 图标和标题 -->
       <div class="icontitle">
-        <img src="@/assets/TitleIcon.svg" class="TitleIcon" />
+        <img src="@/assets/loginimgs/TitleIcon.svg" class="TitleIcon" />
         <div class="titlewords">
           <div class="titleChn">
             我们<span class="titleChndevide">一起工作吧</span>
@@ -50,7 +50,7 @@
         <div class="steptitle1">步骤4/4</div>
         <!-- 创建企业 -->
         <div class="registersuccess">
-          <img src="@/assets/registersuccess.png" alt="注册成功" width="600px"/>
+          <img src="@/assets/loginimgs/registersuccess.png" alt="注册成功" width="600px"/>
         </div>
         <div class="successtitle">您已成功注册！</div>
       </div>
