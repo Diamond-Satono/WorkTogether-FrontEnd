@@ -16,7 +16,11 @@ import MemberList from './components/MemberList.vue'
 import EnterpriseInfo from './components/enterprise/EnterpriseInfo.vue'
 import DepartmentManage from './components/organization/DepartmentManage.vue'
 import HomePage from './components/HomePage.vue'
+import BatchDelete from './components/organization/deptPop-upWindows/BatchDelete.vue'
+import CreateDept from './components/organization/deptPop-upWindows/CreateDept.vue'
 import App from './App.vue'
+
+
 
 library.add(fas);
 
@@ -41,4 +45,6 @@ const router = createRouter({
 const app = createApp(App);
 app.use(router);
 app.component('fa', FontAwesomeIcon);
+app.component("BatchDelete", BatchDelete);
+app.component("CreateDept", CreateDept)
 app.mount('#app');
