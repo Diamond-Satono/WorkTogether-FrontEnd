@@ -1,5 +1,5 @@
 <template>
-  <div class="background">
+  <div class="background"  @keyup.enter="Login">
     <img src="@/assets/loginimgs/LoginMain.png" class="LoginPic" />
     <div class="loginbackground">
       <!-- 标题 -->
