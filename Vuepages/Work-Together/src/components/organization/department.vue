@@ -19,11 +19,9 @@
           <thead>
             <tr>
               <th>部门名称</th>
-              <div class="scrollable-columns">
-                <th>部门人数</th>
-                <th>部门负责人</th>
-                <th>部门待分配任务数</th>
-              </div>
+              <th>部门人数</th>
+              <th>部门负责人</th>
+              <th>部门待分配任务数</th>
               <th>操作</th>
             </tr>
           </thead>
@@ -34,35 +32,47 @@
               <td>1</td>
               <td>1</td>
               <td>1</td>
-              <td>操作1</td>
+              <td><button class="AddChildDept">添加子部门</button></td>
             </tr>
-            <tr>
-              <td>部门2</td>
-              <td>1</td>
-              <td>1</td>
-              <td>1</td>
-              <td>操作2</td>
-            </tr>
+            <tr v-for="(row, index) in tableData" :key="index">
+            <td>{{ row.name }}</td>
+            <td>{{ row.number }}</td>
+            <td>{{ row.manager }}</td>
+            <td>{{ row.tasks }}</td>
+            <td>
+              <button class="Detail" @click="showDeptDetail(row)">详情</button>
+              <button class="AddChildDept">添加子部门</button>
+              <img src="@/assets/deptimgs/options.png" class="optionsimg" />
+            </td>
+          </tr>
           </tbody>
         </table>
       </div>
     </div>
     <!-- 动态加载组件 -->
-    <Transition name="fade" mode="out-in">
+    <Transition :name="transitionName" mode="out-in">
       <component
         :is="currentModal"
         v-if="currentModal"
         @close-modal="closeModal"
+        :row="currentRowData"
       ></component>
     </Transition>
   </div>
 </template>
   
 <script setup lang="ts">
-import { ref, Transition } from "vue";
-import {Authorization} from "@/store/token"
+import { ref, Transition, computed } from "vue";
+import { Authorization } from "@/store/token";
 const token = Authorization();
 const currentModal = ref("");
+const transitionName =ref("fade")
+const tableData = ref([
+  { name: '深圳大学一级分部', number: 10, manager: '张三', tasks: 5 },
+  { name: '深圳大学二级分部', number: 15, manager: '李四', tasks: 8 },
+  { name: '深圳大学三级分部', number: 12, manager: '王五', tasks: 7 },
+]);
+const currentRowData = ref("");
 
 function showBatchDelete() {
   currentModal.value = "BatchDelete";
@@ -74,10 +84,33 @@ function showCreateDept() {
   console.log("currentModal=", currentModal.value);
 }
 
-function closeModal() {
-  currentModal.value = "";
-  console.log("ModalClosed");
+function showDeptDetail(row: any) {
+  transitionName.value = "slide-fade"; // 设置 transitionName 的值为 "slide-fade"
+  currentModal.value = "DeptDetail";
+  console.log("currentModal=", currentModal.value);
+  currentRowData.value = row;
+   console.log('详情', row);
 }
+
+function closeModal() {
+  if (currentModal.value === "DeptDetail") {
+    // 如果当前模态框为 DeptDetail，则不改变 transitionName 的值，继续使用 slide-fade 过渡效果
+    currentModal.value = "";
+    console.log("ModalClosed");
+    
+    // 延迟更改 transitionName 的值
+    setTimeout(() => {
+      transitionName.value = "fade";
+    }, 500); // 在动画完成后 500 毫秒后更改 transitionName 的值
+  } else {
+    // 否则，将 transitionName 的值设置为 "fade"，使用默认的 fade 过渡效果
+    transitionName.value = "fade";
+    currentModal.value = "";
+    console.log("ModalClosed");
+  }
+}
+
+defineExpose({ currentRowData });
 </script>
 
 <style scoped>
@@ -166,6 +199,20 @@ function closeModal() {
 .fade-leave-to {
   opacity: 0;
 }
+/* 弹窗滑入效果 */
+.slide-fade-enter-active {
+  transition: all 0.3s ease-out;
+}
+
+.slide-fade-leave-active {
+  transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateX(100%);
+  opacity: 0;
+}
 
 .table {
   margin-left: 2%;
@@ -186,8 +233,27 @@ td {
   padding: 20px;
   text-align: center;
 }
-.scrollable-columns {
-  min-width: 1000px;
-  overflow-x: auto; /* 让表格水平滚动 */
+.AddChildDept {
+  background-color: white;
+  border: none;
+  color: #ff6200;
+  font-size: 18px;
+  cursor: pointer;
+}
+.Detail {
+  background-color: white;
+  border: none;
+  color: #ff6200;
+  font-size: 18px;
+  cursor: pointer;
+  margin-right: 10%;
+  outline: none; /* 去掉点击时的外边框 */
+  box-shadow: none; /* 去掉点击时的阴影效果 */
+}
+.optionsimg {
+  vertical-align: middle; /* 设置垂直居中对齐 */
+  margin-left: 12%;
+  margin-top: -2%;
+  cursor: pointer;
 }
 </style>
