@@ -43,9 +43,12 @@
               <td>{{ user.email }}</td>
               <td>{{ user.deptName }}</td>
               <td>{{ user.position }}</td>
-              <td class="button-container">
-                  <button class="detail_button">详情</button>
-                  <button class="else_button">···</button>
+              <td>
+                  <button class="detail_button" @click="showDeptDetail(user)">详情</button>
+                  <img
+                    src="@/assets/deptimgs/options.png"
+                    class="optionsimg"
+                  />
               </td>
           </tr>
           </tbody>
@@ -53,12 +56,13 @@
     </div>
   </div>
   <!-- 动态加载组件 -->
-  <Transition name="fade" mode="out-in">
+  <Transition name="transitionName" mode="out-in">
     <component
       :is="currentModal"
       v-if="currentModal"
       @close-modal="closeModal"
       :batchIds="batchIds"
+      :user="currentRowData"
     ></component>
   </Transition>
 </template>
@@ -68,6 +72,7 @@ import { onMounted, ref, Transition } from 'vue'
 import {Authorization} from "@/store/token"
 const tokens = Authorization();
 const currentModal = ref("");
+const transitionName = ref("fade");
 const searchText = ref("");
 const batchIds = ref([]);//选中的成员id
 const departments = ref(
@@ -96,6 +101,7 @@ const users = ref([
   },
   // ... more users
 ]);
+const currentRowData = ref("");
 //多选功能
 // 选中或取消选中单个用户
 function toggleSelectUser(userId: number) {
@@ -130,6 +136,14 @@ function showBatchDepart() {
 function showAddMember() {
   currentModal.value = "AddMember";
   console.log("currentModal=", currentModal.value);
+}
+// 显示详情
+function showDeptDetail(user: any) {
+  transitionName.value = "slide-fade"; // 设置 transitionName 的值为 "slide-fade"
+  currentModal.value = "MemberDetail";
+  console.log("currentModal=", currentModal.value);
+  currentRowData.value = user;
+  console.log("详情", user);
 }
 // 关闭对话框
 function closeModal() {
@@ -192,8 +206,10 @@ onMounted (() => {
           var memberName = row.querySelector('td:nth-child(2)').textContent.trim().toLowerCase();
           // 获取当前行的邮箱单元格的内容
           var memberEmail = row.querySelector('td:nth-child(3)').textContent.trim().toLowerCase();
+          // 获取当前行的部门单元格的内容
+          var memberDeptName = row.querySelector('td:nth-child(4)').textContent.trim().toLowerCase();
           // 获取当前行的职位单元格的内容
-          var memberPosition = row.querySelector('td:nth-child(4)').textContent.trim().toLowerCase();
+          var memberPosition = row.querySelector('td:nth-child(5)').textContent.trim().toLowerCase();
 
           // 如果角色名称包含关键字，则显示该行，否则隐藏该行
           if (memberName.includes(keyword) ||
@@ -228,7 +244,7 @@ onMounted (() => {
 }
 /* 搜索框 */
 .search-bar{
-  margin-top: 10px;
+  margin-top: 10%;
   margin-bottom: 10px;
 }
 .input-container {
@@ -238,8 +254,13 @@ onMounted (() => {
 }.input-container input {
   border-radius: 5px;
   width: 80%;
-  height: 20px;
+  height: 30px;
+  font-size: 13px;
   border: 1px solid #BBBBBB;
+  padding: 0 2%;
+}
+.input-container input:focus {
+  outline: none;
 }
 /* 分级部门 */
 
@@ -247,7 +268,7 @@ onMounted (() => {
 .top-content{
   display: flex;
   justify-content: space-between;
-  margin-top: 10px;
+  margin-top: 2%;
   margin-bottom: 10px;
 }
 .dept_title{
@@ -316,7 +337,8 @@ table {
 }
 
 .table {
-  
+  margin-left: 2%;
+  margin-right: 4%;
   margin-top: 1%;
 }
 table {
@@ -327,7 +349,7 @@ th {
   padding: 20px;
   text-align: center;
   background-color: #f5f7fa;
-  width: 200px;
+  width: 80px;
 }
 td {
   padding: 20px;
@@ -358,29 +380,20 @@ input[type="checkbox"] {
 } */
 
 /* Button Styles */
-.button-container {
-    display: flex;
-    justify-content: space-evenly;
-    padding: 10px 3px;
+.detail_button {
+  background-color: white;
+  border: none;
+  color: #ff6200;
+  font-size: 16px;
+  cursor: pointer;
+  margin-right: 10%;
+  outline: none; /* 去掉点击时的外边框 */
+  box-shadow: none; /* 去掉点击时的阴影效果 */
 }
-.button-container .detail_button {
-    /* padding: 5px 10px; */
-    padding: 3% 5%;
-    background-color: #FFFFFF;
-    color: #FF6200;
-    border-radius: 20px;
-    border: none;
-    cursor: pointer;
-}
-
-.button-container .else_button {
-    /* padding: 5px 10px; */
-    padding: 3% 10%;
-    background-color: #FFFFFF;
-    color: #FF6200;
-    border-radius: 20px;
-    border: none;
-    font-size: 20px;
-    cursor: pointer;
+.optionsimg {
+  vertical-align: middle; /* 设置垂直居中对齐 */
+  margin-left: 12%;
+  margin-top: -2%;
+  cursor: pointer;
 }
 </style>

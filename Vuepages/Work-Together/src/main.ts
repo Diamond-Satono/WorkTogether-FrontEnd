@@ -20,6 +20,7 @@ import BatchDelete from './components/organization/deptPop-upWindows/BatchDelete
 import CreateDept from './components/organization/deptPop-upWindows/CreateDept.vue'
 import BatchDepart from './components/organization/deptUser-upWindows/BatchDepart.vue'
 import AddMember from './components/organization/deptUser-upWindows/AddMember.vue'
+import MemberDetail from './components/organization/deptUser-upWindows/MemberDetail.vue'
 import CreateSubDept from './components/organization/deptPop-upWindows/CreateSubDept.vue'
 import DeptDetail from './components/organization/deptPop-upWindows/DeptDetail.vue'
 import MoveDept from './components/organization/deptPop-upWindows/MoveDept.vue'
@@ -57,4 +58,5 @@ app.component("DeptDetail",DeptDetail);
 app.component("CreateSubDept", CreateSubDept);
 app.component('MoveDept',MoveDept);
 app.component('DeleteDept',DeleteDept);
+app.component('MemberDetail',MemberDetail);
 app.mount('#app');
