@@ -19,7 +19,11 @@
           />
         </div>
         <div class="deptname">
-          部门名称<input type="text" placeholder="请填写部门名称" class="nameinput" />
+          部门名称<input
+            type="text"
+            placeholder="请填写部门名称"
+            class="nameinput"
+          />
         </div>
         <div class="deptprincipal">部门负责人</div>
         <div class="buttoncontainer">
@@ -72,9 +76,6 @@
 .cutoff {
   border-top: 1px solid #bbbbbb;
   margin-top: 2%;
-}
-.maincontent {
-  
 }
 .deptbelong {
   font-family: "SiYuanHeiTi";

@@ -3,7 +3,7 @@
     <div class="modal-background"></div>
     <div class="modal-content">
       <div class="title">
-        删除部门<img
+        移动部门<img
           src="@/assets/deptimgs/closeModal.png"
           class="closeModal"
           @click="$emit('close-modal')"
@@ -11,33 +11,34 @@
       </div>
       <div class="cutoff"></div>
       <div class="maincontent">
-        <div class="tipsword1">您确定删除部门勾选的所有部门？</div>
-        <div class="tipsword2">删除后不可恢复。</div>
-        <div class="tipsword3">
-          请输入<span class="q123">q123</span>后点击确定删除按钮进行删除
-        </div>
-        <input type="text" class="confirmword" placeholder="请输入确认词" v-model="inputValue"/>
+        <!-- 插入下拉栏 -->
+        <div class="selectcontainer"><select class="departmentselect">
+          <option v-for="(department, index) in departmentNames" :key="index">
+            {{ department }}
+          </option>
+        </select></div>
+        
         <div class="buttoncontainer">
-          <button class="delete" @click="handleDeleteClick">确定删除</button>
+          <button class="create" @click="$emit('close-modal')">确定变更</button>
         </div>
       </div>
     </div>
   </div>
 </template>
-
+    
 <script setup lang="ts">
-import { ref} from "vue"
-const inputValue = ref("");
-const emit = defineEmits(["close-modal"]);
+import { ref } from "vue";
 
-function handleDeleteClick() {
-  if (inputValue.value === "q123") {
-    emit('close-modal');
-  }
-}
+//获取父组件参数
+const props = defineProps({
+  departmentNames: {
+    type: Array,
+    default: () => [],
+  },
+});
 </script>
-
-<style scoped>
+    
+    <style scoped>
 .modal-background {
   position: fixed;
   top: 0;
@@ -77,44 +78,27 @@ function handleDeleteClick() {
   border-top: 1px solid #bbbbbb;
   margin-top: 2%;
 }
-.maincontent {
-  text-align: center;
+.selectcontainer{
+  margin-top: 10%;
+  text-align : center;
 }
-.tipsword1 {
-  font-family: "SiYuanHeiTi";
-  font-size: 23px;
-  margin-top: 4%;
-}
-.tipsword2 {
-  font-family: "SiYuanHeiTi";
-  font-size: 23px;
-  margin-top: 1%;
-}
-.tipsword3 {
-  font-family: "SiYuanHeiTi";
-  font-size: 23px;
-  margin-top: 3%;
-}
-.q123 {
-  color: #ff6200;
-  text-decoration: underline;
-}
-.confirmword {
-  margin-top: 5%;
-  width: 410px;
+.departmentselect{
+  width: 90%;
   height: 47px;
+  font-size: 20px;
   border-radius: 10px;
+  padding-left: 3%;
+  font-family: 'SiYuanHeiTi';
   border: #bbbbbb solid 1px;
-  font-size: 19px;
-  padding-left: 1%;
 }
-.confirmword:focus {
+.departmentselect:focus{
   outline: none;
 }
-.buttoncontainer{
-  margin-top: 5%;
+.buttoncontainer {
+  margin-top: 22%;
+  text-align: center;
 }
-.delete{
+.create {
   width: 90%;
   height: 47px;
   border-radius: 10px;
@@ -123,6 +107,7 @@ function handleDeleteClick() {
   font-size: 20px;
   border: #ff6200 solid 1px;
   cursor: pointer;
-  font-family: 'SiYuanHeiTi';
+  font-family: "SiYuanHeiTi";
+  margin-top: 4%;
 }
 </style>
