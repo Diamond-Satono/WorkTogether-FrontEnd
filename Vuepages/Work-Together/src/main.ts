@@ -18,6 +18,8 @@ import DepartmentManage from './components/organization/DepartmentManage.vue'
 import HomePage from './components/HomePage.vue'
 import BatchDelete from './components/organization/deptPop-upWindows/BatchDelete.vue'
 import CreateDept from './components/organization/deptPop-upWindows/CreateDept.vue'
+import BatchDepart from './components/organization/deptUser-upWindows/BatchDepart.vue'
+import AddMember from './components/organization/deptUser-upWindows/AddMember.vue'
 import App from './App.vue'
 
 
@@ -46,5 +48,7 @@ const app = createApp(App);
 app.use(router);
 app.component('fa', FontAwesomeIcon);
 app.component("BatchDelete", BatchDelete);
-app.component("CreateDept", CreateDept)
+app.component("CreateDept", CreateDept);
+app.component("BatchDepart", BatchDepart);
+app.component("AddMember", AddMember);
 app.mount('#app');
