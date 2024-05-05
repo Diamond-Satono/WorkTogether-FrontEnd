@@ -128,10 +128,10 @@ const CompanyName = ref("");
 const CompanySize = ref("");
 const CompanyAddress = ref("");
 const vertified = ref(false);
-const requestBody = computed(() => ({
-  code: invitecode.value,
-}));
+const requestBody = computed(() => invitecode.value);
 function VertifyCode() {
+  console.log('clicked');
+  
   fetch(
     "http://localhost:8080/api/company_user/getCompanyInfo?code=" +
       invitecode.value,
@@ -165,14 +165,16 @@ function VertifyCode() {
 }
 
 function JoinCompany() {
-  console.log(requestBody.value);
-  //创建公司
-  fetch("http://localhost:8080/api/company_user/joinCompany/${requestBody.value}", {
+  const code = requestBody.value; // 获取 invitecode 的值
+console.log(code);
+  // 创建公司
+  fetch(`http://localhost:8080/api/company_user/joinCompany/${code}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: token.value,
     },
+    body: JSON.stringify({ code }), // 将 code 放入请求主体
   })
     .then((response) => {
       if (!response.ok) {
@@ -182,7 +184,7 @@ function JoinCompany() {
     })
     .then((data) => {
       console.log(data);
-      console.log(requestBody.value);
+      console.log(code);
       console.log(data.msg);
       GotoSuccess();
     })
