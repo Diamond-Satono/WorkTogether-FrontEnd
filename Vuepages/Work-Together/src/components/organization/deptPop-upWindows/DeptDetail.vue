@@ -14,27 +14,57 @@
       <span class="depttitlename">{{ props.row.name }}</span>
     </div>
     <div class="cutoff2"></div>
-    <div class="detail1">
-      <div class="deptbelong">部门所属</div>
-      <div class="deptbelongname">深圳大学</div>
+    <!-- 显示详情 -->
+    <div v-if="showDetail">
+      <div class="detail1">
+        <div class="deptbelong">部门所属</div>
+        <div class="deptbelongname">深圳大学</div>
+      </div>
+      <div class="detail2">
+        <div class="deptname">部门名称</div>
+        <div class="deptdetailname">{{ props.row.name }}</div>
+      </div>
+      <div class="detail3">
+        <div class="deptmanager">部门负责人</div>
+        <div class="deptdetailmanager">{{ props.row.manager }}</div>
+      </div>
+      <div class="detail4">
+        <div class="managerphone">部门负责人联系电话</div>
+        <div class="detailmanagerphone">12345678910</div>
+      </div>
+      <div class="buttoncontainer1">
+        <button class="edit" @click="toggleEditMode">编辑信息</button>
+      </div>
     </div>
-    <div class="detail2">
-      <div class="deptname">部门名称</div>
-      <div class="deptdetailname">{{ props.row.name }}</div>
+    <!-- 显示编辑信息 -->
+    <div v-else>
+      <div class="detail1">
+        <div class="deptbelong">部门所属</div>
+        <input class="deptbelongname  custom-input" type="text" value="深圳大学" />
+      </div>
+      <div class="detail2">
+        <div class="deptname">部门名称</div>
+        <input class="deptdetailname  custom-input" type="text" :value="props.row.name" />
+      </div>
+      <div class="detail3">
+        <div class="deptmanager">部门负责人</div>
+        <div class="deptdetailmanager">{{ props.row.manager }}</div>
+      </div>
+      <div class="detail4">
+        <div class="managerphone">部门负责人联系电话</div>
+        <div class="detailmanagerphone">12345678910</div>
+      </div>
+      <div class="buttoncontainer2">
+        <button class="cancel" @click="canceledit">取消</button>
+        <button class="save"  @click="$emit('close-modal')">保存</button>
+      </div>
     </div>
-    <div class="detail3">
-      <div class="deptmanager">部门名称</div>
-      <div class="deptdetailmanager">{{ props.row.manager }}</div>
-    </div>
-    <div class="detail4">
-      <div class="managerphone">部门负责人联系电话</div>
-      <div class="detailmanagerphone">12345678910</div>
-    </div>
-    <div class="buttoncontainer"><button class="edit">编辑信息</button></div>
   </div>
 </template>
   
 <script setup lang="ts">
+import { ref } from "vue";
+
 //获取父组件参数
 const props = defineProps({
   row: {
@@ -42,7 +72,18 @@ const props = defineProps({
     default: () => ({}),
   },
 });
+
 console.log(props.row);
+
+const showDetail = ref(true);
+
+function toggleEditMode() {
+  showDetail.value = !showDetail.value;
+}
+
+function canceledit(){
+  showDetail.value = !showDetail.value;
+}
 </script>
   
   <style scoped>
@@ -122,11 +163,11 @@ console.log(props.row);
   margin-top: 5%;
   margin-left: 10%;
 }
-.buttoncontainer{
+.buttoncontainer1 {
   margin-top: 10%;
   margin-left: 62%;
 }
-.edit{
+.edit {
   width: 195px;
   height: 52px;
   border-radius: 10px;
@@ -137,6 +178,46 @@ console.log(props.row);
   cursor: pointer;
   font-family: "SiYuanHeiTi";
   font-weight: bold;
+}
+.custom-input{
+  width:550px;
+  height: 45px;
+  border-radius: 10px;
+  border: #bbbbbb solid 1px;
+  padding-left: 1%;
+}
+.custom-input:focus{
+  outline: none;
+}
+.buttoncontainer2 {
+  margin-top: 10%;
+  margin-left: 50%;
+  display: flex;
+}
+.cancel{
+  width: 120px;
+  height: 52px;
+  border-radius: 10px;
+  color: black;
+  background-color: white;
+  font-size: 20px;
+  border: #BBBBBB solid 1px;
+  cursor: pointer;
+  font-family: "SiYuanHeiTi";
+  font-weight: bold;
+}
+.save{
+  width: 120px;
+  height: 52px;
+  border-radius: 10px;
+  color: white;
+  background-color: #ff6200;
+  font-size: 20px;
+  border: #ff6200 solid 1px;
+  cursor: pointer;
+  font-family: "SiYuanHeiTi";
+  font-weight: bold;
+  margin-left: 10%;
 }
 </style>
   
