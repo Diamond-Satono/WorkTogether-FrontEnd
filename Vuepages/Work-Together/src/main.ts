@@ -18,15 +18,12 @@ import DepartmentManage from './components/organization/DepartmentManage.vue'
 import HomePage from './components/HomePage.vue'
 import BatchDelete from './components/organization/deptPop-upWindows/BatchDelete.vue'
 import CreateDept from './components/organization/deptPop-upWindows/CreateDept.vue'
-<<<<<<< HEAD
 import BatchDepart from './components/organization/deptUser-upWindows/BatchDepart.vue'
 import AddMember from './components/organization/deptUser-upWindows/AddMember.vue'
-=======
 import CreateSubDept from './components/organization/deptPop-upWindows/CreateSubDept.vue'
 import DeptDetail from './components/organization/deptPop-upWindows/DeptDetail.vue'
 import MoveDept from './components/organization/deptPop-upWindows/MoveDept.vue'
 import DeleteDept from './components/organization/deptPop-upWindows/DeleteDept.vue'
->>>>>>> e959ac8dfdb1aa68f8ccc3f57f0c556006c6bf92
 import App from './App.vue'
 
 library.add(fas);
@@ -54,13 +51,10 @@ app.use(router);
 app.component('fa', FontAwesomeIcon);
 app.component("BatchDelete", BatchDelete);
 app.component("CreateDept", CreateDept);
-<<<<<<< HEAD
 app.component("BatchDepart", BatchDepart);
 app.component("AddMember", AddMember);
-=======
 app.component("DeptDetail",DeptDetail);
 app.component("CreateSubDept", CreateSubDept);
 app.component('MoveDept',MoveDept);
 app.component('DeleteDept',DeleteDept);
->>>>>>> e959ac8dfdb1aa68f8ccc3f57f0c556006c6bf92
 app.mount('#app');
