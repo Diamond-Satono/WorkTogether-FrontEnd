@@ -27,34 +27,67 @@
           </thead>
           <tbody>
             <!-- 在这里添加你的数据行 -->
-            <tr v-for="(row, index) in tableData" :key="index">
-              <td>{{ row.name }}</td>
-              <td class="number">{{ row.number }}</td>
-              <td class="manager">{{ row.manager }}</td>
-              <td>{{ row.tasks }}</td>
-              <td>
-                <!-- 只有第一行才渲染添加子部门按钮 -->
-                <template v-if="index === 0">
+            <template v-for="(row, index) in tableData" :key="index">
+              <tr :class="{ parent: row.isParent }">
+                <!-- 添加父级部门的 class -->
+                <td>
+                  <!-- 渲染复选框和展开按钮 -->
+                  <template v-if="row.isParent">
+                    <button class="expand-btn" @click="toggleExpand(row)">
+                      <!-- 使用 v-if 控制展开按钮的显示 -->
+                      <img
+                        v-if="row.expanded"
+                        src="@/assets/deptimgs/expandchild.png"
+                        style="width: 18px; height: 18px"
+                      />
+                      <img
+                        v-else
+                        src="@/assets/deptimgs/foldchild.png"
+                        style="width: 18px; height: 18px"
+                      />
+                    </button>
+                    <input type="checkbox" class="checkbox" />
+                  </template>
+                  {{ row.name }}
+                </td>
+                <td class="number">{{ row.number }}</td>
+                <td class="manager">{{ row.manager }}</td>
+                <td>{{ row.tasks }}</td>
+                <td>
                   <button class="AddChildDept" @click="showCreateSubDept">
                     添加子部门
                   </button>
-                </template>
-                <!-- 其他行渲染默认样式的操作 -->
-                <template v-else>
-                  <button class="Detail" @click="showDeptDetail(row)">
-                    详情
-                  </button>
-                  <button class="AddChildDept" @click="showCreateSubDept">
-                    添加子部门
-                  </button>
-                  <img
-                    src="@/assets/deptimgs/options.png"
-                    class="optionsimg"
-                    @click.stop="updatePopupPosition(row,$event)"
-                  />
-                </template>
-              </td>
-            </tr>
+                </td>
+              </tr>
+              <!-- 递归渲染子部门 -->
+              <TransitionGroup name="list">
+                <template v-if="row.expanded">
+                  <tr
+                    v-for="(child, childIndex) in row.children"
+                    :key="`child-${index}-${childIndex}`"
+                  >
+                    <td>
+                      <input type="checkbox" class="checkbox" />{{ child.name }}
+                    </td>
+                    <td class="number">{{ child.number }}</td>
+                    <td class="manager">{{ child.manager }}</td>
+                    <td>{{ child.tasks }}</td>
+                    <td>
+                      <button class="Detail" @click="showDeptDetail(row)">
+                        详情
+                      </button>
+                      <button class="AddChildDept" @click="showCreateSubDept">
+                        添加子部门
+                      </button>
+                      <img
+                        src="@/assets/deptimgs/options.png"
+                        class="optionsimg"
+                        @click.stop="updatePopupPosition(row, $event)"
+                      />
+                    </td></tr
+                ></template>
+              </TransitionGroup>
+            </template>
           </tbody>
         </table>
       </div>
@@ -81,24 +114,89 @@
       >
         <button class="movedept" @click="showMoveDept">移动部门到</button
         ><button class="exportmember">导出成员</button
-        ><button class="deletedept" @click="showDeleteDept(currentRowData)" >删除部门</button>
+        ><button class="deletedept" @click="showDeleteDept(currentRowData)">
+          删除部门
+        </button>
       </div></Transition
     >
   </div>
 </template>
-  
+
 <script setup lang="ts">
 import { ref, Transition, computed, onMounted, onUnmounted } from "vue";
 import { Authorization } from "@/store/token";
 const token = Authorization();
 const currentModal = ref("");
 const transitionName = ref("fade");
-const tableData = ref([
-  { name: "深圳大学一级分部", number: 10, manager: "张三", tasks: 5 },
-  { name: "深圳大学二级分部", number: 15, manager: "李四", tasks: 8 },
-  { name: "深圳大学三级分部", number: 12, manager: "王五", tasks: 7 },
-  { name: "深圳大学四级分部", number: 20, manager: "小明", tasks: 6 },
+interface Department {
+  name: string;
+  number: number;
+  manager: string;
+  tasks: number;
+  isParent: boolean;
+  children: Department[];
+  expanded: boolean;
+}
+
+const tableData = ref<Department[]>([
+  {
+    name: "深圳大学一级分部",
+    number: 10,
+    manager: "张三",
+    tasks: 5,
+    isParent: true, // 标记为父级部门
+    children: [
+      // 子部门数据
+      {
+        name: "深圳大学一级分部子部门1",
+        number: 5,
+        manager: "李四",
+        tasks: 2,
+        isParent: false,
+        children: [],
+        expanded: false,
+      },
+      {
+        name: "深圳大学一级分部子部门2",
+        number: 8,
+        manager: "王五",
+        tasks: 3,
+        isParent: false,
+        children: [],
+        expanded: false,
+      },
+    ],
+    expanded: true,
+  },
+  {
+    name: "深圳大学二级分部",
+    number: 15,
+    manager: "李四",
+    tasks: 8,
+    isParent: true,
+    children: [],
+    expanded: false,
+  },
+  {
+    name: "深圳大学三级分部",
+    number: 12,
+    manager: "王五",
+    tasks: 7,
+    isParent: true,
+    children: [],
+    expanded: false,
+  },
+  {
+    name: "深圳大学四级分部",
+    number: 20,
+    manager: "小明",
+    tasks: 6,
+    isParent: true,
+    children: [],
+    expanded: false,
+  },
 ]);
+
 const currentRowData = ref("");
 function showBatchDelete() {
   currentModal.value = "BatchDelete";
@@ -137,7 +235,7 @@ function showDeptDetail(row: any) {
 
 //获取所有部门名字
 const departmentNames = computed(() => {
-  return tableData.value.map(row => row.name);
+  return tableData.value.map((row) => row.name);
 });
 
 function closeModal() {
@@ -162,7 +260,7 @@ function closeModal() {
 const showPopup = ref(false);
 const popupPosition = ref({ top: 0, left: 0 });
 
-function updatePopupPosition(row : any,event:MouseEvent) {
+function updatePopupPosition(row: any, event: MouseEvent) {
   showPopup.value = !showPopup.value; // 点击时切换弹窗的显示状态
   const rect = (event.target as HTMLElement).getBoundingClientRect(); // 获取元素的位置信息
   popupPosition.value = {
@@ -170,7 +268,7 @@ function updatePopupPosition(row : any,event:MouseEvent) {
     left: rect.left - 170, // 设置弹窗的水平位置
   };
   currentRowData.value = row; // 保存行数据
-  console.log('currentRowData.value=',currentRowData.value);
+  console.log("currentRowData.value=", currentRowData.value);
 }
 
 // 在 setup 中添加函数用于处理点击弹窗以外的区域
@@ -196,6 +294,91 @@ onUnmounted(() => {
 
 function hidePopup() {
   showPopup.value = false;
+}
+
+//获取部门数据
+onMounted(() => {
+  console.log(token.value);
+  fetchdepartment();
+});
+
+async function fetchdepartment() {
+  const companyId = 1; // 根据实际情况替换
+  const companyIdString = companyId.toString();
+  // 从接口获取部门数据并更新表格
+  const response = await fetch(
+    `http://localhost:8080/api/dept/selectHighestDepts?companyId=${companyId}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: token.value,
+        companyId: companyIdString,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+
+  const data = await response.json();
+
+  // 初始化表格数据
+  tableData.value = [];
+
+  // 遍历每个上级部门，获取其子部门数据
+  for (let department of data.data) {
+    // 提取上级部门数据中的所需字段，组织成适合在表格中渲染的格式
+    const parentFormattedData = {
+      name: department.name,
+      number: department.num,
+      manager: department.managerName,
+      tasks: department.job,
+      isParent: true,
+      children: [],
+      expanded: true,
+    };
+
+    // 将上级部门数据添加到表格数据中
+    tableData.value.push(parentFormattedData);
+
+    const childResponse = await fetch(
+      `http://localhost:8080/api/dept/selectDeptsByParentId?parentDeptId=${department.id}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: token.value,
+          companyId: companyIdString,
+        },
+      }
+    );
+
+    if (!childResponse.ok) {
+      throw new Error("Network response was not ok");
+    }
+
+    const childData = await childResponse.json();
+
+    // 提取子部门数据中的所需字段，组织成适合在表格中渲染的格式
+    const childFormattedData = childData.data.map((childDepartment: any) => ({
+      name: childDepartment.name,
+      number: childDepartment.num,
+      manager: childDepartment.managerName,
+      tasks: childDepartment.job,
+      isParent: false, // 标记为子部门
+    }));
+
+    // 将子部门数据添加到对应的上级部门的 children 数组中
+    const parentIndex = tableData.value.findIndex(
+      (item) => item.name === department.name
+    );
+    tableData.value[parentIndex].children.push(...childFormattedData);
+  }
+}
+
+// 展开/收起子部门
+function toggleExpand(row: any) {
+  row.expanded = !row.expanded;
 }
 </script>
 
@@ -373,6 +556,24 @@ td {
   outline: none; /* 去掉点击时的外边框 */
   box-shadow: none; /* 去掉点击时的阴影效果 */
   text-align: center;
-  font-family: 'SiYuanHeiTi';
+  font-family: "SiYuanHeiTi";
+}
+.expand-btn {
+  background-color: white;
+  border: none;
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+}
+
+/* 子部门折叠/展开动画 */
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.3s ease;
+}
+.list-enter-from,.list-leave-to
+{
+  opacity: 0;
+  transform: translateY(-40%);
 }
 </style>
