@@ -6,7 +6,47 @@
           <input type="text" placeholder="请输入成员名、邮箱、职位" v-model="searchText">
         </div>
       </div>
-      <div>分级部门</div>
+      <table>
+        <tbody>
+          <!-- 在这里添加你的数据行 -->
+          <template v-for="(row, index) in tableData" :key="index">
+            <tr :class="{ parent: row.isParent }">
+              <!-- 添加父级部门的 class -->
+              <td @click="getDeptID(row)">
+                <!-- 渲染复选框和展开按钮 -->
+                <template v-if="row.isParent">
+                  <button class="expand-btn" @click="toggleExpand(row)">
+                    <!-- 使用 v-if 控制展开按钮的显示 -->
+                    <img
+                      v-if="row.expanded"
+                      src="@/assets/deptimgs/expandchild.png"
+                      style="width: 18px; height: 18px"
+                    />
+                    <img
+                      v-else
+                      src="@/assets/deptimgs/foldchild.png"
+                      style="width: 18px; height: 18px"
+                    />
+                  </button>
+                </template>
+                {{ row.name }}
+              </td>
+            </tr>
+            <!-- 递归渲染子部门 -->
+            <TransitionGroup name="list">
+              <template v-if="row.expanded">
+                <tr
+                  v-for="(child, childIndex) in row.children"
+                  :key="`child-${index}-${childIndex}`"
+                >
+                <td @click="getDeptID(row)">
+                  {{ child.name }}
+                </td></tr
+              ></template>
+            </TransitionGroup>
+          </template>
+        </tbody>
+      </table>
     </div>
     <div class="model-content">
       <div class="top-content">
@@ -65,6 +105,7 @@
       :batchIds="batchIds"
       :user="currentRowData"
       :departmentNames="departmentNames"
+      :departmentIds="departmentIds"
     ></component>
   </Transition>
   <!-- 操作选项弹窗 -->
@@ -191,6 +232,10 @@ const users = ref([
 const departmentNames = computed(() => {
   return tableData.value.map((row) => row.name);
 });
+//获取所有部门id
+const departmentIds = computed(() => {
+  return tableData.value.map((row: any) => row.id);
+});
 const currentRowData = ref("");
 //多选功能
 // 选中或取消选中单个用户
@@ -305,10 +350,101 @@ function hidePopup() {
 }
 const companyId = 1; // 根据实际情况替换
 const companyIdString = companyId.toString();
+//获取点击的部门id
+const deptId = ref(1);
+function getDeptID(row: any){
+  deptId.value = row.id;
+  console.log("deptId=", deptId.value);
+  console.log(row.id);
+  fetchUserData()
+}
+//获取部门数据
+onMounted(() => {
+  console.log(tokens.value);
+  fetchdepartment();
+});
+
+async function fetchdepartment() {
+  // 从接口获取部门数据并更新表格
+  const response = await fetch(
+    `http://localhost:8080/api/dept/selectHighestDepts?companyId=${companyId}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: tokens.value,
+        companyId: companyIdString,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+
+  const data = await response.json();
+
+  // 初始化表格数据
+  tableData.value = [];
+
+  // 遍历每个上级部门，获取其子部门数据
+  for (let department of data.data) {
+    // 提取上级部门数据中的所需字段，组织成适合在表格中渲染的格式
+    const parentFormattedData = {
+      id: department.id,
+      name: department.name,
+      number: department.num,
+      manager: department.managerName,
+      tasks: department.job,
+      isParent: true,
+      children: [],
+      expanded: true,
+    };
+
+    // 将上级部门数据添加到表格数据中
+    tableData.value.push(parentFormattedData);
+
+    const childResponse = await fetch(
+      `http://localhost:8080/api/dept/selectDeptsByParentId?parentDeptId=${department.id}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: tokens.value,
+          companyId: companyIdString,
+        },
+      }
+    );
+
+    if (!childResponse.ok) {
+      throw new Error("Network response was not ok");
+    }
+
+    const childData = await childResponse.json();
+
+    // 提取子部门数据中的所需字段，组织成适合在表格中渲染的格式
+    const childFormattedData = childData.data.map((childDepartment: any) => ({
+      id: childDepartment.id,
+      name: childDepartment.name,
+      number: childDepartment.num,
+      manager: childDepartment.managerName,
+      tasks: childDepartment.job,
+      isParent: false, // 标记为子部门
+    }));
+
+    // 将子部门数据添加到对应的上级部门的 children 数组中
+    const parentIndex = tableData.value.findIndex(
+      (item) => item.name === department.name
+    );
+    tableData.value[parentIndex].children.push(...childFormattedData);
+  }
+}
+
+// 展开/收起子部门
+function toggleExpand(row: any) {
+  row.expanded = !row.expanded;
+}
 //拉取成员列表
 function fetchUserData() {
-  const url = 'http://localhost:8080/api/company_user/getAllMember/1';
-  fetch(url, {
+  fetch(`http://localhost:8080/api/company_user/getAllMember/${deptId.value}`, {
       method: 'GET',
       headers: {
           'Content-Type': 'application/json', // 设置 Content-Type 请求头为 JSON
@@ -436,6 +572,7 @@ onMounted (() => {
 .topbar-right {
   display: flex;
   align-items: center;
+  margin-right: 2%;
   /* margin-left: 250px; */
 }
 
@@ -606,5 +743,24 @@ input[type="checkbox"] {
   box-shadow: none; /* 去掉点击时的阴影效果 */
   text-align: center;
   font-family: "SiYuanHeiTi";
+}
+/* 部门样式 */
+.expand-btn {
+  background-color: white;
+  border: none;
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+}
+
+/* 子部门折叠/展开动画 */
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.3s ease;
+}
+.list-enter-from,.list-leave-to
+{
+  opacity: 0;
+  transform: translateY(-40%);
 }
 </style>
