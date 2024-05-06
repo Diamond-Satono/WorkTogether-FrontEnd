@@ -27,6 +27,8 @@
 
 <script setup lang="ts">
 import { ref, defineEmits, defineProps } from "vue"
+import {Authorization} from "@/store/token"
+const tokens = Authorization();
 const inputValue = ref("");
 const emit = defineEmits(["close-modal"]);
 
@@ -42,7 +44,38 @@ console.log(props.batchIds);
 
 function handleDeleteClick() {
   if (inputValue.value === "q123") {
-    emit('close-modal');
+    const url = 'http://localhost:8080/api/user/delete_members';
+    fetch(url, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': tokens.value, // 设置 Authorization 请求头，用于身份验证
+      },
+      body: JSON.stringify({
+        ids: props.batchIds
+      })
+    })
+    .then(response => {
+        console.log(response);
+        // 检查响应状态
+        if (response.ok) {
+            // 数据成功发送到服务器
+            console.log('Data delete successfully.');
+            location.reload();//刷新页面
+        } else {
+            // 数据发送失败
+            console.error('Failed to delete data to server.');
+            alert("删除失败！");
+        }
+    })
+    .then(data => {
+      console.log(data);
+      // 处理删除成功的逻辑
+      emit('close-modal');
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
   }
 }
 </script>

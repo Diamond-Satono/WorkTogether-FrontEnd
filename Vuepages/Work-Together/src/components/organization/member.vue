@@ -48,6 +48,7 @@
                   <img
                     src="@/assets/deptimgs/options.png"
                     class="optionsimg"
+                    @click.stop="updatePopupPosition(user, $event)"
                   />
               </td>
           </tr>
@@ -65,10 +66,26 @@
       :user="currentRowData"
     ></component>
   </Transition>
+  <!-- 操作选项弹窗 -->
+  <Transition :name="transitionName" mode="out-in">
+    <div
+      class="popup"
+      :style="{
+        top: popupPosition.top + 'px',
+        left: popupPosition.left + 'px',
+      }"
+      v-if="showPopup"
+    >
+      <button class="assigndept" @click="showAssignDept">变更部门</button>
+      <button class="deletemember" @click="showDeleteMember(currentRowData)">
+        操作离职
+      </button>
+    </div>
+  </Transition>
 </template>
   
 <script setup lang="ts">
-import { onMounted, ref, Transition } from 'vue'
+import { onMounted, ref, Transition, onUnmounted } from 'vue'
 import {Authorization} from "@/store/token"
 const tokens = Authorization();
 const currentModal = ref("");
@@ -82,6 +99,74 @@ const departments = ref(
     member_num: 53,
     describe: "non"
   });
+interface Department {
+  name: string;
+  number: number;
+  manager: string;
+  tasks: number;
+  isParent: boolean;
+  children: Department[];
+  expanded: boolean;
+}
+
+const tableData = ref<Department[]>([
+  {
+    name: "深圳大学一级分部",
+    number: 10,
+    manager: "张三",
+    tasks: 5,
+    isParent: true, // 标记为父级部门
+    children: [
+      // 子部门数据
+      {
+        name: "深圳大学一级分部子部门1",
+        number: 5,
+        manager: "李四",
+        tasks: 2,
+        isParent: false,
+        children: [],
+        expanded: false,
+      },
+      {
+        name: "深圳大学一级分部子部门2",
+        number: 8,
+        manager: "王五",
+        tasks: 3,
+        isParent: false,
+        children: [],
+        expanded: false,
+      },
+    ],
+    expanded: true,
+  },
+  {
+    name: "深圳大学二级分部",
+    number: 15,
+    manager: "李四",
+    tasks: 8,
+    isParent: true,
+    children: [],
+    expanded: false,
+  },
+  {
+    name: "深圳大学三级分部",
+    number: 12,
+    manager: "王五",
+    tasks: 7,
+    isParent: true,
+    children: [],
+    expanded: false,
+  },
+  {
+    name: "深圳大学四级分部",
+    number: 20,
+    manager: "小明",
+    tasks: 6,
+    isParent: true,
+    children: [],
+    expanded: false,
+  },
+]);
 const users = ref([
   {
     id: 1,
@@ -145,10 +230,73 @@ function showDeptDetail(user: any) {
   currentRowData.value = user;
   console.log("详情", user);
 }
+//显示变更部门
+function showAssignDept() {
+  currentModal.value = "AssignDept";
+  console.log("currentModal=", currentModal.value);
+  hidePopup();
+}
+//显示操作离职
+function showDeleteMember(currentRowData: any) {
+  currentModal.value = "DeleteMember";
+  console.log("currentModal=", currentModal.value);
+  hidePopup();
+}
 // 关闭对话框
 function closeModal() {
-  currentModal.value = "";
-  console.log("ModalClosed");
+  if (currentModal.value === "DeptDetail") {
+    // 如果当前模态框为 DeptDetail，则不改变 transitionName 的值，继续使用 slide-fade 过渡效果
+    currentModal.value = "";
+    console.log("ModalClosed");
+
+    // 延迟更改 transitionName 的值
+    setTimeout(() => {
+      transitionName.value = "fade";
+    }, 500); // 在动画完成后 500 毫秒后更改 transitionName 的值
+  } else {
+    // 否则，将 transitionName 的值设置为 "fade"，使用默认的 fade 过渡效果
+    transitionName.value = "fade";
+    currentModal.value = "";
+    console.log("ModalClosed");
+  }
+}
+// 控制操作选项弹窗
+const showPopup = ref(false);
+const popupPosition = ref({ top: 0, left: 0 });
+
+function updatePopupPosition(user: any, event: MouseEvent) {
+  showPopup.value = !showPopup.value; // 点击时切换弹窗的显示状态
+  const rect = (event.target as HTMLElement).getBoundingClientRect(); // 获取元素的位置信息
+  popupPosition.value = {
+    top: rect.bottom + 20, // 设置弹窗的垂直位置
+    left: rect.left - 170, // 设置弹窗的水平位置
+  };
+  currentRowData.value = user; // 保存行数据
+  console.log("currentRowData.value=", currentRowData.value);
+}
+// 在 setup 中添加函数用于处理点击弹窗以外的区域
+function handleClickOutside(event: MouseEvent) {
+  const popup = document.querySelector(".popup"); // 获取弹窗元素
+  if (!popup) return; // 如果弹窗不存在，直接返回
+
+  // 判断点击事件的目标元素是否在弹窗内部，如果不在则关闭弹窗
+  if (!(event.target as HTMLElement).closest(".popup")) {
+    hidePopup(); // 调用关闭弹窗的函数
+  }
+}
+
+// 组件初始化时，绑定 document 的点击事件处理函数
+onMounted(() => {
+  document.addEventListener("click", handleClickOutside);
+});
+
+// 组件销毁时，移除 document 的点击事件处理函数，以防止内存泄漏
+onUnmounted(() => {
+  document.removeEventListener("click", handleClickOutside);
+});
+//隐藏操作选项
+function hidePopup() {
+  showPopup.value = false;
 }
 
 //拉取成员列表
@@ -325,6 +473,33 @@ onMounted (() => {
     cursor: pointer;
     margin-right: 15px;cursor: pointer; /* 鼠标悬停样式为手型 */
 }
+/* 弹窗淡入淡出动画 */
+.fade-enter-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+/* 弹窗滑入效果 */
+.slide-fade-enter-active {
+  transition: all 0.3s ease-out;
+}
+
+.slide-fade-leave-active {
+  transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateX(100%);
+  opacity: 0;
+}
 /* Table Styles */
 table {
     width: 100%;
@@ -395,5 +570,31 @@ input[type="checkbox"] {
   margin-left: 12%;
   margin-top: -2%;
   cursor: pointer;
+}
+.popup {
+  width: 170px;
+  height: 126px;
+  background-color: white;
+  position: fixed;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 垂直居中 */
+}
+.assigndept,
+.deletemember {
+  margin-left: 8%;
+  margin-top: auto;
+  margin-bottom: auto;
+  width: max-content;
+  background-color: white;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  margin-right: 10%;
+  outline: none; /* 去掉点击时的外边框 */
+  box-shadow: none; /* 去掉点击时的阴影效果 */
+  text-align: center;
+  font-family: "SiYuanHeiTi";
 }
 </style>

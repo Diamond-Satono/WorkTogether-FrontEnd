@@ -25,6 +25,8 @@ import CreateSubDept from './components/organization/deptPop-upWindows/CreateSub
 import DeptDetail from './components/organization/deptPop-upWindows/DeptDetail.vue'
 import MoveDept from './components/organization/deptPop-upWindows/MoveDept.vue'
 import DeleteDept from './components/organization/deptPop-upWindows/DeleteDept.vue'
+import AssignDept from './components/organization/deptUser-upWindows/AssignDept.vue'
+import DeleteMember from './components/organization/deptUser-upWindows/DeleteMember.vue'
 import App from './App.vue'
 
 library.add(fas);
@@ -59,4 +61,6 @@ app.component("CreateSubDept", CreateSubDept);
 app.component('MoveDept',MoveDept);
 app.component('DeleteDept',DeleteDept);
 app.component('MemberDetail',MemberDetail);
+app.component('AssignDept',AssignDept);
+app.component('DeleteMember',DeleteMember);
 app.mount('#app');
