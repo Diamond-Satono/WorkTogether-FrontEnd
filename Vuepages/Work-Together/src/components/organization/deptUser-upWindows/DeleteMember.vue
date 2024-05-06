@@ -167,6 +167,8 @@ function canceledit(){
   showDetail.value = !showDetail.value;
 }
 
+const companyId = 1; // 根据实际情况替换
+const companyIdString = companyId.toString();
 function handleDeleteClick() {
   const url = 'http://localhost:8080/api/user/delete_member?ids=' + props.user.id;
   fetch(url, {
@@ -174,7 +176,7 @@ function handleDeleteClick() {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': tokens.value, // 设置 Authorization 请求头，用于身份验证
-      'companyId': 1 // 设置 companyId 请求头，用于传递公司 ID
+      'companyId': companyIdString // 设置 companyId 请求头，用于传递公司 ID
     }
   })
   .then(response => {

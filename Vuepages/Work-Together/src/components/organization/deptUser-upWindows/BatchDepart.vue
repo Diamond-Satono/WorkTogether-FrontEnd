@@ -12,7 +12,7 @@
       <div class="cutoff"></div>
       <div class="maincontent">
         <div class="tipsword1">您确定删除勾选的所有成员？</div>
-        <div class="tipsword2">删除后不可恢复。</div>
+        <div class="tipsword2">删除后不可恢复。</div>{{ props.batchIds }}
         <div class="tipsword3">
           请输入<span class="q123">q123</span>后点击确定删除按钮进行删除
         </div>
@@ -40,16 +40,19 @@ const props = defineProps({
   }
 });
 console.log(props.batchIds);
+console.log(props.batchIds.values);
 
-
+const companyId = 1; // 根据实际情况替换
+const companyIdString = companyId.toString();
 function handleDeleteClick() {
   if (inputValue.value === "q123") {
-    const url = 'http://localhost:8080/api/user/delete_members?ids=' + props.batchIds;
+    const url = 'http://localhost:8080/api/user/delete_members?ids=' + props.batchIds.join(',');
     fetch(url, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': tokens.value, // 设置 Authorization 请求头，用于身份验证
+        'companyId': companyIdString // 设置 companyId 请求头，用于传递公司 ID
       }
     })
     .then(response => {

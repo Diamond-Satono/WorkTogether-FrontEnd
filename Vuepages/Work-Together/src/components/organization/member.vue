@@ -64,6 +64,7 @@
       @close-modal="closeModal"
       :batchIds="batchIds"
       :user="currentRowData"
+      :departmentNames="departmentNames"
     ></component>
   </Transition>
   <!-- 操作选项弹窗 -->
@@ -85,7 +86,7 @@
 </template>
   
 <script setup lang="ts">
-import { onMounted, ref, Transition, onUnmounted } from 'vue'
+import { onMounted, ref, Transition, onUnmounted, computed } from 'vue'
 import {Authorization} from "@/store/token"
 const tokens = Authorization();
 const currentModal = ref("");
@@ -186,6 +187,10 @@ const users = ref([
   },
   // ... more users
 ]);
+//获取所有部门名字
+const departmentNames = computed(() => {
+  return tableData.value.map((row) => row.name);
+});
 const currentRowData = ref("");
 //多选功能
 // 选中或取消选中单个用户
@@ -298,7 +303,8 @@ onUnmounted(() => {
 function hidePopup() {
   showPopup.value = false;
 }
-
+const companyId = 1; // 根据实际情况替换
+const companyIdString = companyId.toString();
 //拉取成员列表
 function fetchUserData() {
   const url = 'http://localhost:8080/api/company_user/getAllMember/1';
@@ -307,7 +313,7 @@ function fetchUserData() {
       headers: {
           'Content-Type': 'application/json', // 设置 Content-Type 请求头为 JSON
           'Authorization': tokens.value, // 设置 Authorization 请求头，用于身份验证
-          'companyId': 1 // 设置 companyId 请求头，用于传递公司 ID
+          'companyId': companyIdString // 设置 companyId 请求头，用于传递公司 ID
       }
     })
     .then(response => {
@@ -322,7 +328,11 @@ function fetchUserData() {
     })
     .then(data => {
         // 请求成功，更新用户数据
-        users.value = data.data;                    
+        users.value = data.data;
+        console.log(tokens.value);
+        
+        console.log("users.value=", users.value);
+                            
     })
     .catch(error => {
         console.error('Error fetching user data:', error);
