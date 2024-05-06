@@ -44,16 +44,13 @@ console.log(props.batchIds);
 
 function handleDeleteClick() {
   if (inputValue.value === "q123") {
-    const url = 'http://localhost:8080/api/user/delete_members';
+    const url = 'http://localhost:8080/api/user/delete_members?ids=' + props.batchIds;
     fetch(url, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': tokens.value, // 设置 Authorization 请求头，用于身份验证
-      },
-      body: JSON.stringify({
-        ids: props.batchIds
-      })
+      }
     })
     .then(response => {
         console.log(response);
