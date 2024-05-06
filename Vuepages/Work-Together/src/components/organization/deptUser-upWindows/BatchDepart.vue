@@ -12,7 +12,7 @@
       <div class="cutoff"></div>
       <div class="maincontent">
         <div class="tipsword1">您确定删除勾选的所有成员？</div>
-        <div class="tipsword2">删除后不可恢复。</div>{{ props.batchIds }}
+        <div class="tipsword2">删除后不可恢复。</div>
         <div class="tipsword3">
           请输入<span class="q123">q123</span>后点击确定删除按钮进行删除
         </div>
