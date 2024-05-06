@@ -27,12 +27,36 @@
 
 <script setup lang="ts">
 import { ref} from "vue"
+import { Authorization } from "@/store/token";
 const inputValue = ref("");
 const emit = defineEmits(["close-modal"]);
-
-function handleDeleteClick() {
+const token = Authorization();
+// 处理删除按钮点击事件
+async function handleDeleteClick() {
+  console.log(props.row.id);
+  
   if (inputValue.value === "q123") {
-    emit('close-modal');
+    const deptId = props.row.id; // 获取部门 ID
+    const companyId = 1; // 公司 ID，这里暂时设为 1
+    try {
+      const response = await fetch(`http://localhost:8080/api/dept/DeleteDept/${deptId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: token.value,
+          companyId: companyId.toString(),
+        },
+      });
+      if (response.ok) {
+        // 删除成功，触发关闭模态框事件
+        emit("close-modal");
+      } else {
+        // 删除失败，根据实际需求处理错误
+        console.error("Failed to delete department");
+      }
+    } catch (error) {
+      // 处理异常情况
+      console.error("An error occurred:", error);
+    }
   }
 }
 
