@@ -6,14 +6,14 @@
       <ul>
         <li id="home" @click="toggleSubMenu('home')">
           <i class="fas fa-file"></i> 
-          <a href="/HomePage"><fa icon="folder-open" />  首页</a>
+          <a href="/"><fa icon="folder-open" />  首页</a>
         </li>
         <li id="organization">
           <i class="fas fa-file"></i>  
           <a @click="toggleSubMenu('organization')"><fa icon="folder-open" /> 组织架构</a>
           <ul class="submenu" v-show="subMenuStatus.organization">
-            <li><i class="fas fa-file"></i> <a href="/groupmanage"><fa icon="file" />  团队管理</a></li>
-            <li><i class="fas fa-file"></i> <a style="color: #ff7f50;"><fa icon="file" />  成员与部门</a></li>
+            <li><i class="fas fa-file"></i> <a style="color: #ff7f50;"><fa icon="file" />  团队管理</a></li>
+            <li><i class="fas fa-file"></i> <a href="/departmentmanage"><fa icon="file" />  成员与部门</a></li>
           </ul>
         </li>
         <li id="enterprise">
@@ -45,7 +45,7 @@
           <div id="page-info">
               <span id="name-en">深圳大学/</span>
               <span id="name-list">组织架构/</span>
-              <span id="name-page">成员与部门</span>
+              <span id="name-page">团队管理</span>
           </div>   
         </div>
 
@@ -86,7 +86,7 @@
           <button :class="{ active: selectedOption === 'development' }" 
             @click="showComponent2() ; selectOption('development')"
             id="mode2">
-            部门
+            团队
           </button>
         </div>
 
@@ -108,10 +108,10 @@
   
   <script>
   import member from './member.vue';
-  import department from './department.vue';
+  import group from './group.vue';
 
   export default {
-    name: 'DepartmentManage',
+    name: 'GroupManage',
     data() {
       return {
         subMenuStatus: {
@@ -124,17 +124,17 @@
         selectedOption: 'basic',
         showChild1: true, // 控制显示子组件1还是子组件2的标志
         child1Component: member, // 子组件1
-        child2Component: department  // 子组件2
+        child2Component: group  // 子组件2
       }
     },
     components: {
       member,
-      department
+      group
     },
     computed: {
       // 将 showChild1 改为计算属性
       componentToShow() {
-        return this.showChild1 ? 'member' : 'department';
+        return this.showChild1 ? 'member' : 'group';
       }
     },
     methods: {
