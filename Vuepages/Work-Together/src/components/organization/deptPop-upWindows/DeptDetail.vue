@@ -2,7 +2,7 @@
   <div class="container">
     <div class="title">
       部门详情
-      <img src="@/assets/deptimgs/closeModal.png" class="closeModal" @click="$emit('close-modal')" />
+      <img src="@/assets/deptimgs/closeModal.png" class="closeModal" @click="CloseModal" />
     </div>
     <div class="cutoff1"></div>
     <div class="depttitle">
@@ -36,11 +36,11 @@
     <div v-else>
       <div class="detail1">
         <div class="deptbelong">部门所属</div>
-        <input class="deptbelongname  custom-input" type="text" :value="ParentDeptName" />
+        <input class="deptbelongname  custom-input" type="text" v-model="ParentDeptName" />
       </div>
       <div class="detail2">
         <div class="deptname">部门名称</div>
-        <input class="deptdetailname  custom-input" type="text" :value="props.row.name" />
+        <input class="deptdetailname  custom-input" type="text" v-model="props.row.name" />
       </div>
       <div class="detail3">
         <div class="deptmanager">部门负责人</div>
@@ -54,7 +54,7 @@
       </div>
       <div class="buttoncontainer2">
         <button class="cancel" @click="canceledit">取消</button>
-        <button class="save" @click="$emit('close-modal')">保存</button>
+        <button class="save" @click="saveAndCloseModal">保存</button>
       </div>
     </div>
   </div>
@@ -63,6 +63,7 @@
 <script setup lang="ts">
 import { Authorization } from "@/store/token";
 import { ref, onMounted } from "vue";
+const emit = defineEmits(["close-modal","refresh-table"]);
 //获取父组件参数
 const props = defineProps({
   row: {
@@ -100,8 +101,8 @@ onMounted(() => {
   fetchDepartmentById();
   fetchUserData();
   selectedMember.value = props.row.manager;
-  console.log('selectedMember.value',selectedMember.value);
-  
+  console.log('selectedMember.value', selectedMember.value);
+
 });
 
 // 获取指定部门ID的数据
@@ -152,7 +153,6 @@ function fetchUserData() {
     }
   })
     .then(response => {
-      console.log(response);
       // 检查响应状态
       if (!response.ok) {
         alert("拉取失败")
@@ -170,6 +170,59 @@ function fetchUserData() {
       console.error('Error fetching user data:', error);
       // Handle the error, e.g., show a message to the user
     });
+}
+
+//更新部门信息
+function updateDepartmentInfo() {
+  const companyId = 1; // 公司ID，这里暂时设为1
+  // 获取选中的部门负责人的ID
+  const selectedManager = members.value.find(member => member.name === selectedMember.value);
+
+  const managerId = selectedManager ? selectedManager.id : '';
+
+  const url = `http://localhost:8080/api/dept/updateDeptInfo?id=${props.row.id}&deptName=${encodeURIComponent(props.row.name)}&FatherDeptName=${encodeURIComponent(ParentDeptName.value)}&managerId=${encodeURIComponent(managerId)}`;
+
+  const requestData = {
+    deptName: props.row.name, // 部门名称，从 props 中获取
+    FatherDeptName: ParentDeptName.value, // 部门所属，从 ParentDeptName 中获取
+    managerId: managerId, // 部门负责人ID
+    id: props.row.id, // 部门ID，从 props 中获取
+  };
+  console.log(requestData);
+
+  // 发送 POST 请求
+  fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': token.value,
+      'companyId': companyId.toString(),
+    },
+    body: JSON.stringify({}),
+  })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Failed to update department info');
+      }
+      // 在这里处理响应，例如刷新页面或者显示成功消息
+      console.log(requestData);
+    })
+    .catch(error => {
+      console.error('Error updating department info:', error);
+      // 处理错误，例如显示错误消息给用户
+    });
+}
+function saveAndCloseModal() {
+
+  updateDepartmentInfo();
+  // 触发关闭模态框的事件
+
+  emit("close-modal");
+  emit("refresh-table");
+}
+
+function CloseModal(){
+  emit("close-modal");
 }
 </script>
 
@@ -327,7 +380,8 @@ function fetchUserData() {
   font-weight: bold;
   margin-left: 10%;
 }
-.select{
+
+.select {
   width: 558px;
   height: 50px;
   border-radius: 10px;
@@ -336,7 +390,8 @@ function fetchUserData() {
   font-size: 22px;
   margin-top: 2%;
 }
-.select:focus{
+
+.select:focus {
   outline: none;
 }
 </style>
