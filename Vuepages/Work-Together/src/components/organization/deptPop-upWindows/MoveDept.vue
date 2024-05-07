@@ -29,6 +29,7 @@ const token = Authorization();
 const emit = defineEmits(["close-modal", "refresh-table"]);
 const managerId = ref(''); // 创建ref用于存储managerId
 const FatherDeptName = ref('') as { value: string }; // 创建ref用于存储选中的部门
+
 //获取父组件参数
 const props = defineProps({
   departmentNames: {
@@ -45,7 +46,8 @@ const props = defineProps({
 onMounted(() => {
   fetchUserData();
   console.log('managerId.value', managerId.value);
-
+  console.log('departmentNames:',props.departmentNames);
+  FatherDeptName.value = props.departmentNames[0] as string;;
 });
 
 function saveandclose() {
@@ -57,7 +59,7 @@ function saveandclose() {
 //拉取成员列表
 function fetchUserData() {
   const companyId = 1;
-  const url = 'http://localhost:8080/api/company_user/getAllMember/1';
+  const url = 'http://localhost:8080/api/user/company/1';
   fetch(url, {
     method: 'GET',
     headers: {
@@ -82,6 +84,8 @@ function fetchUserData() {
       const manager = data.data.find((member: { id: string, name: string }) => member.name === managerName); // 在成员列表中查找 manager
       if (manager) {
         managerId.value = manager.id; // 找到了对应的 manager，将其 ID 赋值给 managerId
+        console.log('这里这里',managerId.value);
+        
       } else {
         console.error('Manager not found in user data:', managerName);
       }
@@ -96,12 +100,12 @@ function fetchUserData() {
 function updateDepartmentInfo() {
   const companyId = 1; // 公司ID，这里暂时设为1
 
-  const url = `http://localhost:8080/api/dept/updateDeptInfo?id=${props.row.id}&deptName=${encodeURIComponent(props.row.name)}&FatherDeptName=${encodeURIComponent(FatherDeptName.value)}&managerId=${encodeURIComponent(managerId.value)}`;
+  const url = `http://localhost:8080/api/dept/updateDeptInfo?id=${props.row.id}&deptName=${encodeURIComponent(props.row.name)}&FatherDeptName=${encodeURIComponent(FatherDeptName.value)}&managerId=${encodeURIComponent(managerId.value.toString())}`;
 
   const requestData = {
     deptName: props.row.name, // 部门名称，从 props 中获取
     FatherDeptName: FatherDeptName.value, // 部门所属中获取
-    managerId: managerId, // 部门负责人ID
+    managerId: managerId.value.toString(), // 部门负责人ID
     id: props.row.id, // 部门ID，从 props 中获取
   };
   console.log(requestData);

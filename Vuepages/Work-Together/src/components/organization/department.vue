@@ -47,7 +47,7 @@
                 <td class="manager">{{ row.manager }}</td>
                 <td>{{ row.tasks }}</td>
                 <td>
-                  <button class="AddChildDept" @click="showCreateSubDept">
+                  <button class="AddChildDept" @click="showCreateSubDept(row)">
                     添加子部门
                   </button>
                 </td>
@@ -73,7 +73,7 @@
                       <button class="Detail" @click="showDeptDetail(child)">
                         详情
                       </button>
-                      <button class="AddChildDept" @click="showCreateSubDept">
+                      <button class="AddChildDept" @click="showCreateSubDept(child)">
                         添加子部门
                       </button>
                       <img src="@/assets/deptimgs/options.png" class="optionsimg"
@@ -95,7 +95,7 @@
                           <button class="Detail" @click="showDeptDetail(grandchild)">
                             详情
                           </button>
-                          <button class="AddChildDept" @click="showCreateSubDept">
+                          <button class="AddChildDept" @click="showCreateSubDept(grandchild)">
                             添加子部门
                           </button>
                           <img src="@/assets/deptimgs/options.png" class="optionsimg"
@@ -255,9 +255,11 @@ function showCreateDept() {
   console.log("currentModal=", currentModal.value);
 }
 
-function showCreateSubDept() {
+function showCreateSubDept(row: any) {
+  console.log("currentRowData before setting currentModal:", currentRowData.value);
   currentModal.value = "CreateSubDept";
   console.log("currentModal=", currentModal.value);
+  currentRowData.value = row;
 }
 
 function showMoveDept() {
@@ -499,7 +501,6 @@ async function fetchChildDepartments(
         child.haschildren = true; // 设置haschildren为true
       }
     });
-    console.log(child.haschildren);
 
   });
 
