@@ -12,14 +12,14 @@
       <div class="cutoff"></div>
       <div class="maincontent">
         <!-- 插入下拉栏 -->
-        <div class="selectcontainer"><select class="departmentselect">
+        <div class="selectcontainer"><select class="departmentselect" v-model="selectedDepartmentName">
           <option v-for="(department, index) in departmentNames" :key="index">
-            {{ department }} {{ departmentIds[index] }}
+            {{ department }}
           </option>
         </select></div>
         
         <div class="buttoncontainer">
-          <button class="create" @click="$emit('close-modal')">确定变更</button>
+          <button class="create" @click="handleAssignClick">确定变更</button>
         </div>
       </div>
     </div>
@@ -27,7 +27,9 @@
 </template>
     
 <script setup lang="ts">
-import { ref } from "vue";
+import { onMounted, ref, watch } from "vue";
+import {Authorization} from "@/store/token"
+const tokens = Authorization();
 
 //获取父组件参数
 const props = defineProps({
@@ -39,6 +41,63 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
+  user: {
+    type: Object,
+    default: () => ({}),
+  },
+});
+// 使用ref创建响应式属性来存储选中的部门名称和ID
+const selectedDepartmentName = ref('');
+const selectedDepartmentId = ref();
+watch(selectedDepartmentName, (newValue, oldValue) => {
+    const index = props.departmentNames.indexOf(newValue);
+    selectedDepartmentId.value = props.departmentIds[index];
+    console.log(index);
+    console.log(selectedDepartmentId.value);
+    
+});
+const companyId = 1; // 根据实际情况替换
+const companyIdString = companyId.toString();
+//请求变更
+function handleAssignClick() {
+  const url = 'http://localhost:8080/api/dept/updateUserDept';
+  let FormattedData = {
+    uid: props.user.id,
+    did: selectedDepartmentId.value
+  }
+  fetch(url, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': tokens.value,
+      'companyId': companyIdString
+    },
+    body: JSON.stringify(FormattedData)
+  })
+    .then(response => {
+      console.log(response);
+      // 检查响应状态
+      if (response.ok) {
+          // 数据成功发送到服务器
+          console.log('Dept assign successfully.');
+          location.reload();//刷新页面
+      } else {
+          // 数据发送失败
+          console.error('Failed to delete data to server.');
+          alert("变更失败！");
+      }
+    })
+    .then(data => {
+      console.log(data);
+      // 处理响应数据
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      // 处理错误
+    });
+}
+onMounted(() => {
+  selectedDepartmentName.value = props.user.deptName;
 });
 </script>
     

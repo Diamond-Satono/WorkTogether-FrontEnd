@@ -51,8 +51,8 @@
     <div class="model-content">
       <div class="top-content">
         <div class="dept_title">
-          v {{ departments.name }}
-          <span style="color: #8E8E93;">({{ departments.member_num }}人)</span>
+          v {{ departmentCurrentName }}
+          <span style="color: #8E8E93;">({{ departmentCurrentMember_num }}人)</span>
         </div>
         <div class="topbar-right">
             <img src="@/assets/img/batch-export.png" alt="Icon"><button class="bnt1"> 批量导出</button>
@@ -350,12 +350,16 @@ function hidePopup() {
 }
 const companyId = 1; // 根据实际情况替换
 const companyIdString = companyId.toString();
+const departmentCurrentName = ref("生产部");
+const departmentCurrentMember_num = ref("100");
 //获取点击的部门id
 const deptId = ref(1);
 function getDeptID(row: any){
   deptId.value = row.id;
   console.log("deptId=", deptId.value);
   console.log(row.id);
+  departmentCurrentName.value = row.name;
+  departmentCurrentMember_num.value = row.number;
   fetchUserData()
 }
 //获取部门数据
@@ -391,13 +395,17 @@ async function fetchdepartment() {
     // 提取上级部门数据中的所需字段，组织成适合在表格中渲染的格式
     const parentFormattedData = {
       id: department.id,
+      parentid: department.parentId,
       name: department.name,
       number: department.num,
       manager: department.managerName,
       tasks: department.job,
       isParent: true,
-      children: [],
+      children: [], // 初始化子部门数组
       expanded: true,
+      grandchildren: [],
+      haschildren: false,
+      expandchild: true,
     };
 
     // 将上级部门数据添加到表格数据中
