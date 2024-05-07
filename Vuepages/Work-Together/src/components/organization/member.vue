@@ -64,7 +64,7 @@
           <!-- Table structure and data -->
           <thead>
           <tr>
-              <th></th>
+              <!-- <th></th> -->
               <th>成员</th>
               <th>邮箱</th>
               <th>部门</th>
@@ -75,8 +75,9 @@
           <tbody>
           <!-- Sample row -->
           <tr v-for="user in users" :key="user.id">
-              <td><input type="checkbox" :value="user.id" @click="toggleSelectUser(user.id)" class="row-selector"></td>
+              <!-- <td><input type="checkbox" :value="user.id" @click="toggleSelectUser(user.id)" class="row-selector"></td> -->
               <td class="memName">
+                <input type="checkbox" :value="user.id" @click="toggleSelectUser(user.id)" class="row-selector">
                 <!-- <img src="@/assets/img/icon.png" alt=""> -->
                 {{ user.name }}
               </td>
@@ -684,6 +685,9 @@ th {
 td {
   padding: 20px;
   text-align: center;
+}
+.memName {
+  justify-content: space-between;
 }
 
 /* 复选框样式 */
