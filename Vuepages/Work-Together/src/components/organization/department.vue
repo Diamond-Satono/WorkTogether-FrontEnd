@@ -114,7 +114,7 @@
     </div>
     <!-- 动态加载组件 -->
     <Transition :name="transitionName" mode="out-in">
-      <component :is="currentModal" v-if="currentModal" @close-modal="closeModal" :row="currentRowData"
+      <component :is="currentModal" v-if="currentModal" @close-modal="closeModal" @refresh-table="refreshTable":row="currentRowData"
         :departmentNames="departmentNames"></component>
     </Transition>
     <!-- 操作选项弹窗 -->
@@ -303,20 +303,49 @@ function closeModal() {
   }
 }
 
+function refreshTable(){
+  fetchdepartment();
+}
+
 // 控制操作选项弹窗
 const showPopup = ref(false);
 const popupPosition = ref({ top: 0, left: 0 });
 
 function updatePopupPosition(row: any, event: MouseEvent) {
-  showPopup.value = !showPopup.value; // 点击时切换弹窗的显示状态
-  const rect = (event.target as HTMLElement).getBoundingClientRect(); // 获取元素的位置信息
+  showPopup.value = !showPopup.value; // 切换弹窗的显示状态
+  const rect = (event.target as HTMLElement).getBoundingClientRect(); // 获取图标的位置信息
+
+  const popupWidth = 170; // 弹窗的宽度
+  const popupHeight = 190; // 弹窗的高度
+  const windowWidth = window.innerWidth; // 浏览器窗口的宽度
+  const windowHeight = window.innerHeight; // 浏览器窗口的高度
+
+  // 计算弹窗的水平位置，使其水平居中
+  let popupLeft = rect.left - popupWidth / 2;
+  // 如果弹窗左侧超出页面左侧，将其左侧位置设置为0
+  if (popupLeft < 0) {
+    popupLeft = 0;
+  }
+  // 如果弹窗右侧超出页面右侧，将其左侧位置调整到页面右侧边缘
+  if (popupLeft + popupWidth > windowWidth) {
+    popupLeft = windowWidth - popupWidth;
+  }
+
+  // 计算弹窗的垂直位置
+  let popupTop = rect.bottom + 20;
+  // 如果弹窗下方超出页面底部，将其上移，显示在图标上方
+  if (popupTop + popupHeight > windowHeight) {
+    popupTop = rect.top - popupHeight - 20;
+  }
+
   popupPosition.value = {
-    top: rect.bottom + 20, // 设置弹窗的垂直位置
-    left: rect.left - 170, // 设置弹窗的水平位置
+    top: popupTop ,
+    left: popupLeft,
   };
+
   currentRowData.value = row; // 保存行数据
-  console.log("currentRowData.value=", currentRowData.value);
 }
+
 
 // 在 setup 中添加函数用于处理点击弹窗以外的区域
 function handleClickOutside(event: MouseEvent) {
@@ -612,11 +641,11 @@ function filterDepartments(departments: any) {
 
 /* 弹窗淡入淡出动画 */
 .fade-enter-active {
-  transition: opacity 0.5s ease;
+  transition: opacity 0.3s ease;
 }
 
 .fade-leave-active {
-  transition: opacity 0.5s ease;
+  transition: opacity 0.3s ease;
 }
 
 .fade-enter-from,
