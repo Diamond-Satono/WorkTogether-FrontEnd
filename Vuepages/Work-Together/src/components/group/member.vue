@@ -22,7 +22,7 @@
         </div>
         <div class="topbar-right">
           <img src="@/assets/img/batch-export.png" alt="Icon"><button class="bnt1"> 批量导出</button>
-          <img src="@/assets/img/delsymbol.png" alt="Icon"><button class="bnt2" @click="showBatchDepart"> 批量离职</button>
+          <img src="@/assets/img/delsymbol.png" alt="Icon"><button class="bnt2" @click="showBatchDepart"> 批量删除</button>
           <button class="invite-btn" @click="showAddMember">添加成员</button>
         </div>
       </div>
@@ -64,7 +64,7 @@
     </div>
   </div>
   <!-- 动态加载组件 -->
-  <!-- <Transition name="transitionName" mode="out-in">
+  <Transition name="transitionName" mode="out-in">
     <component
     :is="currentModal"
     v-if="currentModal"
@@ -72,7 +72,7 @@
     :batchIds="batchIds"
     :user="currentRowData"
     ></component>
-  </Transition> -->
+  </Transition>
   <!-- 操作选项弹窗 -->
   <Transition :name="transitionName" mode="out-in">
     <div
@@ -99,6 +99,8 @@ const currentModal = ref("");
 const transitionName = ref("fade");
 const searchText = ref("");
 const batchIds = ref([]);//选中的成员id
+const currentRowData = ref("");
+const currentGroupData = ref("");
 const groups = ref([
   {
     id: 0,
@@ -131,6 +133,67 @@ const users = ref([
   },
   // ... more users
 ]);
+// 显示添加成员对话框
+function showAddMember() {
+  currentModal.value = "AddGroupMember";
+  console.log("currentModal=", currentModal.value);
+}
+// 关闭对话框
+function closeModal() {
+  if (currentModal.value === "DeptDetail") {
+    // 如果当前模态框为 DeptDetail，则不改变 transitionName 的值，继续使用 slide-fade 过渡效果
+    currentModal.value = "";
+    console.log("ModalClosed");
+
+    // 延迟更改 transitionName 的值
+    setTimeout(() => {
+      transitionName.value = "fade";
+    }, 500); // 在动画完成后 500 毫秒后更改 transitionName 的值
+  } else {
+    // 否则，将 transitionName 的值设置为 "fade"，使用默认的 fade 过渡效果
+    transitionName.value = "fade";
+    currentModal.value = "";
+    console.log("ModalClosed");
+  }
+}
+// 控制操作选项弹窗
+const showPopup = ref(false);
+const popupPosition = ref({ top: 0, left: 0 });
+
+function updatePopupPosition(user: any, event: MouseEvent) {
+  showPopup.value = !showPopup.value; // 点击时切换弹窗的显示状态
+  const rect = (event.target as HTMLElement).getBoundingClientRect(); // 获取元素的位置信息
+  popupPosition.value = {
+    top: rect.bottom + 20, // 设置弹窗的垂直位置
+    left: rect.left - 170, // 设置弹窗的水平位置
+  };
+  currentRowData.value = user; // 保存行数据
+  console.log("currentRowData.value=", currentRowData.value);
+}
+// 在 setup 中添加函数用于处理点击弹窗以外的区域
+function handleClickOutside(event: MouseEvent) {
+  const popup = document.querySelector(".popup"); // 获取弹窗元素
+  if (!popup) return; // 如果弹窗不存在，直接返回
+
+  // 判断点击事件的目标元素是否在弹窗内部，如果不在则关闭弹窗
+  if (!(event.target as HTMLElement).closest(".popup")) {
+    hidePopup(); // 调用关闭弹窗的函数
+  }
+}
+
+// 组件初始化时，绑定 document 的点击事件处理函数
+onMounted(() => {
+  document.addEventListener("click", handleClickOutside);
+});
+
+// 组件销毁时，移除 document 的点击事件处理函数，以防止内存泄漏
+onUnmounted(() => {
+  document.removeEventListener("click", handleClickOutside);
+});
+//隐藏操作选项
+function hidePopup() {
+  showPopup.value = false;
+}
 const highlightedGroup = ref(null);
 const highlightGroup = (event: MouseEvent) => {
   // 移除之前的高亮
@@ -144,11 +207,13 @@ const highlightGroup = (event: MouseEvent) => {
 }
 const companyId = 1; // 根据实际情况替换
 const companyIdString = companyId.toString();
-//获取点击的部门id
+//获取点击的部门信息
 const groupId = ref(1);
 function getGroupText(row: any){
   groupId.value = row.id;
   console.log("groupId=", groupId.value);
+  currentGroupData.value = row; // 保存行数据
+  console.log("currentGroupData.value=", currentGroupData.value);
   fetchUserData()
 }
 // 获取团队列表
@@ -221,7 +286,8 @@ function fetchUserData() {
 onMounted(() => {
   // 获取团队列表
   fetchGroups();
-  //第一个团队默认高亮
+  //获取成员列表
+  fetchUserData();
 });
 </script>
 

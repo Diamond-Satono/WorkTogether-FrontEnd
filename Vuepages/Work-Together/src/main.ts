@@ -28,6 +28,7 @@ import MoveDept from './components/organization/deptPop-upWindows/MoveDept.vue'
 import DeleteDept from './components/organization/deptPop-upWindows/DeleteDept.vue'
 import AssignDept from './components/organization/deptUser-upWindows/AssignDept.vue'
 import DeleteMember from './components/organization/deptUser-upWindows/DeleteMember.vue'
+import AddGroupMember from './components/group/groupUser-upWindows/AddGroupMember.vue'
 import App from './App.vue'
 
 library.add(fas);
@@ -65,4 +66,5 @@ app.component('DeleteDept',DeleteDept);
 app.component('MemberDetail',MemberDetail);
 app.component('AssignDept',AssignDept);
 app.component('DeleteMember',DeleteMember);
+app.component('AddGroupMember',AddGroupMember);
 app.mount('#app');
