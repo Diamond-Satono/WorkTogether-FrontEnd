@@ -143,7 +143,7 @@ function fetchDepartmentById() {
 //拉取成员列表
 function fetchUserData() {
   const companyId = 1;
-  const url = 'http://localhost:8080/api/company_user/getAllMember/1';
+  const url = 'http://localhost:8080/api/user/company/1';
   fetch(url, {
     method: 'GET',
     headers: {
