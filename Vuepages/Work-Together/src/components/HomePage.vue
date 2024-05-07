@@ -12,7 +12,7 @@
           <i class="fas fa-file"></i>  
           <a @click="toggleSubMenu('organization')"><fa icon="folder-open" /> 组织架构</a>
           <ul class="submenu" v-show="subMenuStatus.organization">
-            <li><i class="fas fa-file"></i> <a><fa icon="file" />  团队管理</a></li>
+            <li><i class="fas fa-file"></i> <a href="/groupmanage"><fa icon="file" />  团队管理</a></li>
             <li><i class="fas fa-file"></i> <a href="/departmentmanage"><fa icon="file" />  成员与部门</a></li>
           </ul>
         </li>
