@@ -105,7 +105,7 @@
         </div>
         <div class="detail5">
           <div class="memberposition">职务</div>
-          <select class="detailmemberposition  custom-input" :value="props.user.position">
+          <select class="detailmemberposition  custom-input" v-model="selectedPostition">
             <option v-for="(postn, index) in positions" :key="index">
             {{ postn }}
             </option>
@@ -121,7 +121,7 @@
 </template>
     
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch } from "vue";
 // 初始化默认标签页为“基本信息”
 const activeTab = ref('basicInfo');
 
@@ -136,9 +136,17 @@ const props = defineProps({
 const types = ref(["正式", "实习", "外包", "正式", "劳务", "顾问"]);
 const areas = ref(["中国香港", "中国", "美国", "加拿大", "法国", "德国", "英国", "澳大利亚", "新西兰", "意大利"]);
 const positions = ref([props.user.position, "技术总监", "运营总监", "CEO", "人力资源总监", "财务总监", "产品总监", "设计总监", "市场总监"]);
-
-
+const selectedPostition = ref(props.user.position);//已选中的职位
+// const selectedDepartmentId = ref();//已选中的部门id
 console.log(props.user);
+console.log(selectedPostition.value);
+watch(selectedPostition, (newValue, oldValue) => {
+    // const index = props.positions.indexOf(newValue);
+    // selectedDepartmentId.value = props.positions[index].pid;
+    // console.log(index);
+    console.log(selectedPostition.value);
+    
+});
 
 const showDetail = ref(true);
 

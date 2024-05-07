@@ -10,7 +10,7 @@
         <tbody>
           <!-- 在这里添加你的数据行 -->
           <template v-for="(row, index) in tableData" :key="index">
-            <tr :class="{ parent: row.isParent }">
+            <tr :class="{ parent: row.isParent }" @click="highlightGroup">
               <!-- 添加父级部门的 class -->
               <td @click="getDeptID(row)">
                 <!-- 渲染复选框和展开按钮 -->
@@ -38,6 +38,7 @@
                 <tr
                   v-for="(child, childIndex) in row.children"
                   :key="`child-${index}-${childIndex}`"
+                  @click="highlightGroup"
                 >
                 <td @click="getDeptID(row)">
                   {{ child.name }}
@@ -85,7 +86,7 @@
               <td>{{ user.deptName }}</td>
               <td>{{ user.position }}</td>
               <td>
-                  <button class="detail_button" @click="showDeptDetail(user)">详情</button>
+                  <button class="detail_button" @click="showMemberDetail(user)">详情</button>
                   <img
                     src="@/assets/deptimgs/options.png"
                     class="optionsimg"
@@ -274,7 +275,7 @@ function showAddMember() {
   console.log("currentModal=", currentModal.value);
 }
 // 显示详情
-function showDeptDetail(user: any) {
+function showMemberDetail(user: any) {
   transitionName.value = "slide-fade"; // 设置 transitionName 的值为 "slide-fade"
   currentModal.value = "MemberDetail";
   console.log("currentModal=", currentModal.value);
@@ -348,6 +349,17 @@ onUnmounted(() => {
 //隐藏操作选项
 function hidePopup() {
   showPopup.value = false;
+}
+const highlightedGroup = ref(null);
+const highlightGroup = (event: MouseEvent) => {
+  // 移除之前的高亮
+  if (highlightedGroup.value) {
+    highlightedGroup.value.classList.remove('highlighted');
+  }
+  // 添加高亮到当前点击的元素
+  const target = event.target as HTMLElement;
+  target.classList.add('highlighted');
+  highlightedGroup.value = target;
 }
 const companyId = 1; // 根据实际情况替换
 const companyIdString = companyId.toString();
@@ -774,5 +786,8 @@ input[type="checkbox"] {
 {
   opacity: 0;
   transform: translateY(-40%);
+}
+.highlighted {
+  color: #FF6200;
 }
 </style>
