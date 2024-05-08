@@ -9,7 +9,7 @@
       <table>
         <tbody>
           <tr v-for="(group, index) in groups" :key="index" class="group-row"  @click="highlightGroup">
-            <td class="group-name" @click="getGroupText(group)">{{ group.name }}</td>
+            <td class="group-name" @click="getGroupText(group)"><input type="checkbox"> {{ group.name }}</td>
           </tr>
         </tbody>
       </table>
@@ -40,7 +40,7 @@
         </thead>
         <tbody>
         <!-- Sample row -->
-        <tr v-for="user in users" :key="user.id">
+        <tr v-for="user in filteredUsers" :key="user.id">
           <!-- <td><input type="checkbox" :value="user.id" @click="toggleSelectUser(user.id)" class="row-selector"></td> -->
           <td class="memName">
             <input type="checkbox" :value="user.id" @click="toggleSelectUser(user.id)" class="row-selector">
@@ -135,6 +135,17 @@ const users = ref([
   },
   // ... more users
 ]);
+// 根据搜索关键词过滤用户列表
+const filteredUsers = computed(() => {
+  const search = searchText.value.trim().toLowerCase();
+  if (!search) return users.value;
+  return users.value.filter(user =>
+    user.name.toLowerCase().includes(search) ||
+    user.email.toLowerCase().includes(search) ||
+    user.deptName.toLowerCase().includes(search) ||
+    user.position.toLowerCase().includes(search)
+  );
+});
 //多选功能
 // 选中或取消选中单个用户
 function toggleSelectUser(userId: number) {
@@ -499,6 +510,13 @@ th {
 td {
   padding: 20px;
   text-align: center;
+}
+tbody td:first-child {
+  /* padding: 0%; */
+  vertical-align: center;
+  text-align: left;
+  /* 将文本左对齐 */
+  padding-left: 3%;
 }
 .group-name {
   padding: 20px;

@@ -3,7 +3,7 @@
     <div class="model-side">
       <div class="search-bar">
         <div class="input-container">
-          <input type="text" placeholder="请输入成员名、邮箱、职位" v-model="searchText">
+          <input type="text" placeholder="请输入成员名、邮箱、部门、职位" v-model="searchText">
         </div>
       </div>
       <table>
@@ -85,7 +85,7 @@
           </thead>
           <tbody>
           <!-- Sample row -->
-          <tr v-for="user in users" :key="user.id">
+          <tr v-for="user in filteredUsers" :key="user.id">
               <!-- <td><input type="checkbox" :value="user.id" @click="toggleSelectUser(user.id)" class="row-selector"></td> -->
               <td class="memName">
                 <input type="checkbox" :value="user.id" @click="toggleSelectUser(user.id)" class="row-selector">
@@ -240,6 +240,17 @@ const users = ref([
   },
   // ... more users
 ]);
+// 根据搜索关键词过滤用户列表
+const filteredUsers = computed(() => {
+  const search = searchText.value.trim().toLowerCase();
+  if (!search) return users.value;
+  return users.value.filter(user =>
+    user.name.toLowerCase().includes(search) ||
+    user.email.toLowerCase().includes(search) ||
+    user.deptName.toLowerCase().includes(search) ||
+    user.position.toLowerCase().includes(search)
+  );
+});
 //获取所有部门名字
 const departmentNames = computed(() => {
   return tableData.value.map((row) => row.name);
@@ -591,47 +602,7 @@ function fetchUserData() {
     });
 }
 onMounted (() => {
-  fetchUserData();
-  // 获取搜索框元素-成员名
-  const searchContent = document.querySelector('.input-container input[type="text"]');
-  // 添加查询成员事件监听器-
-  searchContent.addEventListener('keypress', function (event) {
-      // 判断是否按下的是回车键
-      if (event.key === 'Enter') {
-          performSearchMember();
-      }
-  });
-  // 定义查询功能函数
-  function performSearchMember() {
-      // 获取输入框中的关键字
-      var keyword = searchContent.value.trim().toLowerCase();
-
-      // 获取所有的表格行
-      var rows = document.querySelectorAll('tbody tr');
-
-      // 遍历每一行
-      rows.forEach(function (row) {
-          // 获取当前行的成员单元格的内容
-          var memberName = row.querySelector('td:nth-child(2)').textContent.trim().toLowerCase();
-          // 获取当前行的邮箱单元格的内容
-          var memberEmail = row.querySelector('td:nth-child(3)').textContent.trim().toLowerCase();
-          // 获取当前行的部门单元格的内容
-          var memberDeptName = row.querySelector('td:nth-child(4)').textContent.trim().toLowerCase();
-          // 获取当前行的职位单元格的内容
-          var memberPosition = row.querySelector('td:nth-child(5)').textContent.trim().toLowerCase();
-
-          // 如果角色名称包含关键字，则显示该行，否则隐藏该行
-          if (memberName.includes(keyword) ||
-              memberEmail.includes(keyword) ||
-              memberPosition.includes(keyword)
-              ) {
-              row.style.display = 'table-row';
-          } else {
-              row.style.display = 'none';
-          }
-      });
-  }
-  
+  fetchUserData();  
 });
 </script>
 
