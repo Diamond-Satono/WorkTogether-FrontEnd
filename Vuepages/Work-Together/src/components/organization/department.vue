@@ -9,7 +9,7 @@
           <img src="@/assets/deptimgs/delete.png" />
           <button class="delete" @click="showBatchDelete">批量删除</button>
           <img src="@/assets/deptimgs/import.png" />
-          <button class="import">Excel批量导入</button>
+          <button class="import"><router-link to="/departmentexcel" style="text-decoration: none;">Excel批量导入</router-link></button>
           <img src="@/assets/deptimgs/create.png" />
           <button class="create" @click="showCreateDept">新建部门</button>
         </div>

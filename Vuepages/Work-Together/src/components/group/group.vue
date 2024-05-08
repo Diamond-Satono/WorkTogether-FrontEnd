@@ -9,7 +9,7 @@
           <img src="@/assets/deptimgs/delete.png" />
           <button class="delete" @click="showBatchDelete">批量删除</button>
           <img src="@/assets/deptimgs/import.png" />
-          <button class="import">Excel批量导入</button>
+          <button class="import"><router-link to="/groupexcel" style="text-decoration: none;">Excel批量导入</router-link></button>
           <img src="@/assets/deptimgs/create.png" />
           <button class="create" @click="showCreateDept">新建团队</button>
         </div>
@@ -21,7 +21,7 @@
               <th>团队名称</th>
               <th>团队人数</th>
               <th>团队负责人</th>
-              <th>团队关联团队数</th>
+              <th>团队关联部门数</th>
               <th>操作</th>
             </tr>
           </thead>
