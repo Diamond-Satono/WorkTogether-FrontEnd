@@ -207,7 +207,9 @@ function fetchMemberData() {
     groupId: props.group.id,
     position: selectedPostition.value
   };
-  fetch(`http://localhost:8080/api/group/membern`, {
+  console.log(fortmaData);
+  
+  fetch(`http://localhost:8080/api/group/member`, {
       method: 'PUT',
       headers: {
           'Content-Type': 'application/json', // 设置 Content-Type 请求头为 JSON
@@ -220,9 +222,10 @@ function fetchMemberData() {
         console.log(response);
         // 检查响应状态
         if (!response.ok) {
-            alert("拉取失败")
+            alert("变更失败")
             throw new Error('Network error');
         }
+        location.reload();//刷新页面
         // 解析响应为 JSON 格式
         return response.json();
     })

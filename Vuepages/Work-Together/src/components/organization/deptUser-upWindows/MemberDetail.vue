@@ -197,6 +197,47 @@ function fetchPositionData() {
         // Handle the error, e.g., show a message to the user
     });
 }
+//编辑成员信息
+function fetchMemberData() {
+  const fortmaData = {
+    id: props.user.id,
+    did: props.user.deptId,
+    position: selectedPostition.value
+  };
+  console.log(fortmaData);
+  
+  fetch(`http://localhost:8080/api/dept/member`, {
+      method: 'PUT',
+      headers: {
+          'Content-Type': 'application/json', // 设置 Content-Type 请求头为 JSON
+          'Authorization': tokens.value, // 设置 Authorization 请求头，用于身份验证
+          'companyId': companyIdString // 设置 companyId 请求头，用于传递公司 ID
+      },
+      body: JSON.stringify(fortmaData)
+    })
+    .then(response => {
+        console.log(response);
+        // 检查响应状态
+        if (!response.ok) {
+            alert("变更失败")
+            throw new Error('Network error');
+        } 
+        // 解析响应为 JSON 格式
+        return response.json();
+    })
+    .then(data => {
+        // 请求成功，更新用户数据
+        positions.value = data.data;
+        console.log(tokens.value);
+        
+        console.log("positions.value=", positions.value);
+                            
+    })
+    .catch(error => {
+        console.error('Error fetching positions data:', error);
+        // Handle the error, e.g., show a message to the user
+    });
+}
 </script>
   
 <style scoped>
