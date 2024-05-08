@@ -205,7 +205,7 @@ function fetchPositionData() {
 //编辑成员信息
 function fetchMemberData() {
   const fortmaData = {
-    id: props.user.id,
+    uid: props.user.id,
     did: props.deptId,
     position: selectedPostition.value
   };
@@ -227,6 +227,7 @@ function fetchMemberData() {
             alert("变更失败")
             throw new Error('Network error');
         } 
+        location.reload();//刷新页面
         // 解析响应为 JSON 格式
         return response.json();
     })

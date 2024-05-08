@@ -571,7 +571,7 @@ function filterDepartments(departments: any) {
 }
 //拉取成员列表
 function fetchUserData() {
-  fetch(`http://localhost:8080/api/company_user/getAllMember/${deptId.value}`, {
+  fetch(`http://localhost:8080/api/dept/member/${deptId.value}`, {
       method: 'GET',
       headers: {
           'Content-Type': 'application/json', // 设置 Content-Type 请求头为 JSON
