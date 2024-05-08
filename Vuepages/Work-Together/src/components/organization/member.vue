@@ -118,6 +118,7 @@
       :user="currentRowData"
       :departmentNames="departmentNames"
       :departmentIds="departmentIds"
+      :deptId="deptId"
     ></component>
   </Transition>
   <!-- 操作选项弹窗 -->

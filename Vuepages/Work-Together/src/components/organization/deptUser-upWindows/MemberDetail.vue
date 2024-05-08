@@ -113,7 +113,7 @@
         </div>
         <div class="buttoncontainer2">
           <button class="cancel" @click="canceledit">取消</button>
-          <button class="save"  @click="$emit('close-modal')">保存</button>
+          <button class="save"  @click="fetchMemberData">保存</button>
         </div>
       </div>
     </div>
@@ -133,6 +133,10 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
+  deptId: {
+    type: Number,
+    default: 0,
+  }
 });
 
 const types = ref(["正式", "实习", "外包", "正式", "劳务", "顾问"]);
@@ -141,6 +145,7 @@ const positions = ref([props.user.position, "技术总监", "运营总监", "CEO
 const selectedPostition = ref(props.user.position);//已选中的职位
 // const selectedDepartmentId = ref();//已选中的部门id
 console.log(props.user);
+console.log(props.deptId);
 console.log(selectedPostition.value);
 watch(selectedPostition, (newValue, oldValue) => {
     // const index = props.positions.indexOf(newValue);
@@ -201,7 +206,7 @@ function fetchPositionData() {
 function fetchMemberData() {
   const fortmaData = {
     id: props.user.id,
-    did: props.user.deptId,
+    did: props.deptId,
     position: selectedPostition.value
   };
   console.log(fortmaData);
