@@ -205,7 +205,7 @@ function fetchPositionData() {
 //编辑成员信息
 function fetchMemberData() {
   const fortmaData = {
-    id: props.user.id,
+    uid: props.user.id,
     did: props.deptId,
     position: selectedPostition.value
   };

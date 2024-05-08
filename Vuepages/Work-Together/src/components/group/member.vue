@@ -530,12 +530,46 @@ tbody td:first-child {
 }
 
 /* 复选框样式 */
-input[type="checkbox"] {
-    margin: 0; /* 移除默认的外边距 */
-    padding: 0; /* 移除外边距 */
-    height: 16px; /* 设置复选框的大小 */
-    width: 16px; /* 设置复选框的大小 */
-    vertical-align: middle; /* 垂直居中对齐 */
+input[type=checkbox] {
+  cursor: pointer;
+  position: relative;
+}
+
+input[type=checkbox]::after {
+  position: absolute;
+  top: 0;
+  background-color: #fff;
+  color: #fff;
+  width: 14px;
+  height: 14px;
+  display: inline-block;
+  visibility: visible;
+  padding-left: 0px;
+  text-align: center;
+  content: ' ';
+  border-radius: 2px;
+  box-sizing: border-box;
+  border: 1px solid #ddd;
+}
+
+input[type=checkbox]:checked::after {
+  content: "";
+  background-color: #FF6200;
+  border-color: #FF6200;
+  background-color: #FF6200;
+}
+
+input[type=checkbox]:checked::before {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 5px;
+  width: 3px;
+  height: 8px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  z-index: 1;
 }
 
 /* 全选复选框样式 */
