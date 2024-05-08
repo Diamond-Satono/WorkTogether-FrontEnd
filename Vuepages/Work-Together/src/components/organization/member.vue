@@ -9,43 +9,53 @@
       <table>
         <tbody>
           <!-- 在这里添加你的数据行 -->
-          <template v-for="(row, index) in tableData" :key="index">
+          <template v-for="(row, index) in filteredTableData" :key="index">
             <tr :class="{ parent: row.isParent }" @click="highlightGroup">
               <!-- 添加父级部门的 class -->
               <td @click="getDeptID(row)">
                 <!-- 渲染复选框和展开按钮 -->
                 <template v-if="row.isParent">
-                  <button class="expand-btn" @click="toggleExpand(row)">
+                  <button class="expand-btnfortop" @click="toggleExpand(row)">
                     <!-- 使用 v-if 控制展开按钮的显示 -->
-                    <img
-                      v-if="row.expanded"
-                      src="@/assets/deptimgs/expandchild.png"
-                      style="width: 18px; height: 18px"
-                    />
-                    <img
-                      v-else
-                      src="@/assets/deptimgs/foldchild.png"
-                      style="width: 18px; height: 18px"
-                    />
+                    <img v-if="row.expanded" src="@/assets/deptimgs/expandchild.png"
+                      style="width: 18px; height: 18px" />
+                    <img v-else src="@/assets/deptimgs/foldchild.png" style="width: 18px; height: 18px" />
                   </button>
                 </template>
+                <span class="checkbox"></span>
                 {{ row.name }}
               </td>
             </tr>
-            <!-- 递归渲染子部门 -->
             <TransitionGroup name="list">
               <template v-if="row.expanded">
-                <tr
-                  v-for="(child, childIndex) in row.children"
-                  :key="`child-${index}-${childIndex}`"
-                  @click="highlightGroup"
-                >
-                <td @click="getDeptID(row)">
-                  {{ child.name }}
-                </td></tr
-              ></template>
+                <!-- 递归渲染子部门 -->
+                <tr v-for="(child, childIndex) in row.children" :key="`child-${index}-${childIndex}`" @click="highlightGroup">
+                  <td @click="getDeptID(row)">
+                    <!-- 判断是否显示展开按钮和复选框 -->
+                    <template v-if="child.haschildren">
+                      <button class="expand-btn" @click="toggleExpandchild(row)">
+                        <img v-if="row.expandchild" src="@/assets/deptimgs/expandchild.png"
+                          style="width: 18px; height: 18px" />
+                        <img v-else src="@/assets/deptimgs/foldchild.png" style="width: 18px; height: 18px" />
+                      </button>
+                    </template><span class="checkbox2"></span>{{ child.name }}
+                  </td>
+                </tr>
+                <!-- 递归渲染子部门的子部门 -->
+                <template v-if="row.expandchild">
+                  <template v-if="row.grandchildren">
+                    <tr v-for="(grandchild, grandchildIndex) in row.grandchildren"
+                      :key="`grandchild-${grandchild.id}`" @click="highlightGroup">
+                      <td @click="getDeptID(row)">
+                        <span class="checkbox3"></span> {{ grandchild.name }}
+                      </td>
+                    </tr>
+                  </template>
+                </template>
+              </template>
             </TransitionGroup>
           </template>
+          
         </tbody>
       </table>
     </div>
@@ -382,6 +392,8 @@ onMounted(() => {
 });
 
 async function fetchdepartment() {
+  const companyId = 1; // 根据实际情况替换
+  const companyIdString = companyId.toString();
   // 从接口获取部门数据并更新表格
   const response = await fetch(
     `http://localhost:8080/api/dept/selectHighestDepts?companyId=${companyId}`,
@@ -424,44 +436,126 @@ async function fetchdepartment() {
     // 将上级部门数据添加到表格数据中
     tableData.value.push(parentFormattedData);
 
-    const childResponse = await fetch(
-      `http://localhost:8080/api/dept/selectDeptsByParentId?parentDeptId=${department.id}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: tokens.value,
-          companyId: companyIdString,
-        },
-      }
-    );
-
-    if (!childResponse.ok) {
-      throw new Error("Network response was not ok");
-    }
-
-    const childData = await childResponse.json();
-
-    // 提取子部门数据中的所需字段，组织成适合在表格中渲染的格式
-    const childFormattedData = childData.data.map((childDepartment: any) => ({
-      id: childDepartment.id,
-      name: childDepartment.name,
-      number: childDepartment.num,
-      manager: childDepartment.managerName,
-      tasks: childDepartment.job,
-      isParent: false, // 标记为子部门
-    }));
-
-    // 将子部门数据添加到对应的上级部门的 children 数组中
-    const parentIndex = tableData.value.findIndex(
-      (item) => item.name === department.name
-    );
-    tableData.value[parentIndex].children.push(...childFormattedData);
+    // 递归获取子部门数据
+    await fetchChildDepartments(department.id, parentFormattedData);
   }
 }
+
+// 递归获取子部门数据
+async function fetchChildDepartments(
+  parentId: number,
+  parentDepartment: Department
+) {
+  const companyId = 1; // 根据实际情况替换
+  const companyIdString = companyId.toString();
+
+  const childResponse = await fetch(
+    `http://localhost:8080/api/dept/selectDeptsByParentId?parentDeptId=${parentId}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: tokens.value,
+        companyId: companyIdString,
+      },
+    }
+  );
+
+  if (!childResponse.ok) {
+    throw new Error("Network response was not ok");
+  }
+
+  const childData = await childResponse.json();
+  // console.log(childData.data);
+
+  // 提取子部门数据中的所需字段，组织成适合在表格中渲染的格式
+  const childFormattedData = childData.data.map((childDepartment: any) => ({
+    id: childDepartment.id,
+    parentid: childDepartment.parentId,
+    name: childDepartment.name,
+    number: childDepartment.num,
+    manager: childDepartment.managerName,
+    tasks: childDepartment.job,
+    isParent: false, // 标记为子部门
+    children: [], // 初始化子部门数组
+    expanded: false, // 默认为收起状态
+    grandchildren: [],
+    expandchild: false,
+    haschildren: false
+  }));
+
+  // 在childFormattedData中的每个子部门对象的children数组中添加默认属性haschildren
+  childFormattedData.forEach((child: any) => {
+    child.children.forEach((subchild: any) => {
+      subchild.haschildren = false; // 默认值为false
+    });
+  });
+
+  // 将子部门数据添加到对应的上级部门的 children 数组中
+  parentDepartment.children.push(...childFormattedData);
+
+  // 递归处理子部门的子部门
+  for (let child of parentDepartment.children) {
+    await fetchChildDepartments(child.id, child);
+  }
+
+  // 判断当前部门是否有子部门，并且子部门中是否有子部门，如果有则将其添加到 grandChildren 数组中
+  if (parentDepartment.children.some((child) => child.children && child.children.length > 0)) {
+    parentDepartment.grandchildren.push(...parentDepartment.children.flatMap((child: Department) => child.children));
+    console.log(parentDepartment.grandchildren);
+  }
+
+  // 遍历childFormattedData，设置haschildren属性
+  childFormattedData.forEach((child: any) => {
+    child.children.forEach((subchild: any) => {
+      // 检查子部门对象的parentid是否等于其上级部门的id
+      if (subchild.parentid === child.id) {
+        child.haschildren = true; // 设置haschildren为true
+      }
+    });
+    console.log(child.haschildren);
+
+  });
+
+}
+
 
 // 展开/收起子部门
 function toggleExpand(row: any) {
   row.expanded = !row.expanded;
+}
+function toggleExpandchild(row: any) {
+  row.expandchild = !row.expandchild;
+}
+//搜索功能
+const searchKeyword = ref(""); // 用于存储搜索关键字
+// 使用计算属性过滤表格数据以匹配搜索关键字
+const filteredTableData = computed(() => {
+  // 如果搜索关键字为空，则返回原始表格数据
+  if (!searchKeyword.value.trim()) {
+    return tableData.value;
+  }
+
+  // 否则，使用搜索关键字过滤表格数据
+  return filterDepartments(tableData.value);
+});
+
+// 递归过滤部门数据，包括子部门和孙子部门
+function filterDepartments(departments: any) {
+  return departments.reduce((filtered: any, department: any) => {
+    if (department.name.includes(searchKeyword.value.trim())) {
+      // 如果当前部门名称匹配搜索关键字，则将其添加到过滤后的数组中
+      filtered.push(department);
+    } else if (department.children && department.children.length > 0) {
+      // 递归过滤子部门，并保留原始的部门结构和样式
+      const filteredChildren = filterDepartments(department.children);
+      if (filteredChildren.length > 0) {
+        const parentClone = { ...department }; // 克隆父部门对象
+        parentClone.children = filteredChildren; // 用过滤后的子部门替换原始的子部门
+        filtered.push(parentClone); // 将父部门及其过滤后的子部门添加到过滤后的数组中
+      }
+    }
+    return filtered;
+  }, []);
 }
 //拉取成员列表
 function fetchUserData() {
@@ -669,15 +763,6 @@ onMounted (() => {
   opacity: 0;
 }
 /* Table Styles */
-table {
-    width: 100%;
-    border-collapse: separate; /* 改变表格的边框合并方式 */
-    border-spacing: 0; /* 设置单元格间距为0 */
-    margin-top: 10px;
-    background-color: #FFFFFF;
-    border-radius: 20px;
-    /* Spacing above the table */
-}
 
 .table {
   margin-left: 2%;
@@ -698,17 +783,51 @@ td {
   padding: 20px;
   text-align: center;
 }
-.memName {
+/* .memName {
   justify-content: space-between;
-}
+} */
 
 /* 复选框样式 */
-input[type="checkbox"] {
-    margin: 0; /* 移除默认的外边距 */
-    padding: 0; /* 移除外边距 */
-    height: 16px; /* 设置复选框的大小 */
-    width: 16px; /* 设置复选框的大小 */
-    vertical-align: middle; /* 垂直居中对齐 */
+input[type=checkbox] {
+  cursor: pointer;
+  position: relative;
+}
+
+input[type=checkbox]::after {
+  position: absolute;
+  top: 0;
+  background-color: #fff;
+  color: #fff;
+  width: 14px;
+  height: 14px;
+  display: inline-block;
+  visibility: visible;
+  padding-left: 0px;
+  text-align: center;
+  content: ' ';
+  border-radius: 2px;
+  box-sizing: border-box;
+  border: 1px solid #ddd;
+}
+
+input[type=checkbox]:checked::after {
+  content: "";
+  background-color: #FF6200;
+  border-color: #FF6200;
+  background-color: #FF6200;
+}
+
+input[type=checkbox]:checked::before {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 5px;
+  width: 3px;
+  height: 8px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  z-index: 1;
 }
 
 /* 全选复选框样式 */
@@ -769,12 +888,54 @@ input[type="checkbox"] {
   font-family: "SiYuanHeiTi";
 }
 /* 部门样式 */
+tbody td:first-child {
+  /* padding: 0%; */
+  vertical-align: center;
+  text-align: left;
+  /* 将文本左对齐 */
+  padding-left: 3%;
+}
+
+.expand-btnfortop {
+  background-color: white;
+  border: none;
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+  margin-bottom: 2.8%;
+  margin-right: 3%;
+}
+
 .expand-btn {
   background-color: white;
   border: none;
   cursor: pointer;
   width: 18px;
   height: 18px;
+  vertical-align: middle;
+  margin-bottom: 2.8%;
+  margin-right: -15%;
+  margin-left: 8%;
+}
+.checkbox {
+  vertical-align: middle;
+  margin-bottom: 2.5%;
+  margin-right: 2%;
+}
+
+.checkbox2 {
+  margin-left: 20%;
+  vertical-align: middle;
+  margin-bottom: 2.5%;
+  margin-right: 4%;
+}
+
+.checkbox3 {
+  vertical-align: middle;
+  margin-bottom: 2.5%;
+  margin-right: 2%;
+  margin-left: 30%;
 }
 
 /* 子部门折叠/展开动画 */
