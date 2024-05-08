@@ -227,6 +227,7 @@ function fetchMemberData() {
             alert("变更失败")
             throw new Error('Network error');
         } 
+        location.reload();//刷新页面
         // 解析响应为 JSON 格式
         return response.json();
     })
