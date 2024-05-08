@@ -274,7 +274,7 @@ function updatePopupPosition(row: any, event: MouseEvent) {
   const rect = (event.target as HTMLElement).getBoundingClientRect(); // 获取图标的位置信息
 
   const popupWidth = 170; // 弹窗的宽度
-  const popupHeight = 190; // 弹窗的高度
+  const popupHeight = 130; // 弹窗的高度
   const windowWidth = window.innerWidth; // 浏览器窗口的宽度
   const windowHeight = window.innerHeight; // 浏览器窗口的高度
 
