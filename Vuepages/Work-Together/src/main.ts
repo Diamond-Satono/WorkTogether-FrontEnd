@@ -15,7 +15,9 @@ import RetrievePassword from './components/Login/RetrievePassword.vue'
 import MemberList from './components/MemberList.vue'
 import EnterpriseInfo from './components/enterprise/EnterpriseInfo.vue'
 import DepartmentManage from './components/organization/DepartmentManage.vue'
+import DepartmentExcel from './components/organization/DepartmentExcel.vue'
 import GroupManage from './components/group/GroupManage.vue'
+import GroupExcel from './components/group/GroupExcel.vue'
 import HomePage from './components/HomePage.vue'
 import BatchDelete from './components/organization/deptPop-upWindows/BatchDelete.vue'
 import CreateDept from './components/organization/deptPop-upWindows/CreateDept.vue'
@@ -52,7 +54,9 @@ const router = createRouter({
         { path: '/memberlist', name: 'MemberList', component: MemberList },
         { path: '/enterpriseinfo', name: 'EnterpriseInfo', component: EnterpriseInfo },
         { path: '/departmentmanage', name: 'DepartmentManage', component: DepartmentManage },
+        { path: '/departmentexcel', name: 'DepartmentExcel', component: DepartmentExcel },
         { path: '/groupmanage', name: 'GroupManage', component: GroupManage },
+        { path: '/groupexcel', name: 'GroupExcel', component: GroupExcel },
         { path: '/homepage', name: 'HomePage', component: HomePage },
         { path: '/', redirect: '/login' }
     ]
