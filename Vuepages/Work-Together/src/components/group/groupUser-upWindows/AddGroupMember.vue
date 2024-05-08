@@ -36,6 +36,15 @@ import { onMounted, ref } from 'vue';
 import {Authorization} from "@/store/token"
 const tokens = Authorization();
 
+//获取父组件参数
+const props = defineProps({
+  group: {
+    type: Object,
+    default: () => ({}),
+  },
+});
+console.log(props.group);
+
 // 定义是否为单个添加模式的响应式属性
 const isSingle = ref(true);
 // 邮箱地址的响应式属性
@@ -49,39 +58,41 @@ isSingle.value = !isSingle.value;
 }
 
 function fetchEmailData() {
-const url = 'http://localhost:8080/api/email/sendInviteCode';
-const data = {
-    email: email.value,
-    companyId: "1"
-};
-fetch(url, {
-    method: 'POST',
-    headers: {
-    'Content-Type': 'application/json',
-    'Authorization': tokens.value, // 设置 Authorization 请求头，用于身份验证
-    'companyId': 1 // 设置 companyId 请求头，用于传递公司 ID
-    },
-    body: JSON.stringify(data)
-})
-.then(response => {
-    if (response.ok) {  
-        // 数据成功发送到服务器
-        console.log('Data sent successfully.');
-        alert("邀请码发送成功！");
-        email.value = "";
-        // 刷新页面
-        location.reload();//刷新页面
-    } else {
-        // 数据发送失败
-        console.error('Failed to send data to server.');
-        alert("邀请码发送失败！");
-    }
-})
-.catch(error => {
-    // 捕获网络错误或其他错误
-    console.error('Error:', error);
-    alert("异常错误");
-});
+  const url = 'http://localhost:8080/api/group/member/addByMail';
+  const data = {
+      list: [email.value],
+      groupId: props.group.id
+  };
+  const companyId = 1; // 根据实际情况替换
+  const companyIdString = companyId.toString();
+  fetch(url, {
+      method: 'POST',
+      headers: {
+      'Content-Type': 'application/json',
+      'Authorization': tokens.value, // 设置 Authorization 请求头，用于身份验证
+      'companyId': companyIdString // 设置 companyId 请求头，用于传递公司 ID
+      },
+      body: JSON.stringify(data)
+  })
+  .then(response => {
+      if (response.ok) {  
+          // 数据成功发送到服务器
+          console.log('Data sent successfully.');
+          alert("邀请团员成功！");
+          email.value = "";
+          // 刷新页面
+          location.reload();//刷新页面
+      } else {
+          // 数据发送失败
+          console.error('Failed to send data to server.');
+          alert("邀请团员失败！");
+      }
+  })
+  .catch(error => {
+      // 捕获网络错误或其他错误
+      console.error('Error:', error);
+      alert("异常错误");
+  });
 }
 onMounted(() => {
 //点击确定按钮
@@ -127,9 +138,6 @@ margin-left: 77.4%;
 .cutoff {
 border-top: 1px solid #bbbbbb;
 margin-top: 2%;
-}
-.maincontent {
-
 }
 .quickinvitation {
 font-family: "SiYuanHeiTi";

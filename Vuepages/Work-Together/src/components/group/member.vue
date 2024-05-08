@@ -51,7 +51,7 @@
           <td>{{ user.deptName }}</td>
           <td>{{ user.position }}</td>
           <td>
-            <button class="detail_button" @click="showMemberDetail(user)">详情</button>
+            <button class="detail_button" @click="showGroupMemberDetail(user)">详情</button>
             <img
               src="@/assets/deptimgs/options.png"
               class="optionsimg"
@@ -71,6 +71,8 @@
     @close-modal="closeModal"
     :batchIds="batchIds"
     :user="currentRowData"
+    :group="currentGroupData"
+    :groups="groups"
     ></component>
   </Transition>
   <!-- 操作选项弹窗 -->
@@ -83,9 +85,9 @@
     }"
     v-if="showPopup"
     >
-    <button class="assigndept" @click="showAssignDept">变更团队</button>
-    <button class="deletemember" @click="showDeleteMember(currentRowData)">
-      操作离职
+    <button class="assigndept" @click="showAssignGroup">变更团队</button>
+    <button class="deletemember" @click="showDeleteGroupMember(currentRowData)">
+      移出团队
     </button>
     </div>
   </Transition>
@@ -133,10 +135,60 @@ const users = ref([
   },
   // ... more users
 ]);
+//多选功能
+// 选中或取消选中单个用户
+function toggleSelectUser(userId: number) {
+  if (batchIds.value.includes(userId)) {
+    // 如果batchIds中已存在该id，则移除
+    const index = batchIds.value.indexOf(userId);
+    if (index >= 0) {
+      batchIds.value.splice(index, 1);
+    }
+  } else {
+    // 否则，添加该id到batchIds中
+    batchIds.value.push(userId);
+  }
+}
+// 选中或取消选中所有用户
+// function toggleSelectAll() {
+//   const selectedAll = batchIds.value.length === users.value.length;
+//   if (selectedAll) {
+//     // 如果所有都已选中，则取消全选
+//     batchIds.value = [];
+//   } else {
+//     // 否则，全选
+//     batchIds.value = users.value.map(user => user.id);
+//   }
+// }
+// 显示批量删除对话框
+function showBatchDepart() {
+  currentModal.value = "BatchGroupDepart";
+  console.log("currentModal=", currentModal.value);
+}
 // 显示添加成员对话框
 function showAddMember() {
   currentModal.value = "AddGroupMember";
   console.log("currentModal=", currentModal.value);
+}
+// 显示详情
+function showGroupMemberDetail(user: any) {
+  transitionName.value = "slide-fade"; // 设置 transitionName 的值为 "slide-fade"
+  currentModal.value = "GroupMemberDetail";
+  console.log("currentModal=", currentModal.value);
+  currentRowData.value = user;
+  console.log("详情", user);
+}
+//显示变更团队
+function showAssignGroup() {
+  currentModal.value = "AssignGroup";
+  console.log("currentModal=", currentModal.value);
+  hidePopup();
+}
+//显示移出团队
+function showDeleteGroupMember(currentRowData: any) {
+  currentModal.value = "DeleteGroupMember";
+  console.log("currentModal=", currentModal.value);
+  hidePopup();
 }
 // 关闭对话框
 function closeModal() {
@@ -194,7 +246,7 @@ onUnmounted(() => {
 function hidePopup() {
   showPopup.value = false;
 }
-const highlightedGroup = ref(null);
+const highlightedGroup = ref<HTMLElement | null>(null);
 const highlightGroup = (event: MouseEvent) => {
   // 移除之前的高亮
   if (highlightedGroup.value) {
