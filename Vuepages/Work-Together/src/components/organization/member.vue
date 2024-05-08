@@ -30,7 +30,7 @@
               <template v-if="row.expanded">
                 <!-- 递归渲染子部门 -->
                 <tr v-for="(child, childIndex) in row.children" :key="`child-${index}-${childIndex}`" @click="highlightGroup">
-                  <td @click="getDeptID(row)">
+                  <td @click="getDeptID(child)">
                     <!-- 判断是否显示展开按钮和复选框 -->
                     <template v-if="child.haschildren">
                       <button class="expand-btn" @click="toggleExpandchild(row)">
@@ -46,7 +46,7 @@
                   <template v-if="row.grandchildren">
                     <tr v-for="(grandchild, grandchildIndex) in row.grandchildren"
                       :key="`grandchild-${grandchild.id}`" @click="highlightGroup">
-                      <td @click="getDeptID(row)">
+                      <td @click="getDeptID(grandchild)">
                         <span class="checkbox3"></span> {{ grandchild.name }}
                       </td>
                     </tr>
