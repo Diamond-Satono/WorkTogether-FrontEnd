@@ -9,7 +9,8 @@
           <img src="@/assets/deptimgs/delete.png" />
           <button class="delete" @click="showBatchDelete">批量删除</button>
           <img src="@/assets/deptimgs/import.png" />
-          <button class="import"><router-link to="/departmentexcel" style="text-decoration: none;">Excel批量导入</router-link></button>
+          <button class="import"><router-link to="/departmentexcel"
+              style="text-decoration: none;">Excel批量导入</router-link></button>
           <img src="@/assets/deptimgs/create.png" />
           <button class="create" @click="showCreateDept">新建部门</button>
         </div>
@@ -39,7 +40,8 @@
                         style="width: 18px; height: 18px" />
                       <img v-else src="@/assets/deptimgs/foldchild.png" style="width: 18px; height: 18px" />
                     </button>
-                    <input type="checkbox" class="checkbox" />
+                    <input type="checkbox" class="checkbox" :checked="row.checked"
+                      @click="updateSelectedRows(row, $event)" />
                   </template>
                   {{ row.name }}
                 </td>
@@ -64,7 +66,8 @@
                             style="width: 18px; height: 18px" />
                           <img v-else src="@/assets/deptimgs/foldchild.png" style="width: 18px; height: 18px" />
                         </button>
-                      </template><input type="checkbox" class="checkbox2" />{{ child.name }}
+                      </template><input type="checkbox" class="checkbox2" :checked="child.checked"
+                        @click="updatechildSelectedRows(child, $event, row, child)" />{{ child.name }}
                     </td>
                     <td class="number">{{ child.number }}</td>
                     <td class="manager">{{ child.manager }}</td>
@@ -86,7 +89,8 @@
                       <tr v-for="(grandchild, grandchildIndex) in row.grandchildren"
                         :key="`grandchild-${grandchild.id}`">
                         <td>
-                          <input type="checkbox" class="checkbox3" /> {{ grandchild.name }}
+                          <input type="checkbox" class="checkbox3" :checked="grandchild.checked"
+                            @click="updategrandchildSelectedRows(grandchild, $event)" /> {{ grandchild.name }}
                         </td>
                         <td class="number">{{ grandchild.number }}</td>
                         <td class="manager">{{ grandchild.manager }}</td>
@@ -114,8 +118,8 @@
     </div>
     <!-- 动态加载组件 -->
     <Transition :name="transitionName" mode="out-in">
-      <component :is="currentModal" v-if="currentModal" @close-modal="closeModal" @refresh-table="refreshTable":row="currentRowData"
-        :departmentNames="departmentNames"></component>
+      <component :is="currentModal" v-if="currentModal" @close-modal="closeModal" @refresh-table="refreshTable"
+        :row="currentRowData" :departmentNames="departmentNames" :selectedRows="selectedRows"></component>
     </Transition>
     <!-- 操作选项弹窗 -->
     <Transition :name="transitionName" mode="out-in">
@@ -151,6 +155,7 @@ interface Department {
   expandchild: boolean;
   grandchildren: Department[];
   haschildren: boolean;
+  checked: boolean;
 }
 
 
@@ -162,6 +167,7 @@ const tableData = ref<Department[]>([
     number: 10,
     manager: "张三",
     tasks: 5,
+    checked: false,
     expandchild: false,
     isParent: true, // 标记为父级部门
     children: [
@@ -178,7 +184,8 @@ const tableData = ref<Department[]>([
         expanded: false,
         grandchildren: [],
         expandchild: false,
-        haschildren: false
+        haschildren: false,
+        checked: false,
       },
       {
         id: 1,
@@ -190,6 +197,7 @@ const tableData = ref<Department[]>([
         isParent: false,
         children: [],
         expanded: false,
+        checked: false,
         expandchild: false,
         grandchildren: [],
 
@@ -208,6 +216,7 @@ const tableData = ref<Department[]>([
     manager: "李四",
     tasks: 8,
     isParent: true,
+    checked: false,
     children: [],
     expanded: false,
     expandchild: false,
@@ -220,6 +229,7 @@ const tableData = ref<Department[]>([
     name: "深圳大学三级分部",
     number: 12,
     manager: "王五",
+    checked: false,
     tasks: 7,
     isParent: true,
     children: [],
@@ -234,6 +244,7 @@ const tableData = ref<Department[]>([
     name: "深圳大学四级分部",
     number: 20,
     manager: "小明",
+    checked: false,
     tasks: 6,
     isParent: true,
     children: [],
@@ -283,23 +294,202 @@ function showDeptDetail(row: any) {
 }
 
 
+// 在父组件中创建一个 ref 来跟踪选中行的数据
+const selectedRows = ref<any[]>([]); // 指定 selectedRows 为 any[] 类型，表示它是一个包含任意类型的数组
+
+// 在点击父部门复选框时更新 selectedRows 数组
+// 在点击复选框时更新 selectedRows 数组
+function updateSelectedRows(row: any, event: MouseEvent) {
+  // 检查复选框的状态
+  const isChecked = (event.target as HTMLInputElement).checked;
+
+  // 创建一个 Set 来跟踪已处理的部门
+  const processedDepartments = new Set<number>();
+
+  // 更新当前行的复选框状态
+  row.checked = isChecked;
+
+  // 递归更新子部门和孙子部门的复选框状态
+  updateChildRows(row, isChecked, processedDepartments);
+
+  // 如果复选框被选中，则添加行数据对象到 selectedRows 数组
+  if (isChecked) {
+    // 判断当前行是否已经在 selectedRows 数组中
+    const index = selectedRows.value.findIndex((selectedRow) => selectedRow.id === row.id);
+    if (index === -1) {
+      // 如果不在数组中，则添加到数组中
+      selectedRows.value.push(row);
+      console.log(row.id);
+      console.log(selectedRows.value);
+    }
+  } else {
+    // 如果复选框被取消选中，则从 selectedRows 数组中移除行数据对象
+    const index = selectedRows.value.findIndex((selectedRow) => selectedRow.id === row.id);
+    if (index !== -1) {
+      // 如果在数组中，则从数组中移除
+      selectedRows.value.splice(index, 1);
+      console.log(row.id);
+      console.log(selectedRows.value);
+    }
+  }
+}
+
+// 递归更新子部门和孙子部门的复选框状态，并添加或移除它们的数据到 selectedRows 数组中
+function updateChildRows(row: any, isChecked: boolean, processedDepartments: Set<number>) {
+  // 检查当前部门是否已处理过，避免重复处理
+  if (processedDepartments.has(row.id)) {
+    return;
+  }
+
+  // 将当前部门标记为已处理
+  processedDepartments.add(row.id);
+
+  // 如果当前行有子部门，则递归更新子部门的复选框状态和添加或移除它们的数据
+  if (row.children && row.children.length > 0) {
+    for (const child of row.children) {
+      child.checked = isChecked; // 更新子部门的复选框状态
+      if (isChecked) {
+        selectedRows.value.push(child); // 添加子部门数据到 selectedRows 数组中
+      } else {
+        const index = selectedRows.value.findIndex((selectedRow) => selectedRow.id === child.id);
+        if (index !== -1) {
+          selectedRows.value.splice(index, 1); // 移除子部门数据从 selectedRows 数组中
+        }
+      }
+      updateChildRows(child, isChecked, processedDepartments); // 递归更新子部门的子部门
+    }
+  }
+
+  // 如果当前行有孙子部门，则递归更新孙子部门的复选框状态和添加或移除它们的数据
+  if (row.grandchildren && row.grandchildren.length > 0) {
+    for (const grandchild of row.grandchildren) {
+      grandchild.checked = isChecked; // 更新孙子部门的复选框状态
+      if (isChecked) {
+        selectedRows.value.push(grandchild); // 添加孙子部门数据到 selectedRows 数组中
+      } else {
+        const index = selectedRows.value.findIndex((selectedRow) => selectedRow.id === grandchild.id);
+        if (index !== -1) {
+          selectedRows.value.splice(index, 1); // 移除孙子部门数据从 selectedRows 数组中
+        }
+      }
+      updateChildRows(grandchild, isChecked, processedDepartments); // 递归更新孙子部门的子部门
+    }
+  }
+  // 去除 selectedRows 数组中的重复项
+  selectedRows.value = selectedRows.value.filter((value, index, self) =>
+    index === self.findIndex((t) => (
+      t.id === value.id
+    ))
+  );
+}
 
 
+// 在点击子部门复选框时更新 selectedRows 数组
+function updatechildSelectedRows(child: any, event: MouseEvent, row: any, grandchild: any) {
+  // 检查复选框的状态
+  const isChecked = (event.target as HTMLInputElement).checked;
+  // 创建一个 Set 来跟踪已处理的部门
+  const processedDepartments = new Set<number>();
+  // 更新当前行的复选框状态
+  child.checked = isChecked;
+  // 递归更新子部门的子部门的复选框状态，并添加或移除它们的数据到 selectedRows 数组中
+  updateGrandchildSelectedRows(child, isChecked, processedDepartments, row, grandchild);
+  // 如果复选框被选中，则添加行数据对象到 selectedRows 数组
+  if (isChecked) {
+    // 判断当前行是否已经在 selectedRows 数组中
+    const index = selectedRows.value.findIndex((selectedRow) => selectedRow.id === child.id);
+    if (index === -1) {
+      // 如果不在数组中，则添加到数组中
+      selectedRows.value.push(child);
+      console.log(child.id);
+      console.log(selectedRows.value);
+    }
+  } else {
+    // 如果复选框被取消选中，则从 selectedRows 数组中移除行数据对象
+    const index = selectedRows.value.findIndex((selectedRow) => selectedRow.id === child.id);
+    if (index !== -1) {
+      // 如果在数组中，则从数组中移除
+      selectedRows.value.splice(index, 1);
+      console.log(selectedRows.value);
+    }
+  }
+
+}
+
+// 递归更新子部门的子部门的复选框状态，并添加或移除它们的数据到 selectedRows 数组中
+function updateGrandchildSelectedRows(child: any, isChecked: boolean, processedDepartments: Set<number>, row: any, grandchild: any) {
+  // 检查当前子部门是否已处理过，避免重复处理
+  if (processedDepartments.has(row.id)) {
+    return;
+  }
+
+  // 将当前子部门标记为已处理
+  processedDepartments.add(row.id);
+
+  // 如果当前行有孙子部门，则递归更新孙子部门的复选框状态和添加或移除它们的数据
+  if (row.grandchildren && row.grandchildren.length > 0) {
+    for (const grandchild of row.grandchildren) {
+      if (child.id == grandchild.parentid){
+        grandchild.checked = isChecked; // 更新孙子部门的复选框状态
+      console.log(grandchild.checked); }
+      if (isChecked) {
+        selectedRows.value.push(grandchild); // 添加孙子部门数据到 selectedRows 数组中
+      } else {
+        const index = selectedRows.value.findIndex((selectedRow) => selectedRow.id === grandchild.id);
+        if (index !== -1) {
+          selectedRows.value.splice(index, 1); // 移除孙子部门数据从 selectedRows 数组中
+        }
+      }
+    }
+  }
+  // 去除 selectedRows 数组中的重复项
+  selectedRows.value = selectedRows.value.filter((value, index, self) =>
+    index === self.findIndex((t) => (
+      t.id === value.id
+    ))
+  );
+}
+
+// 在点击孙子部门复选框时更新 selectedRows 数组
+function updategrandchildSelectedRows(grandchild: any, event: MouseEvent) {
+  // 检查复选框的状态
+  const isChecked = (event.target as HTMLInputElement).checked;
+
+  // 如果复选框被选中，则添加行数据对象到 selectedRows 数组
+  if (isChecked) {
+    // 判断当前行是否已经在 selectedRows 数组中
+    const index = selectedRows.value.findIndex((selectedRow) => selectedRow.id === grandchild.id);
+    if (index === -1) {
+      // 如果不在数组中，则添加到数组中
+      selectedRows.value.push(grandchild);
+      console.log(grandchild.id);
+      console.log(selectedRows.value);
+    }
+  } else {
+    // 如果复选框被取消选中，则从 selectedRows 数组中移除行数据对象
+    const index = selectedRows.value.findIndex((selectedRow) => selectedRow.id === grandchild.id);
+    if (index !== -1) {
+      // 如果在数组中，则从数组中移除
+      selectedRows.value.splice(index, 1);
+      console.log(selectedRows.value);
+    }
+  }
+}
 
 // 获取所有部门名字，包括子部门和孙子部门
 const departmentNames = computed(() => {
   return tableData.value.flatMap((row) => {
     // 首先添加当前部门的名字
     let names = [row.name];
-    
+
     // 添加子部门的名字
     if (row.children) {
       names = names.concat(row.children.map((child) => child.name));
-      
+
       // 添加孙子部门的名字
-        if (row.grandchildren) {
-          names = names.concat(row.grandchildren.map((grandchild) => grandchild.name));
-        }
+      if (row.grandchildren) {
+        names = names.concat(row.grandchildren.map((grandchild) => grandchild.name));
+      }
     }
 
     return names;
@@ -326,8 +516,14 @@ function closeModal() {
   }
 }
 
-function refreshTable(){
-  fetchdepartment();
+function refreshTable() {
+  // 清空表格数据
+  tableData.value = [];
+  // 延迟0.5秒再重新获取数据
+  setTimeout(() => {
+    fetchdepartment();
+  }, 500);
+  console.log('刷新表格');
 }
 
 // 控制操作选项弹窗
@@ -362,7 +558,7 @@ function updatePopupPosition(row: any, event: MouseEvent) {
   }
 
   popupPosition.value = {
-    top: popupTop ,
+    top: popupTop,
     left: popupLeft,
   };
 
@@ -441,6 +637,7 @@ async function fetchdepartment() {
       grandchildren: [],
       haschildren: false,
       expandchild: true,
+      checked: false,
     };
 
     // 将上级部门数据添加到表格数据中
@@ -490,7 +687,8 @@ async function fetchChildDepartments(
     expanded: false, // 默认为收起状态
     grandchildren: [],
     expandchild: false,
-    haschildren: false
+    haschildren: false,
+    checked: false,
   }));
 
   // 在childFormattedData中的每个子部门对象的children数组中添加默认属性haschildren

@@ -27,14 +27,53 @@
 
 <script setup lang="ts">
 import { ref} from "vue"
+import { Authorization } from "@/store/token";
 const inputValue = ref("");
-const emit = defineEmits(["close-modal"]);
+const token = Authorization();
+const emit = defineEmits(["close-modal", "refresh-table"]);
+
+const props = defineProps({
+    selectedRows: {
+        type: Array,
+        default: () => [],
+    },
+});
+console.log(props.selectedRows);
 
 function handleDeleteClick() {
   if (inputValue.value === "q123") {
-    emit('close-modal');
+    DeleteSelectedDept();
+    emit("close-modal");
+    emit("refresh-table");
   }
 }
+
+  async function DeleteSelectedDept() {
+  const deptIds = props.selectedRows.map(row => row.id);
+  const companyId = 1; // 默认为1
+
+  try {
+    const response = await fetch('http://localhost:8080/api/dept/deleteDepartments', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': token.value,
+        'companyId': companyId.toString()
+      },
+      body: JSON.stringify({ deptId: deptIds })
+    });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    // 请求成功，可以执行相应的操作
+  } catch (error) {
+    console.error('Error deleting departments:', error);
+    // 处理错误
+  }
+}
+
 </script>
 
 <style scoped>

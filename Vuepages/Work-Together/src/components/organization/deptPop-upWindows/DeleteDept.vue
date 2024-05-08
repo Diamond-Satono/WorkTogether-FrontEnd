@@ -29,7 +29,7 @@
 import { ref} from "vue"
 import { Authorization } from "@/store/token";
 const inputValue = ref("");
-const emit = defineEmits(["close-modal"]);
+const emit = defineEmits(["close-modal", "refresh-table"]);
 const token = Authorization();
 // 处理删除按钮点击事件
 async function handleDeleteClick() {
@@ -37,10 +37,11 @@ async function handleDeleteClick() {
   
   if (inputValue.value === "q123") {
     emit("close-modal");
+    emit("refresh-table")
     const deptId = props.row.id; // 获取部门 ID
     const companyId = 1; // 公司 ID，这里暂时设为 1
     try {
-      const response = await fetch(`http://localhost:8080/api/dept/DeleteDept/${deptId}`, {
+      const response = await fetch(`http://localhost:8080/api/dept/deleteDept/${deptId}`, {
         method: "DELETE",
         headers: {
           Authorization: token.value,
