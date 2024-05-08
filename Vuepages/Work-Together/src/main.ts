@@ -31,6 +31,10 @@ import DeleteDept from './components/organization/deptPop-upWindows/DeleteDept.v
 import AssignDept from './components/organization/deptUser-upWindows/AssignDept.vue'
 import DeleteMember from './components/organization/deptUser-upWindows/DeleteMember.vue'
 import AddGroupMember from './components/group/groupUser-upWindows/AddGroupMember.vue'
+import BatchGroupDepart from './components/group/groupUser-upWindows/BatchGroupDepart.vue'
+import DeleteGroupMember from './components/group/groupUser-upWindows/DeleteGroupMember.vue'
+import AssignGroup from './components/group/groupUser-upWindows/AssignGroup.vue'
+import GroupMemberDetail from './components/group/groupUser-upWindows/GroupMemberDetail.vue'
 import BatchDeleteGroup from './components/group/groupPop-upWindows/BatchDeleteGroup.vue'
 import CreateGroup from './components/group/groupPop-upWindows/CreateGroup.vue'
 import DeleteGroup from './components/group/groupPop-upWindows/DeleteGroup.vue'
@@ -76,6 +80,10 @@ app.component('MemberDetail',MemberDetail);
 app.component('AssignDept',AssignDept);
 app.component('DeleteMember',DeleteMember);
 app.component('AddGroupMember',AddGroupMember);
+app.component('BatchGroupDepart',BatchGroupDepart);
+app.component('DeleteGroupMember',DeleteGroupMember);
+app.component('AssignGroup',AssignGroup);
+app.component('GroupMemberDetail',GroupMemberDetail);
 app.component('BatchDeleteGroup',BatchDeleteGroup);
 app.component('CreateGroup',CreateGroup);
 app.component('DeleteGroup',DeleteGroup);

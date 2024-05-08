@@ -28,37 +28,37 @@
           <tbody>
             <!-- 在这里添加你的数据行 -->
             <TransitionGroup name="list">
-            <template v-for="(row, index) in filteredTableData" :key="index">
-              <tr :class="{ parent: row.isParent }">
-                <!-- 添加父级团队的 class -->
-                <td>
-                  <!-- 渲染复选框和展开按钮 -->
-                  <template v-if="row.isParent">
-                    <input type="checkbox" class="checkbox" />
-                  </template>
-                  {{ row.name }}
-                </td>
-                <td class="number">{{ row.number }}</td>
-                <td class="manager">{{ row.manager }}</td>
-                <td>{{ row.tasks }}</td>
-                <td>
-                  <button class="Detail" @click="showDeptDetail(row)">
-                        详情
-                      </button>
-                      <img src="@/assets/deptimgs/options.png" class="optionsimg"
-                        @click.stop="updatePopupPosition(row, $event)" />
-                </td>
-              </tr>
-            </template>
-          </TransitionGroup>
+              <template v-for="(row, index) in filteredTableData" :key="index">
+                <tr :class="{ parent: row.isParent }">
+                  <!-- 添加父级团队的 class -->
+                  <td>
+                    <!-- 渲染复选框和展开按钮 -->
+                    <template v-if="row.isParent">
+                      <input type="checkbox" class="checkbox" @click="updateSelectedRows(row,$event)" />
+                    </template>
+                    {{ row.name }}
+                  </td>
+                  <td class="number">{{ row.number }}</td>
+                  <td class="manager">{{ row.manager }}</td>
+                  <td>{{ row.tasks }}</td>
+                  <td>
+                    <button class="Detail" @click="showDeptDetail(row)">
+                      详情
+                    </button>
+                    <img src="@/assets/deptimgs/options.png" class="optionsimg"
+                      @click.stop="updatePopupPosition(row, $event)" />
+                  </td>
+                </tr>
+              </template>
+            </TransitionGroup>
           </tbody>
         </table>
       </div>
     </div>
     <!-- 动态加载组件 -->
     <Transition :name="transitionName" mode="out-in">
-      <component :is="currentModal" v-if="currentModal" @close-modal="closeModal" @refresh-table="refreshTable":row="currentRowData"
-        :departmentNames="departmentNames"></component>
+      <component :is="currentModal" v-if="currentModal" @close-modal="closeModal" @refresh-table="refreshTable"
+        :row="currentRowData" :departmentNames="departmentNames" :selectedRows="selectedRows"></component>
     </Transition>
     <!-- 操作选项弹窗 -->
     <Transition :name="transitionName" mode="out-in">
@@ -66,8 +66,7 @@
         top: popupPosition.top + 'px',
         left: popupPosition.left + 'px',
       }" v-if="showPopup">
-       <button class="exportmember">导出成员</button><button
-          class="deletedept" @click="showDeleteDept(currentRowData)">
+        <button class="exportmember">导出成员</button><button class="deletedept" @click="showDeleteDept(currentRowData)">
           删除团队
         </button>
       </div>
@@ -94,6 +93,35 @@ interface Department {
   expandchild: boolean;
   grandchildren: Department[];
   haschildren: boolean;
+}
+
+// 在父组件中创建一个 ref 来跟踪选中行的数据
+const selectedRows = ref<any[]>([]); // 指定 selectedRows 为 any[] 类型，表示它是一个包含任意类型的数组
+
+// 在点击复选框时更新 selectedRows 数组
+function updateSelectedRows(row: any, event: MouseEvent) {
+  // 检查复选框的状态
+  const isChecked = (event.target as HTMLInputElement).checked;
+
+  // 如果复选框被选中，则添加行数据对象到 selectedRows 数组
+  if (isChecked) {
+    // 判断当前行是否已经在 selectedRows 数组中
+    const index = selectedRows.value.findIndex((selectedRow) => selectedRow.id === row.id);
+    if (index === -1) {
+      // 如果不在数组中，则添加到数组中
+      selectedRows.value.push(row);
+      console.log(row.id);
+      console.log(selectedRows.value);
+    }
+  } else {
+    // 如果复选框被取消选中，则从 selectedRows 数组中移除行数据对象
+    const index = selectedRows.value.findIndex((selectedRow) => selectedRow.id === row.id);
+    if (index !== -1) {
+      // 如果在数组中，则从数组中移除
+      selectedRows.value.splice(index, 1);
+      console.log(selectedRows.value);
+    }
+  }
 }
 
 
@@ -191,15 +219,15 @@ const departmentNames = computed(() => {
   return tableData.value.flatMap((row) => {
     // 首先添加当前团队的名字
     let names = [row.name];
-    
+
     // 添加子团队的名字
     if (row.children) {
       names = names.concat(row.children.map((child) => child.name));
-      
+
       // 添加孙子团队的名字
-        if (row.grandchildren) {
-          names = names.concat(row.grandchildren.map((grandchild) => grandchild.name));
-        }
+      if (row.grandchildren) {
+        names = names.concat(row.grandchildren.map((grandchild) => grandchild.name));
+      }
     }
 
     return names;
@@ -226,14 +254,14 @@ function closeModal() {
   }
 }
 
-function refreshTable(){
+function refreshTable() {
   // 清空表格数据
   tableData.value = [];
   // 延迟0.5秒再重新获取数据
   setTimeout(() => {
     fetchgroup();
-  }, 500);  
-   console.log('刷新表格');
+  }, 500);
+  console.log('刷新表格');
 }
 
 
@@ -246,7 +274,7 @@ function updatePopupPosition(row: any, event: MouseEvent) {
   const rect = (event.target as HTMLElement).getBoundingClientRect(); // 获取图标的位置信息
 
   const popupWidth = 170; // 弹窗的宽度
-  const popupHeight = 190; // 弹窗的高度
+  const popupHeight = 130; // 弹窗的高度
   const windowWidth = window.innerWidth; // 浏览器窗口的宽度
   const windowHeight = window.innerHeight; // 浏览器窗口的高度
 
@@ -269,7 +297,7 @@ function updatePopupPosition(row: any, event: MouseEvent) {
   }
 
   popupPosition.value = {
-    top: popupTop ,
+    top: popupTop,
     left: popupLeft,
   };
 
@@ -337,7 +365,7 @@ async function fetchgroup() {
     // 提取上级团队数据中的所需字段，组织成适合在表格中渲染的格式
     const parentFormattedData = {
       id: department.id,
-      description: department.desc,
+      description: department.description,
       name: department.name,
       number: department.memberNum,
       manager: department.managerName,
@@ -601,6 +629,7 @@ td {
   text-align: center;
   font-family: "SiYuanHeiTi";
 }
+
 .expand-btnfortop {
   background-color: white;
   border: none;

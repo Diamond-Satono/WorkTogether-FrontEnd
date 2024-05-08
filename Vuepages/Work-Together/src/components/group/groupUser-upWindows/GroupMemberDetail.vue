@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="title">
-      成员详情
+      成员详情1
       <img
         src="@/assets/deptimgs/closeModal.png"
         class="closeModal"
@@ -113,13 +113,13 @@
         </div>
         <div class="buttoncontainer2">
           <button class="cancel" @click="canceledit">取消</button>
-          <button class="save"  @click="$emit('close-modal')">保存</button>
+          <button class="save"  @click="fetchMemberData">保存</button>
         </div>
       </div>
     </div>
   </div>
 </template>
-    
+      
 <script setup lang="ts">
 import { ref, watch, onMounted } from "vue";
 import {Authorization} from "@/store/token"
@@ -130,6 +130,10 @@ const activeTab = ref('basicInfo');
 //获取父组件参数
 const props = defineProps({
   user: {
+    type: Object,
+    default: () => ({}),
+  },
+  group: {
     type: Object,
     default: () => ({}),
   },
@@ -147,7 +151,6 @@ watch(selectedPostition, (newValue, oldValue) => {
     // selectedDepartmentId.value = props.positions[index].pid;
     // console.log(index);
     console.log(selectedPostition.value);
-    
 });
 
 const showDetail = ref(true);
@@ -173,6 +176,45 @@ function fetchPositionData() {
           'Authorization': tokens.value, // 设置 Authorization 请求头，用于身份验证
           'companyId': companyIdString // 设置 companyId 请求头，用于传递公司 ID
       }
+    })
+    .then(response => {
+        console.log(response);
+        // 检查响应状态
+        if (!response.ok) {
+            alert("拉取失败")
+            throw new Error('Network error');
+        }
+        // 解析响应为 JSON 格式
+        return response.json();
+    })
+    .then(data => {
+        // 请求成功，更新用户数据
+        positions.value = data.data;
+        console.log(tokens.value);
+        
+        console.log("positions.value=", positions.value);
+                            
+    })
+    .catch(error => {
+        console.error('Error fetching positions data:', error);
+        // Handle the error, e.g., show a message to the user
+    });
+}
+//编辑成员信息
+function fetchMemberData() {
+  const fortmaData = {
+    id: props.user.id,
+    groupId: props.group.id,
+    position: selectedPostition.value
+  };
+  fetch(`http://localhost:8080/api/group/membern`, {
+      method: 'PUT',
+      headers: {
+          'Content-Type': 'application/json', // 设置 Content-Type 请求头为 JSON
+          'Authorization': tokens.value, // 设置 Authorization 请求头，用于身份验证
+          'companyId': companyIdString // 设置 companyId 请求头，用于传递公司 ID
+      },
+      body: JSON.stringify(fortmaData)
     })
     .then(response => {
         console.log(response);
@@ -366,5 +408,4 @@ function fetchPositionData() {
   font-weight: bold;
   margin-left: 10%;
 }
-</style>
-  
+</style>  
