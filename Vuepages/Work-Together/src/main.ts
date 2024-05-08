@@ -15,7 +15,9 @@ import RetrievePassword from './components/Login/RetrievePassword.vue'
 import MemberList from './components/MemberList.vue'
 import EnterpriseInfo from './components/enterprise/EnterpriseInfo.vue'
 import DepartmentManage from './components/organization/DepartmentManage.vue'
+import DepartmentExcel from './components/organization/DepartmentExcel.vue'
 import GroupManage from './components/group/GroupManage.vue'
+import GroupExcel from './components/group/GroupExcel.vue'
 import HomePage from './components/HomePage.vue'
 import BatchDelete from './components/organization/deptPop-upWindows/BatchDelete.vue'
 import CreateDept from './components/organization/deptPop-upWindows/CreateDept.vue'
@@ -29,11 +31,19 @@ import DeleteDept from './components/organization/deptPop-upWindows/DeleteDept.v
 import AssignDept from './components/organization/deptUser-upWindows/AssignDept.vue'
 import DeleteMember from './components/organization/deptUser-upWindows/DeleteMember.vue'
 import AddGroupMember from './components/group/groupUser-upWindows/AddGroupMember.vue'
+<<<<<<< HEAD
 import BatchGroupDepart from './components/group/groupUser-upWindows/BatchGroupDepart.vue'
 import DeleteGroupMember from './components/group/groupUser-upWindows/DeleteGroupMember.vue'
 import AssignGroup from './components/group/groupUser-upWindows/AssignGroup.vue'
 import GroupMemberDetail from './components/group/groupUser-upWindows/GroupMemberDetail.vue'
+=======
+import BatchDeleteGroup from './components/group/groupPop-upWindows/BatchDeleteGroup.vue'
+import CreateGroup from './components/group/groupPop-upWindows/CreateGroup.vue'
+import DeleteGroup from './components/group/groupPop-upWindows/DeleteGroup.vue'
+import GroupDetail from './components/group/groupPop-upWindows/GroupDetail.vue'
+>>>>>>> 08c2c30026be08c3f3199a5c6fb35e33d64d1a36
 import App from './App.vue'
+
 
 library.add(fas);
 
@@ -51,7 +61,9 @@ const router = createRouter({
         { path: '/memberlist', name: 'MemberList', component: MemberList },
         { path: '/enterpriseinfo', name: 'EnterpriseInfo', component: EnterpriseInfo },
         { path: '/departmentmanage', name: 'DepartmentManage', component: DepartmentManage },
+        { path: '/departmentexcel', name: 'DepartmentExcel', component: DepartmentExcel },
         { path: '/groupmanage', name: 'GroupManage', component: GroupManage },
+        { path: '/groupexcel', name: 'GroupExcel', component: GroupExcel },
         { path: '/homepage', name: 'HomePage', component: HomePage },
         { path: '/', redirect: '/login' }
     ]
@@ -75,4 +87,8 @@ app.component('BatchGroupDepart',BatchGroupDepart);
 app.component('DeleteGroupMember',DeleteGroupMember);
 app.component('AssignGroup',AssignGroup);
 app.component('GroupMemberDetail',GroupMemberDetail);
+app.component('BatchDeleteGroup',BatchDeleteGroup);
+app.component('CreateGroup',CreateGroup);
+app.component('DeleteGroup',DeleteGroup);
+app.component('GroupDetail',GroupDetail);
 app.mount('#app');

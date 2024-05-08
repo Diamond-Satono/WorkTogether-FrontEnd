@@ -36,11 +36,11 @@
     <div v-else>
       <div class="detail1">
         <div class="deptbelong">部门所属</div>
-        <input class="deptbelongname  custom-input" type="text" v-model="ParentDeptName" />
+        <input class="deptbelongname  custom-input" type="text" v-model="ParentDeptName" ref="deptNameInput" />
       </div>
       <div class="detail2">
         <div class="deptname">部门名称</div>
-        <input class="deptdetailname  custom-input" type="text" v-model="props.row.name" />
+        <input class="deptdetailname  custom-input" type="text" :value="deptName" @input="updateDeptName($event)" />
       </div>
       <div class="detail3">
         <div class="deptmanager">部门负责人</div>
@@ -63,7 +63,7 @@
 <script setup lang="ts">
 import { Authorization } from "@/store/token";
 import { ref, onMounted } from "vue";
-const emit = defineEmits(["close-modal","refresh-table"]);
+const emit = defineEmits(["close-modal", "refresh-table"]);
 //获取父组件参数
 const props = defineProps({
   row: {
@@ -94,6 +94,13 @@ const deptId = parentId.value;
 const ParentDeptName = ref('');
 
 const selectedMember = ref('');
+
+const deptName = ref(props.row.name);
+
+function updateDeptName(event: any) {
+  deptName.value = event.target.value;
+}
+const deptNameInput = ref('');
 
 const members = ref([] as any[]); // 用于存储成员数据
 
@@ -174,16 +181,19 @@ function fetchUserData() {
 
 //更新部门信息
 function updateDepartmentInfo() {
+  console.log(deptName.value);
+
+  const inputValue = deptNameInput.value;
   const companyId = 1; // 公司ID，这里暂时设为1
   // 获取选中的部门负责人的ID
   const selectedManager = members.value.find(member => member.name === selectedMember.value);
 
   const managerId = selectedManager ? selectedManager.id : '';
 
-  const url = `http://localhost:8080/api/dept/updateDeptInfo?id=${props.row.id}&deptName=${encodeURIComponent(props.row.name)}&FatherDeptName=${encodeURIComponent(ParentDeptName.value)}&managerId=${encodeURIComponent(managerId)}`;
+  const url = `http://localhost:8080/api/dept/updateDeptInfo?id=${props.row.id}&deptName=${encodeURIComponent(deptName.value)}&FatherDeptName=${encodeURIComponent(ParentDeptName.value)}&managerId=${encodeURIComponent(managerId)}`;
 
   const requestData = {
-    deptName: props.row.name, // 部门名称，从 props 中获取
+    deptName: deptName.value, // 部门名称，从 props 中获取
     FatherDeptName: ParentDeptName.value, // 部门所属，从 ParentDeptName 中获取
     managerId: managerId, // 部门负责人ID
     id: props.row.id, // 部门ID，从 props 中获取
@@ -221,7 +231,7 @@ function saveAndCloseModal() {
   emit("refresh-table");
 }
 
-function CloseModal(){
+function CloseModal() {
   emit("close-modal");
 }
 </script>

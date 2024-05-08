@@ -6,14 +6,14 @@
       <ul>
         <li id="home" @click="toggleSubMenu('home')">
           <i class="fas fa-file"></i> 
-          <a href="/homepage"><fa icon="folder-open" />  首页</a>
+          <a href="/"><fa icon="folder-open" />  首页</a>
         </li>
         <li id="organization">
           <i class="fas fa-file"></i>  
           <a @click="toggleSubMenu('organization')"><fa icon="folder-open" /> 组织架构</a>
           <ul class="submenu" v-show="subMenuStatus.organization">
-            <li><i class="fas fa-file"></i> <a style="color: #ff7f50;"><fa icon="file" />  团队管理</a></li>
-            <li><i class="fas fa-file"></i> <a href="/departmentmanage"><fa icon="file" />  成员与部门</a></li>
+            <li><i class="fas fa-file"></i> <a href="/groupmanage"><fa icon="file" />  团队管理</a></li>
+            <li><i class="fas fa-file"></i> <a href="/departmentmanage" style="color: #ff7f50;"><fa icon="file" />  成员与部门</a></li>
           </ul>
         </li>
         <li id="enterprise">
@@ -45,7 +45,7 @@
           <div id="page-info">
               <span id="name-en">深圳大学/</span>
               <span id="name-list">组织架构/</span>
-              <span id="name-page">团队管理</span>
+              <span id="name-page">成员与部门 /批量导入</span>
           </div>   
         </div>
 
@@ -77,7 +77,7 @@
 
       <div id="main-content">
           <!-- 这里放置页面的主要内容 -->
-        <div id="info-mode">
+          <!--<div id="info-mode">
             <button :class="{ active: selectedOption === 'basic' }" 
             @click="showComponent1() ;selectOption('basic')"
             id="mode1">
@@ -88,13 +88,41 @@
             id="mode2">
             团队
           </button>
+        </div> -->
+
+        <div id="title">Excel批量导入</div>
+
+        <div id="container1">
+          <span class="subnum">1.</span>
+          <span class="subtitle">下载模板</span>
+          <div id="download">
+            <span class="con-text">你可以下载空的表格模板，录入部门信息后上传以批量新增部门</span>
+            <span @click="fetchTemplate" class="con-text" id="text-button1">点击下载</span>
+          </div> 
+          <div id="output">
+            <span class="con-text">或者导出包含已有部门信息的表格，修改后上传以批量更新部门设置</span>
+            <span @click="fetchAndSave" class="con-text" id="text-button2">点击导出</span>
+          </div>
         </div>
 
-        <div id="bottom-line"></div> <!-- 下方的线 -->
-        <div id="list-content">
-          <component :is="componentToShow"></component>
-
+        <div id="container2">
+          <span class="subnum">2.</span>
+          <span class="subtitle">上传完善后的模板</span>
+          <div id="upload-text">更新信息的模板中，如有空的数据列，则相应字段信息会被清空，请谨慎填写</div>
+          <div id="upload-zone">
+            <div id="excel-zone">
+              <img id="excel-icon" src="@/assets/img/excel_icon.png" alt="Icon">
+            </div>
+            <input id="file-upload" type="file" ref="fileInput" @change="onFileChange" style="display: none">
+            <button @click="openFileInput" id="excel-upload">选择文件</button>
+            <div v-if="selectedFile" id="upload-message">
+              <span id="up-info" v-if="selectedFile">已选择文件: {{ selectedFile.name }}</span>
+              <button @click="uploadFile" id="up-button" v-if="selectedFile">确定上传</button>
+            </div>
+            <div id="excel-info">支持格式：.xls,.xlsx</div>
+          </div>
         </div>
+
 
       </div>
 
@@ -107,11 +135,17 @@
   </template>
   
   <script>
-  import member from './member.vue';
-  import group from './group.vue';
+  import { Authorization } from "@/store/token";
+  const token = Authorization();
+
+
+  //import member from './member.vue';
+  //import group from './group.vue';
+  import { writeFile } from 'xlsx';
+  import { saveAs } from 'file-saver';
 
   export default {
-    name: 'GroupManage',
+    name: 'DepartmentExcel',
     data() {
       return {
         subMenuStatus: {
@@ -122,21 +156,10 @@
         },
         isMenuOpen: false, // 用于控制气泡菜单的显示与隐藏
         selectedOption: 'basic',
-        showChild1: true, // 控制显示子组件1还是子组件2的标志
-        child1Component: member, // 子组件1
-        child2Component: group  // 子组件2
+        selectedFile: null,
       }
     },
-    components: {
-      member,
-      group
-    },
-    computed: {
-      // 将 showChild1 改为计算属性
-      componentToShow() {
-        return this.showChild1 ? 'member' : 'group';
-      }
-    },
+
     methods: {
       toggleSubMenu(item) {
         this.subMenuStatus[item] = !this.subMenuStatus[item];
@@ -144,7 +167,15 @@
       toggleMenu() {
         this.isMenuOpen = !this.isMenuOpen; // 点击按钮时切换菜单的显示状态
       },
-      selectOption(option) {
+      openFileInput() {
+        // 打开文件选择对话框
+        this.$refs.fileInput.click();
+      },
+      onFileChange(event) {
+        // 当文件被选择时更新selectedFile
+        this.selectedFile = event.target.files[0];
+      },
+      /*selectOption(option) {
         this.selectedOption = option;
       },
       showComponent1() {
@@ -152,10 +183,100 @@
       },
       showComponent2() {
         this.showChild1 = false; // 点击按钮2时显示子组件2
-      }
+      } */
+      fetchAndSave() {
+        const url = 'http://localhost:8080/api/dept/excel/export';
+        fetch(url,
+            {
+              method:'GET',
+              headers:{
+                'Content-Type': 'application/json', // 设置 Content-Type 请求头为 JSON
+                'Authorization':token.value,
+                'companyId':1
+              }
+            }
+          ) // 替换成的JSON数据URL
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            //console.log(response.blob);
+            return response.blob();
+          })
+          .then(blobData => {
+            const fileName = 'data.xlsx'; // 设置文件名
+            const file = new File([blobData], fileName, { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            saveAs(file); // 使用文件下载 API 下载文件
+          })
+          .catch(error => {
+            console.error('There was a problem with your fetch operation:', error);
+          });
+        },
+      fetchTemplate(){
+          const url = 'http://localhost:8080/api/dept/excel/getTemplate';
+          fetch(url,
+              {
+                method:'GET',
+                headers:{
+                  'Content-Type': 'application/json', // 设置 Content-Type 请求头为 JSON
+                  'Authorization':token.value,
+                  'companyId':1
+                }
+              }
+            ) // 替换成的JSON数据URL
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('Network response was not ok');
+              }
+              //console.log(response.blob);
+              return response.blob();
+            })
+            .then(blobData => {
+              const fileName = 'data.xlsx'; // 设置文件名
+              const file = new File([blobData], fileName, { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+              saveAs(file); // 使用文件下载 API 下载文件
+            })
+            .catch(error => {
+              console.error('There was a problem with your fetch operation:', error);
+            });
+        },
+      uploadFile() {
+          const fileInput = this.$refs.fileInput;
+          const file = fileInput.files[0];
+          
+          if (!file) {
+            console.error('No file selected');
+            return;
+          }
+
+          const formData = new FormData();
+          formData.append('groupFile', file);
+
+          fetch('http://localhost:8080/api/dept/excel/upload', {
+            method: 'POST',
+            headers:{
+                  'Authorization':token.value,
+                  'companyId':1
+                },
+            body: formData
+          })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            return response.json();
+          })
+          .then(data => {
+            console.log('File uploaded successfully:', data);
+            //console.log(file);
+          })
+          .catch(error => {
+            console.error('There was a problem with your fetch operation:', error);
+            //console.log(file);
+          });
+        }
+
       
-      
-  
     }
   }
   </script>
@@ -434,5 +555,149 @@
     background-color: #fff;
   }
 
+
+  #title{
+    position: relative;
+    left: 30px;
+    top: 30px;
+    font-size: 20px;
+    font-weight: 600;
+    color: #050505;
+  }
+
+  #container1{
+    position: relative;
+    left:30px;
+    top:60px;
+    width: 1200px;
+    height: 190px;
+    /* border: solid 2px black; */
+  }
+
+  #container2{
+    position: relative;
+    left:30px;
+    top:60px;
+    width: 1500px;
+    height: 480px;
+    /* border: solid 2px black; */
+  }
+  .subnum{
+    position: relative;
+    left: 10px;
+    top: 5px;
+    font-size: 25px;
+    font-weight: 600;
+    color: #1684FC;
+  }
+  .subtitle{
+    position: relative;
+    left: 20px;
+    top: 2px;
+    font-size: 20px;
+    font-weight: 550;
+    color: #050505;
+  }
+  .con-text{
+    position: relative;
+    left: 10px;
+    top: 10px;
+    font-size: 20px;
+    font-weight: 550;
+  }
+  #text-button1{
+    text-decoration: underline;
+    color: #fb5b1d; 
+    cursor: pointer; /* 鼠标悬停时显示手型光标 */
+  }
+  #text-button2{
+    text-decoration: underline;
+    color: #fb5b1d; 
+    cursor: pointer; /* 鼠标悬停时显示手型光标 */
+  }
+  #download{
+    position: relative;
+    left: 50px;
+    top: 20px;
+    width: 900px;
+    height: 50px;
+  }
+  #output{
+    position: relative;
+    left: 50px;
+    top: 30px;
+    width: 900px;
+    height: 50px;
+  }
+  #upload-text{
+    position: relative;
+    left: 50px;
+    top: 20px;
+    width: 900px;
+    height: 40px;
+    font-size: 20px;
+    font-weight: 550;
+    color: #8E8E93;
+  }
+  #upload-zone{
+    position: relative;
+    left:100px;
+    top:30px;
+    width: 1200px;
+    height: 400px;
+    border: 2px dashed #D9D9D9; /* 虚线边框，1像素宽，黑色 */
+    border-radius: 10px;
+    text-align: center;
+  }
+  
+  #excel-icon{
+    margin-top: 60px;
+    margin-bottom: 20px;
+  }
+  #excel-upload{
+    width: 280px;
+    height: 55px;
+    background-color: #fff;
+    font-size: 20px;
+    border: 2px solid #D9D9D9;
+    border-radius: 5px;
+  }
+  #excel-upload:hover {
+    background-color: #e9ecee;
+    cursor: pointer; /* 鼠标悬停时显示手型光标 */
+  }
+  #excel-info{
+    position: relative;
+    top: 20px;
+    font-size: 20px;
+    color: #8E8E93;
+    
+  }
+  #upload-message{
+    position: relative;
+    top: 20px;
+    margin-left: 300px;
+    margin-bottom: 10px;
+    width: 600px;
+    height: 40px;
+  }
+  #up-info{
+    margin-right: 30px;
+  }
+  #up-button{
+    width: 100px;
+    height: 30px;
+    background-color: #fff;
+    font-size: 15px;
+    border: 2px solid #D9D9D9;
+    border-radius: 5px;
+  }
+  #up-button:hover {
+    background-color: #e9ecee;
+    cursor: pointer; /* 鼠标悬停时显示手型光标 */
+  }
+
+
   </style>
+  
   
