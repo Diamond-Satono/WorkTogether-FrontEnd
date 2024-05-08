@@ -282,10 +282,31 @@ function showDeptDetail(row: any) {
   console.log("详情", row);
 }
 
-//获取所有部门名字
+
+
+
+
+// 获取所有部门名字，包括子部门和孙子部门
 const departmentNames = computed(() => {
-  return tableData.value.map((row) => row.name);
+  return tableData.value.flatMap((row) => {
+    // 首先添加当前部门的名字
+    let names = [row.name];
+    
+    // 添加子部门的名字
+    if (row.children) {
+      names = names.concat(row.children.map((child) => child.name));
+      
+      // 添加孙子部门的名字
+        if (row.grandchildren) {
+          names = names.concat(row.grandchildren.map((grandchild) => grandchild.name));
+        }
+    }
+
+    return names;
+  });
 });
+
+
 
 function closeModal() {
   if (currentModal.value === "DeptDetail") {

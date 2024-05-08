@@ -29,7 +29,12 @@ import DeleteDept from './components/organization/deptPop-upWindows/DeleteDept.v
 import AssignDept from './components/organization/deptUser-upWindows/AssignDept.vue'
 import DeleteMember from './components/organization/deptUser-upWindows/DeleteMember.vue'
 import AddGroupMember from './components/group/groupUser-upWindows/AddGroupMember.vue'
+import BatchDeleteGroup from './components/group/groupPop-upWindows/BatchDeleteGroup.vue'
+import CreateGroup from './components/group/groupPop-upWindows/CreateGroup.vue'
+import DeleteGroup from './components/group/groupPop-upWindows/DeleteGroup.vue'
+import GroupDetail from './components/group/groupPop-upWindows/GroupDetail.vue'
 import App from './App.vue'
+
 
 library.add(fas);
 
@@ -67,4 +72,8 @@ app.component('MemberDetail',MemberDetail);
 app.component('AssignDept',AssignDept);
 app.component('DeleteMember',DeleteMember);
 app.component('AddGroupMember',AddGroupMember);
+app.component('BatchDeleteGroup',BatchDeleteGroup);
+app.component('CreateGroup',CreateGroup);
+app.component('DeleteGroup',DeleteGroup);
+app.component('GroupDetail',GroupDetail);
 app.mount('#app');

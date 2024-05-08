@@ -36,6 +36,7 @@ async function handleDeleteClick() {
   console.log(props.row.id);
   
   if (inputValue.value === "q123") {
+    emit("close-modal");
     const deptId = props.row.id; // 获取部门 ID
     const companyId = 1; // 公司 ID，这里暂时设为 1
     try {
@@ -48,7 +49,7 @@ async function handleDeleteClick() {
       });
       if (response.ok) {
         // 删除成功，触发关闭模态框事件
-        emit("close-modal");
+
       } else {
         // 删除失败，根据实际需求处理错误
         console.error("Failed to delete department");

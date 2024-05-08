@@ -11,7 +11,7 @@
       </div>
       <div class="cutoff"></div>
       <div class="maincontent">
-        <div class="tipsword1">您确定删除部门勾选的所有部门？</div>
+        <div class="tipsword1">您确定删除所勾选的所有部门？</div>
         <div class="tipsword2">删除后不可恢复。</div>
         <div class="tipsword3">
           请输入<span class="q123">q123</span>后点击确定删除按钮进行删除
