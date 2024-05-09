@@ -154,7 +154,9 @@ const departments = ref(
     member_num: 53,
     describe: "non"
   });
-interface Department {
+  interface Department {
+  id: number;
+  parentid: number;
   name: string;
   number: number;
   manager: string;
@@ -162,18 +164,29 @@ interface Department {
   isParent: boolean;
   children: Department[];
   expanded: boolean;
+  expandchild: boolean;
+  grandchildren: Department[];
+  haschildren: boolean;
+  checked: boolean;
 }
+
 
 const tableData = ref<Department[]>([
   {
+    id: 1,
+    parentid: 1,
     name: "深圳大学一级分部",
     number: 10,
     manager: "张三",
     tasks: 5,
+    checked: false,
+    expandchild: false,
     isParent: true, // 标记为父级部门
     children: [
       // 子部门数据
       {
+        id: 1,
+        parentid: 1,
         name: "深圳大学一级分部子部门1",
         number: 5,
         manager: "李四",
@@ -181,8 +194,14 @@ const tableData = ref<Department[]>([
         isParent: false,
         children: [],
         expanded: false,
+        grandchildren: [],
+        expandchild: false,
+        haschildren: false,
+        checked: false,
       },
       {
+        id: 1,
+        parentid: 1,
         name: "深圳大学一级分部子部门2",
         number: 8,
         manager: "王五",
@@ -190,38 +209,64 @@ const tableData = ref<Department[]>([
         isParent: false,
         children: [],
         expanded: false,
+        checked: false,
+        expandchild: false,
+        grandchildren: [],
+
+        haschildren: false
       },
     ],
+    grandchildren: [],
     expanded: true,
+    haschildren: false,
   },
   {
+    id: 1,
+    parentid: 1,
     name: "深圳大学二级分部",
     number: 15,
     manager: "李四",
     tasks: 8,
     isParent: true,
+    checked: false,
     children: [],
     expanded: false,
+    expandchild: false,
+    grandchildren: [],
+    haschildren: false
   },
   {
+    id: 1,
+    parentid: 1,
     name: "深圳大学三级分部",
     number: 12,
     manager: "王五",
+    checked: false,
     tasks: 7,
     isParent: true,
     children: [],
     expanded: false,
+    expandchild: false,
+    haschildren: false,
+    grandchildren: []
   },
   {
+    id: 1,
+    parentid: 1,
     name: "深圳大学四级分部",
     number: 20,
     manager: "小明",
+    checked: false,
     tasks: 6,
     isParent: true,
     children: [],
     expanded: false,
+    expandchild: false,
+    haschildren: false,
+    grandchildren: []
   },
 ]);
+
 const users = ref([
   {
     id: 1,
@@ -252,13 +297,43 @@ const filteredUsers = computed(() => {
     user.position.toLowerCase().includes(search)
   );
 });
-//获取所有部门名字
+// 获取所有部门名字，包括子部门和孙子部门
 const departmentNames = computed(() => {
-  return tableData.value.map((row) => row.name);
+  return tableData.value.flatMap((row) => {
+    // 首先添加当前部门的名字
+    let names = [row.name];
+
+    // 添加子部门的名字
+    if (row.children) {
+      names = names.concat(row.children.map((child) => child.name));
+
+      // 添加孙子部门的名字
+      if (row.grandchildren) {
+        names = names.concat(row.grandchildren.map((grandchild) => grandchild.name));
+      }
+    }
+
+    return names;
+  });
 });
 //获取所有部门id
 const departmentIds = computed(() => {
-  return tableData.value.map((row: any) => row.id);
+  return tableData.value.flatMap((row) => {
+    // 首先添加当前部门的名字
+    let names = [row.id];
+
+    // 添加子部门的名字
+    if (row.children) {
+      names = names.concat(row.children.map((child) => child.id));
+
+      // 添加孙子部门的名字
+      if (row.grandchildren) {
+        names = names.concat(row.grandchildren.map((grandchild) => grandchild.id));
+      }
+    }
+
+    return names;
+  });
 });
 const currentRowData = ref("");
 //多选功能
