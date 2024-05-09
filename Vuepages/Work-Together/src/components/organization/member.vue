@@ -460,10 +460,10 @@ const highlightGroup = (event: MouseEvent) => {
 }
 const companyId = 1; // 根据实际情况替换
 const companyIdString = companyId.toString();
-const departmentCurrentName = ref("生产部");
+const departmentCurrentName = ref("深圳大学");
 const departmentCurrentMember_num = ref("100");
 //获取点击的部门id
-const deptId = ref(1);
+const deptId = ref(0);
 function getDeptID(row: any){
   deptId.value = row.id;
   console.log("deptId=", deptId.value);
