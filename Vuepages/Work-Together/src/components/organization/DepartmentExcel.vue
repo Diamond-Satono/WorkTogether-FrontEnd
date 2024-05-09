@@ -250,7 +250,7 @@
           }
 
           const formData = new FormData();
-          formData.append('groupFile', file);
+          formData.append('departmentFile', file);
 
           fetch('http://localhost:8080/api/dept/excel/upload', {
             method: 'POST',
