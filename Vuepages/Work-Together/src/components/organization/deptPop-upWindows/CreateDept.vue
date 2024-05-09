@@ -8,10 +8,10 @@
       <div class="cutoff"></div>
       <div class="maincontent">
         <div class="deptbelong">
-          部门所属<input type="text" placeholder="请填写所属部门" class="belonginput" v-model="ParentDept"/>
+          部门所属<input type="text" placeholder="请填写所属部门" class="belonginput" v-model="ParentDept" />
         </div>
         <div class="deptname">
-          部门名称<input type="text" placeholder="请填写部门名称" class="nameinput" v-model="DeptName"/>
+          部门名称<input type="text" placeholder="请填写部门名称" class="nameinput" v-model="DeptName" />
         </div>
         <div class="deptprincipal">部门负责人<select v-model="selectedMember" class="select">
             <option value="" disabled selected>请选择部门负责人</option> <!-- 添加默认选项 -->
@@ -72,45 +72,46 @@ function fetchUserData() {
 }
 
 async function createDept() {
-    const companyId = 1;
-    try {
-        // 获取选中的负责人的ID
-        const selectedManager = members.value.find(member => member.name === selectedMember.value);
-        if (!selectedManager) {
-            console.error('无效的负责人');
-            return;
-        }
-
-        const managerId = selectedManager.id;
-
-        // 发送 POST 请求创建团队
-        const response = await fetch('http://localhost:8080/api/dept/CreateDept', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': token.value,
-                'companyId': companyId.toString()
-            },
-            body: JSON.stringify({
-                name: DeptName.value,
-                managerId: managerId,
-                introduction: '',
-                parentId: ''
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error('创建部门失败');
-        }
-
-        console.log('部门创建成功');
-
-    } catch (error) {
-        console.error('创建部门时出错:', error);
+  const companyId = 1;
+  try {
+    // 获取选中的负责人的ID
+    const selectedManager = members.value.find(member => member.name === selectedMember.value);
+    if (!selectedManager) {
+      console.error('无效的负责人');
+      return;
     }
+
+    const managerId = selectedManager.id;
+    console.log(DeptName.value);
+
+    // 发送 POST 请求创建团队
+    const response = await fetch('http://localhost:8080/api/dept/createDept', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': token.value,
+        'companyId': companyId.toString()
+      },
+      body: JSON.stringify({
+        name: DeptName.value,
+        managerId: managerId,
+        introduction: '',
+        parentName: ParentDept.value
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error('创建部门失败');
+    }
+
+    console.log('部门创建成功');
+
+  } catch (error) {
+    console.error('创建部门时出错:', error);
+  }
 }
 
-function saveandcreate(){
+function saveandcreate() {
   createDept();
   emit("close-modal");
   emit("refresh-table");
@@ -246,7 +247,7 @@ function saveandcreate(){
   font-size: 20px;
 }
 
-.select:focus{
+.select:focus {
   outline: none;
 }
 </style>

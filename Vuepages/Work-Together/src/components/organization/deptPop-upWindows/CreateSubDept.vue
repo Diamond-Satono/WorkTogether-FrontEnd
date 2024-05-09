@@ -11,14 +11,14 @@
           部门所属<span class="belong">{{ props.row.name }}</span>
         </div>
         <div class="deptname">
-          部门名称<input type="text" placeholder="请填写部门名称" class="nameinput" />
+          部门名称<input type="text" placeholder="请填写部门名称" class="nameinput" v-model="deptName"/>
         </div>
         <div class="deptprincipal">部门负责人<select v-model="selectedMember" class="select">
             <option value="" disabled selected>请选择部门负责人</option> <!-- 添加默认选项 -->
             <option v-for="member in members" :key="member.id" :value="member.name">{{ member.name }}</option>
           </select></div>
         <div class="buttoncontainer">
-          <button class="create" @click="$emit('close-modal')">确定添加</button>
+          <button class="create" @click="saveandcreate">确定添加</button>
         </div>
       </div>
     </div>
@@ -28,6 +28,9 @@
 <script setup lang="ts">
 import { Authorization } from '@/store/token';
 import { ref, onMounted } from 'vue';
+const emit = defineEmits(["close-modal", "refresh-table"]);
+
+const deptName = ref('');
 
 //获取父组件参数
 const props = defineProps({
@@ -77,8 +80,51 @@ function fetchUserData() {
     });
 }
 
+async function createSubDept() {
+  const companyId = 1;
+  try {
+    // 获取选中的负责人的ID
+    const selectedManager = members.value.find(member => member.name === selectedMember.value);
+    if (!selectedManager) {
+      console.error('无效的负责人');
+      return;
+    }
 
+    const managerId = selectedManager.id;
+    console.log(deptName.value);
 
+    // 发送 POST 请求创建团队
+    const response = await fetch('http://localhost:8080/api/dept/createDept', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': token.value,
+        'companyId': companyId.toString()
+      },
+      body: JSON.stringify({
+        name: deptName.value,
+        managerId: managerId,
+        introduction: '',
+        parentName: props.row.name
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error('创建部门失败');
+    }
+
+    console.log('部门创建成功');
+
+  } catch (error) {
+    console.error('创建部门时出错:', error);
+  }
+}
+
+function saveandcreate(){
+  createSubDept();
+  emit("close-modal");
+  emit("refresh-table");
+}
 
 </script>
 
