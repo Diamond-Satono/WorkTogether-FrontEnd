@@ -6,7 +6,7 @@
       <ul>
         <li id="home" @click="toggleSubMenu('home')">
           <i class="fas fa-file"></i> 
-          <a href="/homepage"><fa icon="folder-open" />  首页</a>
+          <a href="/foregroundhomepage"><fa icon="folder-open" />  首页</a>
         </li>
         <li id="calendar">
           <i class="fas fa-file"></i>  

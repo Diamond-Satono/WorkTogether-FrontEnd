@@ -378,7 +378,7 @@ const goToRetrievePassword = () =>{
 
 const goToHomePage = () => {
   if (router) {
-    router.push({ name: "HomePage" });
+    router.push({ name: "ForegroundHomePage" });
   } else {
     console.error("Router is not initialized.");
   }

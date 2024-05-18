@@ -26,7 +26,7 @@
   </template>
   
   <script setup lang="ts">
-  import { ref, defineEmits, defineProps } from "vue"
+  import { ref } from "vue"
   import {Authorization} from "@/store/token"
   const tokens = Authorization();
   const inputValue = ref("");
