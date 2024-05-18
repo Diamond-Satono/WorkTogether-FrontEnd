@@ -39,6 +39,7 @@ import BatchDeleteGroup from './components/group/groupPop-upWindows/BatchDeleteG
 import CreateGroup from './components/group/groupPop-upWindows/CreateGroup.vue'
 import DeleteGroup from './components/group/groupPop-upWindows/DeleteGroup.vue'
 import GroupDetail from './components/group/groupPop-upWindows/GroupDetail.vue'
+import Calendar from './components/calendar/Calendar.vue'
 import App from './App.vue'
 
 
@@ -62,6 +63,7 @@ const router = createRouter({
         { path: '/groupmanage', name: 'GroupManage', component: GroupManage },
         { path: '/groupexcel', name: 'GroupExcel', component: GroupExcel },
         { path: '/homepage', name: 'HomePage', component: HomePage },
+        { path: '/calendar', name: 'Calendar', component: Calendar },
         { path: '/', redirect: '/login' }
     ]
 })
