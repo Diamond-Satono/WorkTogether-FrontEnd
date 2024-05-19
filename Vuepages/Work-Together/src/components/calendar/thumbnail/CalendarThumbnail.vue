@@ -235,15 +235,15 @@
     $activeBgColor: var(--active-bg-color);
     .m-calendar{
       max-width: 400px;
-      max-height: 450px;
-      border: 1px solid #054C96;
+      max-height: 380px;
+      // border: 1px solid #054C96;
       border-radius: 8px 8px 0 0;
       padding-bottom: 20px;
       header{
         display: flex;
         align-items: center;
         justify-content: center;
-        border-bottom: 1px solid #054C96;
+        // border-bottom: 1px solid #054C96;
         padding: 20px 0;
         margin-bottom: 5px;
         h1{

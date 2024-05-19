@@ -103,7 +103,11 @@
         <div id="carlendar-content">
           <!-- <component :is="componentToShow"></component> -->
           <div id="carlendar-L">
-            <CalendarL />
+            <CalendarL 
+              @update:selectedDate="updateSelectedDate"
+              @update:currentActive="updateActive"
+              @update:currentTypeColor="updateColor"
+            />
           </div>
           <div id="carlendar-R">
             <CalendarR />
@@ -141,6 +145,11 @@
         /* showChild1: true, // 控制显示子组件1还是子组件2的标志 */
 /*         child1Component: member, // 子组件1
         child2Component: group  // 子组件2 */
+        //从组件CalendarL中获取数据
+        // 使用 props 接收从子组件传递过来的值
+        selectedDate: '',
+        currentActive: null,
+        currentTypeColor: ''  
       }
     },
     components: {
@@ -163,8 +172,20 @@
       toggleMenu2() {
         this.isMenuOpen2 = !this.isMenuOpen2; // 点击按钮时切换菜单的显示状态
       },
-
-      
+      // 定义方法来更新 selectedDate
+      updateSelectedDate(date) {
+        this.selectedDate = date;
+        console.log('Selected date:', this.selectedDate);
+      },
+      // 定义方法来更新 currentActive 和 currentTypeColor
+      updateActive(active) {
+        this.currentActive = active;
+        console.log('Current active:', this.currentActive);
+      },
+      updateColor(color) {
+        this.currentTypeColor = color;
+        console.log('Current type color:', this.currentTypeColor)
+      }
       
   
     }
