@@ -147,9 +147,9 @@
         child2Component: group  // 子组件2 */
         //从组件CalendarL中获取数据
         // 使用 props 接收从子组件传递过来的值
-        selectedDate: '',
-        currentActive: null,
-        currentTypeColor: ''  
+        selectedDate: '',//格式：2024-5-19
+        currentActive: null,//格式：allschedule
+        currentTypeColor: ''  //格式：#FF0000
       }
     },
     components: {
