@@ -212,7 +212,7 @@ async function fetchEvents() {
           color = 'rgba(52, 199, 88, 0.48)';
           break;
         case 2:
-          color = 'rgba(252, 176, 1, 0.48)';
+          color = 'rgba(255,203,1,0.48)';
           break;
         case 3:
           color = 'rgba(90,200,250,0.48)';
@@ -277,7 +277,7 @@ async function fetchOtherEvents() {
           color = 'rgba(52, 199, 88, 0.48)';
           break;
         case 2:
-          color = 'rgba(252, 176, 1, 0.48)';
+          color = 'rgba(255,203,1,0.48)';
           break;
         case 3:
           color = 'rgba(90,200,250,0.48)';
