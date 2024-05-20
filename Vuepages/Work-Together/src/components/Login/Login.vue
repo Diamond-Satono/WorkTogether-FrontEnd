@@ -277,6 +277,7 @@ import { useRouter } from "vue-router";
 import useStore from "@/store/store";
 import {Authorization} from "@/store/token"
 import LoginSuccess from './LoginSuccess.vue';
+import { UserInfo } from "@/store/userinfo";
 // const email = ref("");
 
 // const password = ref("");
@@ -295,7 +296,8 @@ const token = Authorization();
 const router = useRouter();
 
 const alert = ref();
-
+//用户公司、团队id
+const userInfo = UserInfo();
 //显示密码方法
 function togglePasswordVisibility() {
   const passwordInput = document.querySelector(
@@ -308,56 +310,108 @@ function togglePasswordVisibility() {
   }
 }
 //登录
-function Login() {
-  // 发送登录请求到后端API
-  fetch("http://localhost:8080/api/user/login", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(requestBody.value),
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      return response.json();
-    })
-    .then((data) => {
-      console.log(data);
-      console.log(requestBody.value);
-      //邮箱不正确
-      if (data.msg === "邮箱格式错误/不支持该类邮箱") {
-        emailError.value = true;
-        noaccount.value = false;
-        passwordError.value = false;
-        console.error("邮箱不正确，请重新输入");
-      }
-      // 密码错误,显示错误信息
-      else if (data.msg === "密码错误") {
-        passwordError.value = true;
-        noaccount.value = false;
-        emailError.value = false;
-        console.error("密码错误，请重新输入");
-      } else if (data.msg === "账户不存在") {
-        noaccount.value = true;
-        emailError.value = false;
-        passwordError.value = false;
-      } else {
-        // 登录成功
-        noaccount.value = false;
-        emailError.value = false;
-        passwordError.value = false;
-        console.log(data.msg);
-        // 在这里进行 Authorization 令牌的存储
-        token.value = data.data; // 存储 Authorization
-        console.log("令牌：", token.value);
-        showAlert();
-      }
-    })
-    .catch((error) => {
-      console.error("There was a problem with the login:", error);
+async function Login() {
+  try {
+    // 发送登录请求到后端API
+    const response = await fetch("http://localhost:8080/api/user/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestBody.value),
     });
+
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+
+    const data = await response.json();
+    console.log(data);
+    console.log(requestBody.value);
+
+    // 邮箱不正确
+    if (data.msg === "邮箱格式错误/不支持该类邮箱") {
+      emailError.value = true;
+      noaccount.value = false;
+      passwordError.value = false;
+      console.error("邮箱不正确，请重新输入");
+    }
+    // 密码错误,显示错误信息
+    else if (data.msg === "密码错误") {
+      passwordError.value = true;
+      noaccount.value = false;
+      emailError.value = false;
+      console.error("密码错误，请重新输入");
+    } else if (data.msg === "账户不存在") {
+      noaccount.value = true;
+      emailError.value = false;
+      passwordError.value = false;
+    } else {
+      // 登录成功
+      showAlert();
+      noaccount.value = false;
+      emailError.value = false;
+      passwordError.value = false;
+      console.log(data.msg);
+      // 在这里进行 Authorization 令牌的存储
+      token.value = data.data; // 存储 Authorization
+      console.log("令牌：", token.value);    
+
+      // 确保 GetCompanyId 成功执行后再执行 GetGroupId
+      await GetCompanyId();
+      await GetGroupId();
+    }
+  } catch (error) {
+    console.error("There was a problem with the login:", error);
+  }
+}
+
+async function GetCompanyId() {
+  try {
+    const response = await fetch("http://localhost:8080/api/company/myCompany", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": token.value,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+
+    const data = await response.json();
+    // 在这里进行公司id的存储
+    userInfo.value.companyId = data.data[0].id; // 存储公司id 此处默认为第一个
+    console.log("公司ID：", userInfo.value.companyId);
+  } catch (error) {
+    console.error("There was a problem with the login:", error);
+  }
+}
+
+async function GetGroupId() {
+  try {
+    const response = await fetch("http://localhost:8080/api/group/myGroup", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": token.value,
+        "companyId": userInfo.value.companyId,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+
+    const data = await response.json();
+    
+    // 在这里进行团队id的存储
+    userInfo.value.groupId = data.data[0].id; // 存储团队id 此处默认为第一个
+    console.log("团队ID：", userInfo.value.groupId);
+  } catch (error) {
+    console.error("There was a problem with the login:", error);
+  }
 }
 
 const goToRegister = () => {
