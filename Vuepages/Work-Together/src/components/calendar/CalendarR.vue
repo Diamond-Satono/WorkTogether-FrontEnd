@@ -21,6 +21,7 @@ import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
+import listPlugin from '@fullcalendar/list';
 import { type CalendarOptions, type EventApi, type DateSelectArg, type EventClickArg } from '@fullcalendar/core'
 import esLocale from '@fullcalendar/core/locales/zh-cn'
 import { INITIAL_EVENTS, createEventId } from './event-utils'
@@ -32,9 +33,46 @@ const props = defineProps({
   currentActive: String,//当前日历类别
   currentTypeColor: String//当前日历类别颜色
 });
+
 watch(() => props.selectedDate, (newDate, oldDate) => {
   console.log('selectedDate updated:', newDate);
+
+  // 确保 newDate 不为空
+  if (newDate) {
+    try {
+      // 将月份部分变成两位数
+      const dateParts = newDate.split('-');
+      if (dateParts.length === 3) {
+        const year = dateParts[0];
+        const month = dateParts[1].padStart(2, '0'); // 确保月份是两位数
+        const day = dateParts[2].padStart(2, '0'); // 确保日期是两位数
+        const formattedDate = `${year}-${month}-${day}`;
+
+        // 获取 FullCalendar 的 API
+        if (calendarRef.value) {
+          let calendarApi = calendarRef.value.getApi();
+
+          // 切换到日视图
+          calendarApi.changeView('listDay');
+
+          // 跳转到指定日期
+          calendarApi.gotoDate(formattedDate);
+
+          console.log('Date changed to:', formattedDate);
+        } else {
+          console.error('Calendar reference is null');
+        }
+      } else {
+        throw new Error('Invalid date format. Expected format is YYYY-MM-DD.');
+      }
+    } catch (error) {
+      console.error('Error updating calendar view:', error);
+    }
+  } else {
+    console.warn('New date is empty or invalid:', newDate);
+  }
 });
+
 
 watch(() => props.currentActive, (newActive, oldActive) => {
   console.log('currentActive updated:', newActive);
@@ -111,10 +149,11 @@ const calendarOptions = ref<CalendarOptions>({
   plugins: [
     dayGridPlugin,
     timeGridPlugin,
-    interactionPlugin // needed for dateClick
+    interactionPlugin, // needed for dateClick
+    listPlugin
   ],
   headerToolbar: {
-    left: 'dayGridMonth,timeGridWeek,timeGridDay',
+    left: 'dayGridMonth,timeGridWeek,listDay',
     center: 'prev,title,next',
     right: ''
   },
@@ -123,6 +162,43 @@ const calendarOptions = ref<CalendarOptions>({
   },
   initialView: 'dayGridMonth',
   initialEvents: INITIAL_EVENTS, // alternatively, use the `events` setting to fetch from a feed
+  views: {
+    listDay: {
+      type: 'list',
+      duration: { days: 1 },
+      buttonText: '日',
+      listDayFormat: {
+        weekday: 'long', // 显示完整的星期几
+        day: 'numeric', // 显示日期
+        month: 'long', // 显示完整的月份名称
+        year: 'numeric' // 显示年份
+      }, // Custom date format
+      listDayAltFormat: {
+        weekday: 'long', // 显示简短的星期几
+        day: 'numeric', // 显示日期
+        month: 'short', // 显示简短的月份名称
+        year: 'numeric' // 显示年份
+      }, // Alternative date format
+      noEventsText: '没有日程安排', // 没有日程安排显示
+      eventTimeFormat: {
+        hour: '2-digit', // 显示两位数的小时
+        minute: '2-digit', // 显示两位数的分钟
+        meridiem: false // 不显示上午/下午
+      }, // Custom event time format
+    },
+    timeGridWeek: {
+      allDaySlot: false, // 隐藏全天事件槽
+      nowIndicator: true, // 显示当前时间指示器
+      scrollTime: '00:00:00', // 初始滚动时间
+      slotEventOverlap: false, // 允许事件重叠
+      eventOverlap: false, // 允许事件重叠
+      eventLimit: true, // 限制同一时间段显示的最大事件数
+      eventLimitText: '更多', // 超出事件数量限制时显示的文本
+    },
+    dayGridMonth: {
+      slotEventOverlap: true, // 允许事件重叠
+    }
+  },
   editable: true,
   selectable: true,
   selectMirror: true,
@@ -130,6 +206,8 @@ const calendarOptions = ref<CalendarOptions>({
   weekends: true,
   locale: esLocale,
   displayEventEnd: false,//显示结束时间
+  displayEventTime: true,
+  eventDisplay: 'block',
   select: handleDateSelect,
   eventClick: handleEventClick,
   eventsSet: handleEvents
@@ -203,7 +281,6 @@ async function fetchEvents() {
 
     const apiEvents = events.map((event: any) => {
       let color;
-      console.log(event.type);
       switch (event.type) {
         case 0:
           color = '#F7DAE6';
@@ -264,11 +341,9 @@ async function fetchOtherEvents() {
     if (!Array.isArray(events)) {
       throw new Error("Events data is not an array");
     }
-    console.log(data.data);
 
     const apiEvents = events.map((event: any) => {
       let color;
-      console.log(event.type);
       switch (event.type) {
         case 0:
           color = '#F7DAE6';
@@ -398,7 +473,7 @@ async function fetchOtherEvents() {
 
 .fc-dayGridMonth-button,
 .fc-timeGridWeek-button,
-.fc-timeGridDay-button {
+.fc-listDay-button {
   width: 110px !important;
   text-align: center !important;
   border: #FF6200 solid 1px !important;
@@ -407,7 +482,7 @@ async function fetchOtherEvents() {
 
 .fc-dayGridMonth-button.fc-button-active,
 .fc-timeGridWeek-button.fc-button-active,
-.fc-timeGridDay-button.fc-button-active {
+.fc-listDay-button.fc-button-active {
   color: var(--fc-button-selected-text-color) !important;
 }
 
@@ -426,4 +501,5 @@ async function fetchOtherEvents() {
   --fc-button-unselected-text-color: #FF6200;
   --fc-button-selected-text-color: white;
 }
+
 </style>
