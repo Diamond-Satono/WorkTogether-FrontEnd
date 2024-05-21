@@ -91,6 +91,11 @@
   
   <script>
   import calendar from './calendarmini.vue'
+  import {UserInfo }from '@/store/userinfo'
+  const userInfo =UserInfo()
+  //访问存储的 companyId 和 groupId
+  console.log("companyId:",userInfo.value.companyId)
+  console.log("GroupId:",userInfo.value.groupId)
   
   export default {
     components: {
