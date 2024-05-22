@@ -184,6 +184,7 @@ export default {
         console.log('日程创建成功', data);
         this.showPopup = false;
         // 这里可以添加成功后的处理逻辑，比如刷新列表或者显示成功提示
+        this.$emit('refresh-calendar');
       })
       .catch(error => {
         console.error('创建日程时发生错误:', error);
@@ -192,6 +193,7 @@ export default {
     },
     cancel() {
       this.showPopup = false;
+      this.$emit('refresh-calendar');
     },
     addParticipant() {
       this.showMemberMenu = !this.showMemberMenu; // 显示或隐藏成员菜单

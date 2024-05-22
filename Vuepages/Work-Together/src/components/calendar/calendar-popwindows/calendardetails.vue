@@ -135,7 +135,12 @@
       import DeleteConfirm from './deleteconfirm.vue';
 
   export default {
-
+    props: {
+      scheduleId: {
+        type: String,
+        required: true
+      }
+    }, 
     data() {
       return {
         showPopup: true,
@@ -399,6 +404,7 @@
       closePopup() {
         this.showPopup = false;
         this.closeDialog();
+        this.$emit('refresh-calendar')
       }
 
 

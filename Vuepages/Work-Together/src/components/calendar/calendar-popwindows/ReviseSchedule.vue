@@ -164,7 +164,7 @@
     },
     methods: {
       loadSchedule() {
-        const url = `http://localhost:8080/api/schedule/1793227986862919681`;
+        const url = `http://localhost:8080/api/schedule/${this.scheduleId}`;
         fetch(url, {
           method: 'GET',
           headers: {
@@ -223,6 +223,7 @@
           console.log('日程修改成功', data);
           this.showPopup = false;
           // 这里可以添加成功后的处理逻辑，比如刷新列表或者显示成功提示
+          this.$emit('refresh-calendar');
         })
         .catch(error => {
           console.error('修改日程时发生错误:', error);
@@ -231,6 +232,7 @@
       },
       cancel() {
         this.showPopup = false;
+        this.$emit('refresh-calendar');
       },
       addParticipant() {
         this.showMemberMenu = !this.showMemberMenu; // 显示或隐藏成员菜单

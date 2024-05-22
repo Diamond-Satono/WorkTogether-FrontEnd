@@ -76,6 +76,7 @@
         },
         closeDialog() {
             this.$emit('closeDialog');
+            //this.$emit('refresh-calendar');
         }
     }
   };
