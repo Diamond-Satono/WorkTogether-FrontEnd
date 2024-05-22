@@ -93,6 +93,7 @@
   import calendar from './calendarmini.vue'
   import {UserInfo }from '@/store/userinfo'
   const userInfo =UserInfo()
+
   //访问存储的 companyId 和 groupId
   console.log("companyId:",userInfo.value.companyId)
   console.log("GroupId:",userInfo.value.groupId)
@@ -101,6 +102,7 @@
     components: {
       calendar
     },
+    emits: ['close-modal'],
     data() {
       return {
         showPopup: true,
@@ -147,7 +149,7 @@
         this.showPopup = false;
       },
       cancel() {
-        this.showPopup = false;
+        this.$emit('close-modal');
       },
       addParticipant() {
         // 添加参与人的逻辑

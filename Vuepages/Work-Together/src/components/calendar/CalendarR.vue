@@ -2,7 +2,7 @@
   <div class="title">
     <img src="@/assets/calendarimgs/mycalendar.png" class="calendarimg">
     <span class="calendartitle">{{ CalendarTitle }}</span>
-    <button class="createbutton">新建日程</button>
+    <button class="createbutton" @click="showCreateSchedule">新建日程</button>
     <div class="cutoff"></div>
   </div>
   <div class='app-main'>
@@ -13,6 +13,11 @@
       </template>
     </FullCalendar>
   </div>
+  <!-- 动态加载组件 -->
+  <Transition :name="transitionName" mode="out-in">
+    <component :is="currentModal" v-if="currentModal" @close-modal="closeModal" @refresh-calendar="refreshCalendar">
+    </component>
+  </Transition>
 </template>
 
 <script setup lang="ts">
@@ -380,7 +385,35 @@ async function fetchOtherEvents() {
     console.error("There was a problem fetching the events:", error);
   }
 }
+//设置弹窗
+const currentModal = ref("");
+const transitionName = ref("fade");
+function showCreateSchedule() {
+  currentModal.value = "CreateSchedule";
+  console.log("currentModal=", currentModal.value);
+}
+//关闭弹窗
+function closeModal() {
+    currentModal.value = "";
+    console.log("ModalClosed");
+}
+//刷新日历重新获取事件
+async function refreshCalendar(){
+  // 获取 FullCalendar 的 API
+  let calendarApi = calendarRef.value.getApi();
 
+  // 清空所有 events
+  let events = calendarApi.getEvents();
+  events.forEach((event: EventApi) => event.remove());
+
+
+  // 根据 type.value 的值调用不同的函数
+  if (type.value === -2) {
+    await fetchEvents();
+  } else if (type.value > -1) {
+    await fetchOtherEvents();
+  }
+}
 </script>
 
 <style>
@@ -502,4 +535,17 @@ async function fetchOtherEvents() {
   --fc-button-selected-text-color: white;
 }
 
+/* 弹窗淡入淡出动画 */
+/* .fade-enter-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+} */
 </style>
