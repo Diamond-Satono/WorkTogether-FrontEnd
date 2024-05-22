@@ -298,6 +298,7 @@ function handleEventMouseEnter(info: any) {
     appendTo: document.body,
     theme: 'custom',
     offset: [0, 0], // 设置偏移量为 0
+    delay: [300, 0], // 显示延迟 300ms
     onShown(instance) {
       // 绑定查看详情按钮点击事件处理程序
       const detailButton = document.getElementById(`btn-detail-${scheduleId}`);
