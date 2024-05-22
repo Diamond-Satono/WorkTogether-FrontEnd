@@ -134,12 +134,12 @@ const handleClickDate = (date: string) => {
 const handleChangeMonth = (date: string) => {
   console.log('Changed month to:', date);
 };
-const currentActive = ref(null); // 初始化为null，表示没有选中任何类型
+const currentActive = ref('allschedule'); // 初始化为allschedule，初始默认选中全部日程
 const currentTypeColor = ref<string>('');// 选中类型的颜色
 function toggleActive(type :any) {
   // 当点击当前已选中的div时，取消选中
   if (currentActive.value === type) {
-    currentActive.value = null;
+    // currentActive.value = null;
   } else {
     // 否则，设置当前点击的div为选中状态
     currentActive.value = type;
