@@ -295,6 +295,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center; /* 垂直居中 */
+  z-index: 999;
 }
 .memberName {
   margin-left: 8%;
