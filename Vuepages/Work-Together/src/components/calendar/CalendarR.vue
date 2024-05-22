@@ -15,7 +15,8 @@
   </div>
   <!-- 动态加载组件 -->
   <Transition :name="transitionName" mode="out-in">
-    <component :is="currentModal" v-if="currentModal" @close-modal="closeModal" @refresh-calendar="refreshCalendar">
+    <component :is="currentModal" v-if="currentModal" @close-modal="closeModal" @refresh-calendar="refreshCalendar"
+      :scheduleId="scheduleId">
     </component>
   </Transition>
 </template>
@@ -40,7 +41,8 @@ const props = defineProps({
   currentActive: String,//当前日历类别
   currentTypeColor: String//当前日历类别颜色
 });
-
+//传递给子组件
+const scheduleId = ref('')
 watch(() => props.selectedDate, (newDate, oldDate) => {
   console.log('selectedDate updated:', newDate);
 
@@ -127,6 +129,7 @@ watch(() => props.currentActive, (newActive) => {
       break;
   }
 });
+
 //定义标签类型
 const type = ref(-2);
 //根据类型调用不同的接口
@@ -142,6 +145,8 @@ watch(() => type.value, async (newType) => {
   // 根据 type.value 的值调用不同的函数
   if (newType === -2) {
     await fetchEvents();
+  } else if (newType === -1) {
+    await fetchMyEvents();
   } else if (newType > -1) {
     await fetchOtherEvents();
   }
@@ -254,32 +259,38 @@ function handleEvents(events: EventApi[]) {
 }
 
 let currentTippyInstance: any = null;
-//鼠标悬浮事件弹窗
+
 function handleEventMouseEnter(info: any) {
   // 关闭其他悬浮框
   if (currentTippyInstance) {
     currentTippyInstance.destroy();
   }
+
+  console.log(info.event);
+
   const startTime = info.event.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   const startDate = info.event.start.toLocaleDateString('zh-CN', { month: 'numeric', day: 'numeric' }).replace('/', '月') + '日';
   const endTime = info.event.end ? info.event.end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
   const endDate = info.event.end ? info.event.end.toLocaleDateString('zh-CN', { month: 'numeric', day: 'numeric' }).replace('/', '月') + '日' : '';
 
+  const scheduleId = info.event.id;
+  console.log(scheduleId);
+
   const content = `
-        <div class="custom-tooltip">
-          <div class="event-header">
-               <div class="color-bar" style="background-color: ${info.event.backgroundColor};"></div>
-              <div class="event-title">${info.event.title}</div>
-          </div>
-          <div class="event-time">
-            <span class="start-time">${startTime}</span> <span class="start-date">${startDate}</span>  <span class="end-time">${endTime}</span> <span class="end-date">${endDate}</span>
-          </div>
-          <div class="event-button">
-            <button class="btn-detail">查看详情</button>
-            <button class="btn-edit">编辑</button>
-          </div>
-        </div>
-      `;
+    <div class="custom-tooltip">
+      <div class="event-header">
+        <div class="color-bar" style="background-color: ${info.event.backgroundColor};"></div>
+        <div class="event-title">${info.event.title}</div>
+      </div>
+      <div class="event-time">
+        <span class="start-time">${startTime}</span> <span class="start-date">${startDate}</span> <span class="end-time">${endTime}</span> <span class="end-date">${endDate}</span>
+      </div>
+      <div class="event-button">
+        <button class="btn-detail" id="btn-detail-${scheduleId}">查看详情</button>
+        <button class="btn-edit" id="btn-edit-${scheduleId}">编辑</button>
+      </div>
+    </div>
+  `;
 
   currentTippyInstance = tippy(info.el, {
     content: content,
@@ -290,8 +301,33 @@ function handleEventMouseEnter(info: any) {
     appendTo: document.body,
     theme: 'custom',
     offset: [0, 0], // 设置偏移量为 0
-  });
+    onShown(instance) {
+      // 绑定查看详情按钮点击事件处理程序
+      const detailButton = document.getElementById(`btn-detail-${scheduleId}`);
+      if (detailButton) {
+        detailButton.addEventListener('click', () => showcalendardetails(info));
+      }
 
+      // 绑定编辑按钮点击事件处理程序
+      const editButton = document.getElementById(`btn-edit-${scheduleId}`);
+      if (editButton) {
+        editButton.addEventListener('click', () => showReviseSchedule(info));
+      }
+    },
+    onHidden(instance) {
+      // 清除查看详情按钮点击事件处理程序
+      const detailButton = document.getElementById(`btn-detail-${scheduleId}`);
+      if (detailButton) {
+        detailButton.removeEventListener('click', () => showcalendardetails(info));
+      }
+
+      // 清除编辑按钮点击事件处理程序
+      const editButton = document.getElementById(`btn-edit-${scheduleId}`);
+      if (editButton) {
+        editButton.removeEventListener('click', () => showReviseSchedule(info));
+      }
+    }
+  });
 }
 
 function handleEventMouseLeave(info: any) {
@@ -307,7 +343,71 @@ onMounted(async () => {
 //获取团队全部日程
 async function fetchEvents() {
   try {
-    const response = await fetch(`http://localhost:8080/api/schedule/group/all?groupId=1`, {//把1换成${userInfo.value.groupId}
+    const response = await fetch(`http://localhost:8080/api/schedule/group/all?groupId=${userInfo.value.groupId}`, {//把1换成${userInfo.value.groupId}
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": token.value,
+        "companyId": userInfo.value.companyId,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+
+    const data = await response.json();
+
+    // 检查 data 结构并提取 events 数组
+    const events = data.data || [];
+    if (!Array.isArray(events)) {
+      throw new Error("Events data is not an array");
+    }
+
+
+    const apiEvents = events.map((event: any) => {
+      let color;
+      switch (event.type) {
+        case 0:
+          color = '#F7DAE6';
+          break;
+        case 1:
+          color = 'rgba(52, 199, 88, 0.48)';
+          break;
+        case 2:
+          color = 'rgba(255,203,1,0.48)';
+          break;
+        case 3:
+          color = 'rgba(90,200,250,0.48)';
+          break;
+        case 4:
+          color = 'rgba(175,82,222,0.48)';
+          break;
+      }
+      return {
+        id: `${event.id}`,
+        title: event.title,
+        start: event.startTime,
+        end: event.endTime ? event.endTime : undefined,
+        color: color, // 设置事件的颜色
+        textColor: 'black'
+      };
+    });
+    if (calendarRef.value) {
+      let calendarApi = calendarRef.value.getApi();
+      apiEvents.forEach(event => calendarApi.addEvent(event));
+      console.log("日程:", calendarApi.getEvents());
+    }
+
+  } catch (error) {
+    console.error("There was a problem fetching the events:", error);
+  }
+}
+
+//获取我的全部日程
+async function fetchMyEvents() {
+  try {
+    const response = await fetch(`http://localhost:8080/api/schedule/user/all?groupId=${userInfo.value.groupId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -371,7 +471,7 @@ async function fetchEvents() {
 //根据标签获取对应类别日程
 async function fetchOtherEvents() {
   try {
-    const response = await fetch(`http://localhost:8080/api/schedule/type/all?groupId=1&type=${type.value}`, {//把1换成${userInfo.value.groupId}
+    const response = await fetch(`http://localhost:8080/api/schedule/type/all?groupId=${userInfo.value.groupId}&type=${type.value}`, {//把1换成${userInfo.value.groupId}
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -433,10 +533,31 @@ async function fetchOtherEvents() {
 //设置弹窗
 const currentModal = ref("");
 const transitionName = ref("fade");
+
 function showCreateSchedule() {
   currentModal.value = "CreateSchedule";
   console.log("currentModal=", currentModal.value);
 }
+
+function showcalendardetails(info: any) {
+  if (currentTippyInstance) {
+    currentTippyInstance.destroy();
+  }
+  scheduleId.value = info.event.id;
+  currentModal.value = "calendardetails";
+  console.log("currentModal=", currentModal.value);
+}
+
+function showReviseSchedule(info: any) {
+  if (currentTippyInstance) {
+    currentTippyInstance.destroy();
+  }
+  scheduleId.value = info.event.id;
+  currentModal.value = "ReviseSchedule";
+  console.log("currentModal=", currentModal.value);
+}
+
+
 //关闭弹窗
 function closeModal() {
   currentModal.value = "";
@@ -578,6 +699,7 @@ async function refreshCalendar() {
   --fc-button-active-border-color: #FF6200;
   --fc-button-unselected-text-color: #FF6200;
   --fc-button-selected-text-color: white;
+  --fc-today-bg-color: rgba(227, 222, 219, 0.25);
 }
 
 /* 弹窗淡入淡出动画 */
