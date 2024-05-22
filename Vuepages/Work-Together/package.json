@@ -22,6 +22,7 @@
     "@fullcalendar/vue3": "^6.1.11",
     "@vueuse/core": "^10.9.0",
     "file-saver": "^2.0.5",
+    "tippy.js": "^6.3.7",
     "vue": "^3.4.21",
     "vue-quick-calendar": "^1.0.92",
     "vue-router": "^4.0.13",

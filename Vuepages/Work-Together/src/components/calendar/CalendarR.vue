@@ -32,6 +32,8 @@ import esLocale from '@fullcalendar/core/locales/zh-cn'
 import { INITIAL_EVENTS, createEventId } from './event-utils'
 import { UserInfo } from '@/store/userinfo'
 import { Authorization } from '@/store/token'
+import tippy from 'tippy.js'
+import 'tippy.js/dist/tippy.css';
 //从父组件获取数据
 const props = defineProps({
   selectedDate: String,//导航日历中已选择日期
@@ -154,7 +156,7 @@ const calendarOptions = ref<CalendarOptions>({
   plugins: [
     dayGridPlugin,
     timeGridPlugin,
-    interactionPlugin, // needed for dateClick
+    // interactionPlugin, // needed for dateClick
     listPlugin
   ],
   headerToolbar: {
@@ -178,12 +180,6 @@ const calendarOptions = ref<CalendarOptions>({
         month: 'long', // 显示完整的月份名称
         year: 'numeric' // 显示年份
       }, // Custom date format
-      listDayAltFormat: {
-        weekday: 'long', // 显示简短的星期几
-        day: 'numeric', // 显示日期
-        month: 'short', // 显示简短的月份名称
-        year: 'numeric' // 显示年份
-      }, // Alternative date format
       noEventsText: '没有日程安排', // 没有日程安排显示
       eventTimeFormat: {
         hour: '2-digit', // 显示两位数的小时
@@ -197,11 +193,13 @@ const calendarOptions = ref<CalendarOptions>({
       scrollTime: '00:00:00', // 初始滚动时间
       slotEventOverlap: false, // 允许事件重叠
       eventOverlap: false, // 允许事件重叠
-      eventLimit: true, // 限制同一时间段显示的最大事件数
-      eventLimitText: '更多', // 超出事件数量限制时显示的文本
+      // eventLimit: true, // 限制同一时间段显示的最大事件数
+      // eventLimitText: '更多', // 超出事件数量限制时显示的文本
     },
     dayGridMonth: {
       slotEventOverlap: true, // 允许事件重叠
+      eventMouseEnter: handleEventMouseEnter,//鼠标移入
+      eventMouseLeave: handleEventMouseLeave//鼠标移出
     }
   },
   editable: true,
@@ -215,7 +213,8 @@ const calendarOptions = ref<CalendarOptions>({
   eventDisplay: 'block',
   select: handleDateSelect,
   eventClick: handleEventClick,
-  eventsSet: handleEvents
+  eventsSet: handleEvents,
+
   /* you can update a remote database when these fire:
   eventAdd:
   eventChange:
@@ -243,7 +242,7 @@ function handleDateSelect(selectInfo: DateSelectArg) {
     })
   }
 }
-
+//处理events点击事件
 function handleEventClick(clickInfo: EventClickArg) {
   if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
     clickInfo.event.remove()
@@ -253,6 +252,52 @@ function handleEventClick(clickInfo: EventClickArg) {
 function handleEvents(events: EventApi[]) {
   currentEvents.value = events
 }
+
+let currentTippyInstance: any = null;
+//鼠标悬浮事件弹窗
+function handleEventMouseEnter(info: any) {
+  // 关闭其他悬浮框
+  if (currentTippyInstance) {
+    currentTippyInstance.destroy();
+  }
+  const startTime = info.event.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const startDate = info.event.start.toLocaleDateString('zh-CN', { month: 'numeric', day: 'numeric' }).replace('/', '月') + '日';
+  const endTime = info.event.end ? info.event.end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+  const endDate = info.event.end ? info.event.end.toLocaleDateString('zh-CN', { month: 'numeric', day: 'numeric' }).replace('/', '月') + '日' : '';
+
+  const content = `
+        <div class="custom-tooltip">
+          <div class="event-header">
+               <div class="color-bar" style="background-color: ${info.event.backgroundColor};"></div>
+              <div class="event-title">${info.event.title}</div>
+          </div>
+          <div class="event-time">
+            <span class="start-time">${startTime}</span> <span class="start-date">${startDate}</span>  <span class="end-time">${endTime}</span> <span class="end-date">${endDate}</span>
+          </div>
+          <div class="event-button">
+            <button class="btn-detail">查看详情</button>
+            <button class="btn-edit">编辑</button>
+          </div>
+        </div>
+      `;
+
+  currentTippyInstance = tippy(info.el, {
+    content: content,
+    allowHTML: true,
+    placement: 'bottom',
+    arrow: false,
+    interactive: true,
+    appendTo: document.body,
+    theme: 'custom',
+    offset: [0, 0], // 设置偏移量为 0
+  });
+
+}
+
+function handleEventMouseLeave(info: any) {
+  // Tippy.js 会自动处理鼠标离开事件，所以这里通常不需要额外处理
+}
+
 
 // 钩子函数
 onMounted(async () => {
@@ -394,11 +439,11 @@ function showCreateSchedule() {
 }
 //关闭弹窗
 function closeModal() {
-    currentModal.value = "";
-    console.log("ModalClosed");
+  currentModal.value = "";
+  console.log("ModalClosed");
 }
 //刷新日历重新获取事件
-async function refreshCalendar(){
+async function refreshCalendar() {
   // 获取 FullCalendar 的 API
   let calendarApi = calendarRef.value.getApi();
 
@@ -548,4 +593,106 @@ async function refreshCalendar(){
 .fade-leave-to {
   opacity: 0;
 } */
+
+/* 定义鼠标悬浮事件弹窗 */
+.custom-tooltip {
+  padding: 1%;
+}
+
+.tippy-content {
+  background-color: white;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+  width: 300px;
+  height: 130px;
+}
+
+.custom-tooltip .event-title {
+  font-size: 16px;
+  color: black;
+  margin-left: 3%;
+
+}
+
+.custom-tooltip .event-time {
+  margin-top: 5%;
+  margin-bottom: 10px;
+  color: black;
+  display: flex;
+  justify-content: center;
+  /* 水平居中 */
+  align-items: baseline;
+}
+
+.custom-tooltip .btn-detail {
+  width: 75px !important;
+  height: 30px !important;
+  font-size: 13px;
+  display: inline-block;
+  margin-right: 5px;
+  padding: 5px 10px;
+  background-color: #FF6200;
+  color: white;
+  border: #FF6200 solid 1px;
+  border-radius: 4px;
+  cursor: pointer;
+  /* font-weight: bold; */
+}
+
+.custom-tooltip .btn-edit {
+  display: inline-block;
+  width: 75px !important;
+  height: 30px !important;
+  margin-right: 5px;
+  padding: 5px 10px;
+  font-size: 13px;
+  background-color: white;
+  color: black;
+  border: #FF6200 solid 1px;
+  border-radius: 4px;
+  cursor: pointer;
+  /* font-weight: bold; */
+  margin-left: 24%;
+}
+
+.custom-tooltip .event-header {
+  display: flex;
+  align-items: center;
+}
+
+.custom-tooltip .color-bar {
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+}
+
+.custom-tooltip .start-time {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.custom-tooltip .start-date {
+  font-size: 12px;
+  margin-left: 1.5%;
+}
+
+.custom-tooltip .end-time {
+  margin-left: 5%;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.custom-tooltip .end-date {
+  font-size: 12px;
+  margin-left: 1.5%;
+}
+
+.custom-tooltip .event-button {
+  margin-top: 8%;
+  display: flex;
+  justify-content: center;
+}
+
+.fc-list-event {
+  cursor: pointer;
+}
 </style>
