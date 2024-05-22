@@ -106,8 +106,10 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import calendar from './thumbnail/CalendarThumbnail.vue';
-import {Authorization} from "@/store/token"
+import {Authorization} from "@/store/token";
+import { UserInfo } from "@/store/userinfo"
 const tokens = Authorization();
+const userInfo =UserInfo();
 // 定义 emits 选项
 const emit = defineEmits(['update:selectedDate', 'update:currentActive', 'update:currentTypeColor']);
 
@@ -185,9 +187,9 @@ const members = ref([
   { name: '王五', avatar: 'https://example.com/avatar3.jpg' },
 ]);
 //拉取团队成员列表
-const companyId = 1; // 根据实际情况替换
+const companyId = userInfo.value.companyId; // 根据实际情况替换
 const companyIdString = companyId.toString();
-const groupId = ref(1);
+const groupId = ref(userInfo.value.groupId);
 //拉取成员列表
 function fetchUserData() {
   fetch(`http://localhost:8080/api/group/member/${groupId.value}`, {
