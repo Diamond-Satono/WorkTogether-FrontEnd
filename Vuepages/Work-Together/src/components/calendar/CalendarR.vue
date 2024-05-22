@@ -251,7 +251,6 @@ function handleDateSelect(selectInfo: DateSelectArg) {
 //处理events点击事件
 function handleEventClick(clickInfo: EventClickArg) {
   showcalendardetails(clickInfo);
-  console.log(clickInfo.event.title);
 }
 
 
@@ -267,15 +266,12 @@ function handleEventMouseEnter(info: any) {
     currentTippyInstance.destroy();
   }
 
-  console.log(info.event);
-
   const startTime = info.event.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   const startDate = info.event.start.toLocaleDateString('zh-CN', { month: 'numeric', day: 'numeric' }).replace('/', '月') + '日';
   const endTime = info.event.end ? info.event.end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
   const endDate = info.event.end ? info.event.end.toLocaleDateString('zh-CN', { month: 'numeric', day: 'numeric' }).replace('/', '月') + '日' : '';
 
   const scheduleId = info.event.id;
-  console.log(scheduleId);
 
   const content = `
     <div class="custom-tooltip">
