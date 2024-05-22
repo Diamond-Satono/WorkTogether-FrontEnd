@@ -53,12 +53,12 @@
         <div class="form-group">
           <label for="calendar">日历<span class="required">*</span></label>
           <select id="calendar" v-model="calendarType">
-            <option value="0">面试</option>
-            <option value="1">会议</option>
-            <option value="2">培训</option>
-            <option value="3">出差</option>
-            <option value="4">个人日程</option>
-            <option value="5">其他</option>
+            <option value="1">面试</option>
+            <option value="0">会议</option>
+            <option value="3">培训</option>
+            <option value="2">出差</option>
+            <option value="5">个人日程</option>
+            <option value="4">其他</option>
           </select>
         </div>
 

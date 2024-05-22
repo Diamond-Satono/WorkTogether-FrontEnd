@@ -1,10 +1,10 @@
 <template>
     <div>
       <!-- 背景遮罩层 -->
-      <div v-if="showPopup" class="overlay"></div>
+      <div v-if="showPopup" class="overlay" @click="closePopup"></div>
   
       <!-- 弹窗组件 -->
-      <div v-if="showPopup" class="popup">
+      <div v-if="showPopup" class="popup"  @click.stop>
         <div class="popup-body">
           <!-- 左侧部分 -->
           <div class="left-section">
@@ -13,14 +13,16 @@
               <span id="type-span">
                 <label id="typetitle" for="type">类型:</label>
                 <select v-model="schedule.type">
-                  <option value="0">面试</option>
-                  <option value="1">会议</option>
-                  <option value="2">培训</option>
-                  <option value="3">出差</option>
-                  <option value="4">个人日程</option>
-                  <option value="5">其他</option>
+                  <option value="1">面试</option>
+                  <option value="0">会议</option>
+                  <option value="3">培训</option>
+                  <option value="2">出差</option>
+                  <option value="5">个人日程</option>
+                  <option value="4">其他</option>
                 </select>
               </span>
+              <button id="delete-button" @click="showDeleteConfirm()">删除</button>
+              <component :title="schedule.title" :scheduleId="scheduleId" :is="currentDialog" @closeDialog="closeDialog" v-if="isDialogVisible" />
             </div>
   
             <!-- 日程名称 -->
@@ -37,7 +39,7 @@
                 >谢绝</button>
                 <button
                   :class="{ active: currentStatus === '接受' }"
-                  @click="updateStatus('接受')"
+                  @click="() => { updateStatus('接受'); joinInSchedule(); }"
                 >接受</button>
               </div>
             </div>
@@ -86,28 +88,36 @@
             <div id="right-title">参与详情:</div>
             <div class="right-content">
               <h4>暂定人员</h4>
-              <div v-for="participant in tentativeParticipants" :key="participant.id">
-                <img :src="participant.avatar" alt="Avatar" class="avatar" />
-                <span>{{ participant.name }}</span>
+              <div class="right-member">
+                <div v-for="participant in tentativeParticipants" :key="participant.id">
+                <img :src="participant.avatar" :alt="participant.name" class="avatar" />
+                <!-- <span>{{ participant.name }}</span> -->
+                </div>
               </div>
             </div>
             <div class="right-content">
               <h4>确定参与人员</h4>
-              <div v-for="participant in confirmedParticipants" :key="participant.id">
-                <img :src="participant.avatar" alt="Avatar" class="avatar" />
-                <span>{{ participant.name }}</span>
+              <div class="right-member">
+                <div v-for="participant in confirmedParticipants" :key="participant.id">
+                  <img :src="participant.avatar" :alt="participant.name" class="avatar" />
+                  <!-- <span>{{ participant.name }}</span> -->
+                </div>
               </div>
             </div>
             <div class="right-content">
               <h4>拒绝参与人员</h4>
-              <div v-for="participant in declinedParticipants" :key="participant.id">
-                <img :src="participant.avatar" alt="Avatar" class="avatar" />
-                <span>{{ participant.name }}</span>
+              <div class="right-member">
+                <div v-for="participant in declinedParticipants" :key="participant.id">
+                  <img :src="participant.avatar" :alt="participant.name" class="avatar" />
+                  <!-- <span>{{ participant.name }}</span> -->
+                </div>
               </div>
             </div>
+
           </div>
         </div>
       </div>
+
     </div>
   </template>
   
@@ -122,6 +132,8 @@
       import { Authorization } from "@/store/token";
       const token = Authorization();
 
+      import DeleteConfirm from './deleteconfirm.vue';
+
   export default {
 
     data() {
@@ -135,9 +147,21 @@
           description: '本次会议旨在讨论迭代四的拟计划完成内容，包括业务功能、页面、数据库以及接口。',
           participants: []
         },
+        status0: {
+          userId:[]
+        },
+        status1: {
+          userId:[]
+        }, 
+        status2: {
+          userId:[]
+        },
         organizer: [],
         currentStatus: '暂定',  // 默认状态为暂定
         members: [], // 存储从后端获取的团队成员
+        scheduleId:'1793310937944465409',
+        currentDialog:'', // 当前显示的弹窗组件名称
+        isDialogVisible: false, // 是否显示弹窗
       };
     },
     watch: {
@@ -147,9 +171,15 @@
         }
       }
     },
+    components:{
+      DeleteConfirm,
+    },
     created() {
       this.loadSchedule(); // 获取要修改的日程信息
       this.viewMember(); // 获取团队成员
+      this.viewStatus0(); //获取参与状态
+      this.viewStatus1(); //获取参与状态
+      this.viewStatus2(); //获取参与状态
     },
     computed: {
       formattedStartDate() {
@@ -165,23 +195,24 @@
         return this.formatTime(this.schedule.endTime);
       },
       tentativeParticipants() {
-        return this.schedule.participants.filter(participant => participant.status === '暂定');
+        return this.getParticipantsByStatus(this.status0.userId);
       },
       confirmedParticipants() {
-        return this.schedule.participants.filter(participant => participant.status === '接受');
+        return this.getParticipantsByStatus(this.status1.userId);
       },
       declinedParticipants() {
-        return this.schedule.participants.filter(participant => participant.status === '谢绝');
+        return this.getParticipantsByStatus(this.status2.userId);
       }
     },
     methods: {
       loadSchedule() {
-        const url = `http://localhost:8080/api/schedule/1793227986862919681`;
+        const url = `http://localhost:8080/api/schedule/${this.scheduleId}`;
         fetch(url, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': token.value
+            'Authorization': token.value,
+            'companyId': userInfo.value.groupId
           }
         })
         .then(response => {
@@ -249,15 +280,129 @@
           console.error('Error fetching user data:', error);
         });
       },
+      viewStatus0(){
+        const url = `http://localhost:8080/api/schedule/member/${this.scheduleId}/0`;
+        fetch(url, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': token.value,
+            'companyId': userInfo.value.groupId
+          }
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          const status = data.data;
+          
+          this.status0.userId = status.map(item => item.userId);
+          console.log(this.status0.userId);
+          console.log('获取状态id0');
+        })
+        .catch(error => {
+          console.error('获取状态时发生错误:', error);
+        });
+      },
       viewStatus1(){
-        const url = `http://localhost:8080/api/schedule/member/{id}/{type}`;
+        const url = `http://localhost:8080/api/schedule/member/${this.scheduleId}/1`;
+        fetch(url, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': token.value,
+            'companyId': userInfo.value.groupId
+          }
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          const status = data.data;
+          
+          this.status1.userId = status.map(item => item.userId);
+          console.log(this.status1.userId);
+          console.log('获取状态id1');
+        })
+        .catch(error => {
+          console.error('获取状态时发生错误:', error);
+        });
       },
       viewStatus2(){
-        
+        const url = `http://localhost:8080/api/schedule/member/${this.scheduleId}/2`;
+        fetch(url, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': token.value,
+            'companyId': userInfo.value.groupId
+          }
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          const status = data.data;
+          
+          this.status2.userId = status.map(item => item.userId);
+          console.log(this.status2.userId);
+          console.log('获取状态id2');
+        })
+        .catch(error => {
+          console.error('获取状态时发生错误:', error);
+        });
       },
-      viewStatus3(){
-        
+      getParticipantsByStatus(userIds) {
+        return userIds.map(userId => this.members.find(member => member.id === userId)).filter(participant => participant);
+      },
+      joinInSchedule(){
+        const url = `http://localhost:8080/api/schedule/join/${this.scheduleId}/0`;
+        fetch(url,{
+          method: 'PUT',
+          headers:{
+            'Content-Type': 'application/json',
+            'Authorization': token.value,
+            'companyId': userInfo.value.groupId
+          }
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log(data);
+        })
+        .catch(error => {
+          console.error('获取状态时发生错误:', error);
+        });
+      },
+      showDeleteConfirm() {
+        this.currentDialog = 'DeleteConfirm';
+        this.isDialogVisible = true;
+      },
+      // 关闭弹窗
+      closeDialog() {
+        this.currentDialog = '';
+        this.isDialogVisible = false;
+      },
+      closePopup() {
+        this.showPopup = false;
+        this.closeDialog();
       }
+
+
+
     }
   };
   </script>
@@ -403,7 +548,7 @@
   
   #type-span {
     position: relative;
-    right: 65%;
+    right: 14%;
   }
   
   #typetitle {
@@ -470,6 +615,21 @@
     border-radius: 50%;
     margin: 5px;
   }
+  .right-member{
+    display: flex;
+  }
+  #delete-button{
+    width: 75px;
+    height: 30px;
+    background-color: rgb(255, 32, 32);
+    border: none;
+    border-radius: 4px;
+    color: white;
+    font-size: 15px;
+    position: relative;
+    right: 9%;
+  }
+
   
   </style>
   

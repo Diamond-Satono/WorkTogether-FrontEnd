@@ -202,6 +202,7 @@ import CreateEnterprise from './CreateEnterprise.vue';
 import LogoutEnterprise from './LogoutEnterprise.vue';
 
 export default {
+  
   name: 'EnterpriseInfo',
   data() {
     return {
