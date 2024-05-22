@@ -177,7 +177,7 @@ function toggleDetail(event: MouseEvent) {
     top: rect.bottom - 40*members.value.length, // 设置弹窗的垂直位置
     left: rect.right + 30, // 设置弹窗的水平位置
   };
-  memberListHeight.value = memberListHeight.value * members.value.length
+  memberListHeight.value = 42 * members.value.length
 }
 //成员列表
 const members = ref([
@@ -258,6 +258,9 @@ onMounted(() => {
   font-size: 18px;
   font-family: "SiYuanHeiTi";
   cursor: pointer; /* 添加鼠标悬停时的手势 */
+}
+.icon:hover {
+  cursor: pointer; /* 设置鼠标悬停时的光标为手势（通常使用pointer） */
 }
 /* 添加一个类用于表示选中状态 */
 .active {
