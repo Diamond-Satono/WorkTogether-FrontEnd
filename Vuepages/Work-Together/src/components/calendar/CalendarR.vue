@@ -247,12 +247,13 @@ function handleDateSelect(selectInfo: DateSelectArg) {
     })
   }
 }
+
 //处理events点击事件
 function handleEventClick(clickInfo: EventClickArg) {
-  if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
-    clickInfo.event.remove()
-  }
+  showcalendardetails(clickInfo);
+  console.log(clickInfo.event.title);
 }
+
 
 function handleEvents(events: EventApi[]) {
   currentEvents.value = events
@@ -580,7 +581,7 @@ async function refreshCalendar() {
     await fetchOtherEvents();
   }
   console.log('数据刷新！');
-  
+
 }
 </script>
 
