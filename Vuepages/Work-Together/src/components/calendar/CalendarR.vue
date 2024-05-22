@@ -579,6 +579,8 @@ async function refreshCalendar() {
   } else if (type.value > -1) {
     await fetchOtherEvents();
   }
+  console.log('数据刷新！');
+  
 }
 </script>
 
