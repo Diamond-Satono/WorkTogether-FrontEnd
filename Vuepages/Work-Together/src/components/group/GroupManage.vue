@@ -107,7 +107,7 @@
   </template>
   
   <script>
-  import member from './member.vue';
+  import groupmember from './groupmember.vue';
   import group from './group.vue';
 
   export default {
@@ -123,18 +123,18 @@
         isMenuOpen: false, // 用于控制气泡菜单的显示与隐藏
         selectedOption: 'basic',
         showChild1: true, // 控制显示子组件1还是子组件2的标志
-        child1Component: member, // 子组件1
+        child1Component: groupmember, // 子组件1
         child2Component: group  // 子组件2
       }
     },
     components: {
-      member,
+      groupmember,
       group
     },
     computed: {
       // 将 showChild1 改为计算属性
       componentToShow() {
-        return this.showChild1 ? 'member' : 'group';
+        return this.showChild1 ? 'groupmember' : 'group';
       }
     },
     methods: {
