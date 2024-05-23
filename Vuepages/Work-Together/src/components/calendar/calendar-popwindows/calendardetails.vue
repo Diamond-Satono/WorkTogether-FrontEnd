@@ -1,125 +1,130 @@
 <template>
-    <div>
-      <!-- 背景遮罩层 -->
-      <div v-if="showPopup" class="overlay" @click="closePopup"></div>
-  
-      <!-- 弹窗组件 -->
-      <div v-if="showPopup" class="popup"  @click.stop>
-        <div class="popup-body">
-          <!-- 左侧部分 -->
-          <div class="left-section">
-            <div class="popup-header">
-              <span class="menu-type">日历</span>
-              <span id="type-span">
-                <label id="typetitle" for="type">类型:</label>
-                <select v-model="schedule.type">
-                  <option value="1">面试</option>
-                  <option value="0">会议</option>
-                  <option value="3">培训</option>
-                  <option value="2">出差</option>
-                  <option value="5">个人日程</option>
-                  <option value="4">其他</option>
-                </select>
-              </span>
-              <button id="delete-button" @click="showDeleteConfirm()">删除</button>
-              <component :title="schedule.title" :scheduleId="scheduleId" :is="currentDialog" @closeDialog="closeDialog" v-if="isDialogVisible" />
-            </div>
-  
-            <!-- 日程名称 -->
-            <div class="schedule-type">
-              <div id="title">{{ schedule.title }}</div>
-              <div class="status-buttons">
-                <button
-                  :class="{ active: currentStatus === '暂定' }"
-                  @click="updateStatus('暂定')"
-                >暂定</button>
-                <button
-                  :class="{ active: currentStatus === '谢绝' }"
-                  @click="updateStatus('谢绝')"
-                >谢绝</button>
-                <button
-                  :class="{ active: currentStatus === '接受' }"
-                  @click="() => { updateStatus('接受'); joinInSchedule(); }"
-                >接受</button>
-              </div>
-            </div>
-            <!-- 日程时间 -->
-            <div class="schedule-time">
-              <div id="left-time">
-                <div>
-                  <span class="time-line1">{{ formattedStartDate }}</span>
-                  <span class="time-line2">{{ formattedStartTime }}</span>
-                </div>
-                <div class="time-type">开始时间</div>
-              </div>
-              <div id="line1">—</div>
-              <div id="right-time">
-                <div>
-                  <span class="time-line1">{{ formattedEndDate }}</span>
-                  <span class="time-line2">{{ formattedEndTime }}</span>
-                </div>
-                <div class="time-type">结束时间</div>
-              </div>
-            </div>
-            <!-- 组织人 -->
-            <div class="organizer">
-              <label class="subtitle">组织人:</label>
-              <!-- <div>{{ this.schedule.organizer }}</div> -->
-              <div v-if="organizer">
-                <img :src="organizer.avatar" :alt="organizer.name" class="participant-avatar" />
-                <!-- <span>{{ organizer.name }}</span> -->
-              </div>
-            </div>
-            <!-- 参与人 -->
-            <div class="participants">
-              <label class="subtitle">参与人:</label>
-              <div v-for="(participant, index) in this.schedule.participants" :key="participant.id" class="participant-wrapper">
-                <img :src="participant.avatar" :alt="participant.name" class="participant-avatar" />
-              </div>
-            </div>
-            <!-- 描述 -->
-            <div class="description">
-              <label class="subtitle">描述:</label>
-              <p>{{ schedule.description }}</p>
+  <div>
+    <!-- 背景遮罩层 -->
+    <div v-if="showPopup" class="overlay" @click="closePopup"></div>
+
+    <!-- 弹窗组件 -->
+    <div v-if="showPopup" class="popup" @click.stop>
+      <div class="popup-body">
+        <!-- 左侧部分 -->
+        <div class="left-section">
+          <div class="popup-header">
+            <span class="menu-type">日历</span>
+            <span id="type-span">
+              <label id="typetitle" for="type">类型:</label>
+              <select v-model="schedule.type">
+                <option value="1">面试</option>
+                <option value="0">会议</option>
+                <option value="3">培训</option>
+                <option value="2">出差</option>
+                <option value="5">个人日程</option>
+                <option value="4">其他</option>
+              </select>
+            </span>
+            <button id="delete-button" @click="showDeleteConfirm()">删除</button>
+            <delete-confirm :title="schedule.title" :scheduleId="scheduleId" @closeDialog="closeDialog" v-if="isDialogVisible" />
+          </div>
+
+          <!-- 日程名称 -->
+          <div class="schedule-type">
+            <div id="title">{{ schedule.title }}</div>
+            <div class="status-buttons">
+              <button
+                :class="{ active: currentStatus === '暂定' }"
+                @click="updateStatus('暂定')"
+              >暂定</button>
+              <button
+                :class="{ active: currentStatus === '谢绝' }"
+                @click="() => { updateStatus('谢绝'); refuseSchedule(); }"
+              >谢绝</button>
+              <button
+                :class="{ active: currentStatus === '接受' }"
+                @click="() => { updateStatus('接受'); joinInSchedule(); }"
+              >接受</button>
             </div>
           </div>
-          <!-- 右侧部分 -->
-          <div class="right-section">
-            <div id="right-title">参与详情:</div>
-            <div class="right-content">
-              <h4>暂定人员</h4>
-              <div class="right-member">
-                <div v-for="participant in tentativeParticipants" :key="participant.id">
+          <!-- 日程时间 -->
+          <div class="schedule-time">
+            <div id="left-time">
+              <div>
+                <span class="time-line1">{{ formattedStartDate }}</span>
+                <span class="time-line2">{{ formattedStartTime }}</span>
+              </div>
+              <div class="time-type">开始时间</div>
+            </div>
+            <div id="line1">—</div>
+            <div id="right-time">
+              <div>
+                <span class="time-line1">{{ formattedEndDate }}</span>
+                <span class="time-line2">{{ formattedEndTime }}</span>
+              </div>
+                <div class="time-type">结束时间</div>
+            </div>
+          </div>
+          <!-- 组织人 -->
+          <div class="organizer">
+            <label class="subtitle">组织人:</label>
+            <div v-if="organizer">
+              <img :src="organizer.avatar" :alt="organizer.name" class="participant-avatar" />
+            </div>
+          </div>
+          <!-- 参与人 -->
+          <div class="participants">
+            <label class="subtitle">参与人:</label>
+            <div v-for="(participant, index) in this.schedule.participants" :key="participant.id" class="participant-wrapper">
+              <img :src="participant.avatar" :alt="participant.name" class="participant-avatar" />
+            </div>
+          </div>
+          <!-- 描述 -->
+          <div class="description">
+            <label class="subtitle">描述:</label>
+            <p>{{ schedule.description }}</p>
+          </div>
+        </div>
+        <!-- 右侧部分 -->
+        <div class="right-section">
+          <div id="right-title">参与详情:</div>
+          <div class="right-content">
+            <h4>暂定人员</h4>
+            <div class="right-member">
+              <div v-for="participant in tentativeParticipants" :key="participant.id">
+              <img :src="participant.avatar" :alt="participant.name" class="avatar" />
+              </div>
+            </div>
+          </div>
+          <div class="right-content">
+            <h4>确定参与人员</h4>
+            <div class="right-member">
+              <div v-for="participant in confirmedParticipants" :key="participant.id">
                 <img :src="participant.avatar" :alt="participant.name" class="avatar" />
-                <!-- <span>{{ participant.name }}</span> -->
-                </div>
               </div>
             </div>
-            <div class="right-content">
-              <h4>确定参与人员</h4>
-              <div class="right-member">
-                <div v-for="participant in confirmedParticipants" :key="participant.id">
-                  <img :src="participant.avatar" :alt="participant.name" class="avatar" />
-                  <!-- <span>{{ participant.name }}</span> -->
-                </div>
+          </div>
+          <div class="right-content">
+            <h4>拒绝参与人员</h4>
+            <div class="right-member">
+              <div v-for="participant in declinedParticipants" :key="participant.id">
+                <img :src="participant.avatar" :alt="participant.name" class="avatar" />
               </div>
             </div>
-            <div class="right-content">
-              <h4>拒绝参与人员</h4>
-              <div class="right-member">
-                <div v-for="participant in declinedParticipants" :key="participant.id">
-                  <img :src="participant.avatar" :alt="participant.name" class="avatar" />
-                  <!-- <span>{{ participant.name }}</span> -->
-                </div>
-              </div>
-            </div>
-
           </div>
         </div>
       </div>
-
     </div>
-  </template>
+
+    <!-- 新的询问弹窗 -->
+    <div v-if="isConfirmationVisible" class="suboverlay" @click="closeConfirmationPopup">
+      <div class="subpopup" @click.stop>
+        <div class="sub-popup-body">
+          <div id="sub-text">您的日程与其他日程冲突，确定参加该日程吗？</div>
+          <button id="sub-button1" @click="confirmJoinInSchedule">确定</button>
+          <button id="sub-button2" @click="cancelJoinInSchedule">取消</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
   
   <script>
       //import calendar from './calendarmini.vue';
@@ -162,11 +167,12 @@
           userId:[]
         },
         organizer: [],
-        currentStatus: '暂定',  // 默认状态为暂定
+        currentStatus: '',  // 默认状态为暂定
         members: [], // 存储从后端获取的团队成员
-        scheduleId:'1793310937944465409',
+        
         currentDialog:'', // 当前显示的弹窗组件名称
         isDialogVisible: false, // 是否显示弹窗
+        isConfirmationVisible: false, // 新的状态变量
       };
     },
     watch: {
@@ -386,6 +392,11 @@
           return response.json();
         })
         .then(data => {
+          if (data.code === 20031) {
+            alert('已接受日程');
+          } else if (data.code === 20030) {
+            this.isConfirmationVisible = true;
+          }
           console.log(data);
         })
         .catch(error => {
@@ -405,6 +416,68 @@
         this.showPopup = false;
         this.closeDialog();
         this.$emit('refresh-calendar')
+      },
+      cancelJoinInSchedule() {
+        this.isConfirmationVisible = false;
+      },
+      confirmJoinInSchedule() {
+        this.isConfirmationVisible = false;
+        // 这里添加再次尝试加入日程的逻辑
+        this.joinInSchedule2();
+      },
+      joinInSchedule2(){
+        const url = `http://localhost:8080/api/schedule/join/${this.scheduleId}/1`;
+        fetch(url,{
+          method: 'PUT',
+          headers:{
+            'Content-Type': 'application/json',
+            'Authorization': token.value,
+            'companyId': userInfo.value.groupId
+          }
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          alert('已接受日程');
+          console.log(data);
+        })
+        .catch(error => {
+          console.error('获取状态时发生错误:', error);
+        });
+      },
+      refuseSchedule(){
+        const url = `http://localhost:8080/api/schedule/refuseOrTentative`;
+        const refuseData={
+          scheduleId: this.scheduleId,
+          joinStatus: 2,
+          refuseReason:'申请调整活动事件'
+        }
+        fetch(url,{
+          method: 'PUT',
+          headers:{
+            'Content-Type': 'application/json',
+            'Authorization': token.value,
+            'companyId': userInfo.value.groupId
+          },
+          body: JSON.stringify(refuseData)
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          alert('已拒绝日程');
+          console.log(data);
+        })
+        .catch(error => {
+          console.error('获取状态时发生错误:', error);
+        });
       }
 
 
@@ -421,7 +494,7 @@
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
-    z-index: 999;
+    z-index: 998;
   }
   
   .popup {
@@ -433,7 +506,7 @@
     background: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
+    z-index: 999;
     padding: 20px;
     width: 70%;
     height: 80%;
@@ -635,7 +708,58 @@
     position: relative;
     right: 9%;
   }
+  .subpopup{
+    position: relative;
+    z-index: 1000;
+    left: 46%;
+    top: 28%;
+    width: 12%;
+    height: 16%;
+    background-color: #fff;
+    border: 1px solid black;
+    overflow: auto;
+    border-radius: 5px;
+  }
+  .suboverlay{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 999;
+  }
+  #sub-text{
+    position: relative;
+    padding: 30px;
+    padding-top: 20px;
+    font-size: 15px;
+    font-weight: 600;
 
+  }
+  #sub-button1{
+    position: relative;
+    top: 0px;
+    width: 80px;
+    height: 30px;
+    background-color: #ff7f50;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    font-size: 15px;
+    margin-left: 15px;
+  }
+  #sub-button2{
+    position: relative;
+    top: 0px;
+    width: 80px;
+    height: 30px;
+    /* background-color: #ec4116; */
+    border: none;
+    border-radius: 4px;
+    color: black;
+    font-size: 15px;
+    margin-left: 30px;
+  }
   
   </style>
   

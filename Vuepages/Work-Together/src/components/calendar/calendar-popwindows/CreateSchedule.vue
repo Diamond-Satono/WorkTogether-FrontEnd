@@ -182,6 +182,7 @@ export default {
       })
       .then(data => {
         console.log('日程创建成功', data);
+        alert('日程创建成功');
         this.showPopup = false;
         // 这里可以添加成功后的处理逻辑，比如刷新列表或者显示成功提示
         this.$emit('refresh-calendar');
@@ -192,6 +193,7 @@ export default {
       });
     },
     cancel() {
+      //alert('取消创建');
       this.showPopup = false;
       this.$emit('refresh-calendar');
     },
