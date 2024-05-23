@@ -239,7 +239,7 @@ onMounted(() => {
 .thumbnail {
   margin: -5% 5%;
   transform: scale(0.9); /* 缩小到原来的50% */
-  height: 375px;
+  /* height: 375px; */
 }
 .scheduleType {
   margin: 2% 7%;

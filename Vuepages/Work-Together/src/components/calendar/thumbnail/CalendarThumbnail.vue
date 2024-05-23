@@ -284,7 +284,7 @@
         padding: 0 12px;
         li{
           width: 42px;
-          height: 42px;
+          height: 37px;
           margin: 4px calc((100% / 7 - 42px) / 2);
           display: flex;
           flex-direction: column;
