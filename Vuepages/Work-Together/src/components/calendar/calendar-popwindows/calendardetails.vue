@@ -410,10 +410,11 @@
       // 关闭弹窗
       closeDialog() {
         this.currentDialog = '';
-        this.isDialogVisible = false;
+        //this.isDialogVisible = false;
+        this.$emit('close-modal');
       },
       closePopup() {
-        this.showPopup = false;
+        //this.showPopup = false;
         this.closeDialog();
         this.$emit('refresh-calendar')
       },

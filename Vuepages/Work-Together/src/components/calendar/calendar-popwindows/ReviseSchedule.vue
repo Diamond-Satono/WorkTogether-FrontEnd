@@ -222,7 +222,8 @@
         .then(data => {
           console.log('日程修改成功', data);
           alert('日程修改成功');
-          this.showPopup = false;
+          //this.showPopup = false;
+          this.$emit('close-modal');
           // 这里可以添加成功后的处理逻辑，比如刷新列表或者显示成功提示
           this.$emit('refresh-calendar');
         })
@@ -232,7 +233,8 @@
         });
       },
       cancel() {
-        this.showPopup = false;
+        //this.showPopup = false;
+        this.$emit('close-modal');
         this.$emit('refresh-calendar');
       },
       addParticipant() {
