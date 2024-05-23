@@ -68,6 +68,7 @@
             })
             .then(data => {
                 console.log(data);
+                alert('删除完毕');
                 this.closeDialog();
             })
             .catch(error => {
