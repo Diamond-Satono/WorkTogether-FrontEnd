@@ -412,11 +412,12 @@
         this.currentDialog = '';
         //this.isDialogVisible = false;
         this.$emit('close-modal');
+        this.$emit('refresh-calendar');
       },
       closePopup() {
         //this.showPopup = false;
         this.closeDialog();
-        this.$emit('refresh-calendar')
+        //this.$emit('refresh-calendar')
       },
       cancelJoinInSchedule() {
         this.isConfirmationVisible = false;

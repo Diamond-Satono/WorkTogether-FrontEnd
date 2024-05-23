@@ -197,7 +197,7 @@ export default {
       //alert('取消创建');
       //this.showPopup = false;
       this.$emit('close-modal');
-      this.$emit('refresh-calendar');
+      //this.$emit('refresh-calendar');
     },
     addParticipant() {
       this.showMemberMenu = !this.showMemberMenu; // 显示或隐藏成员菜单
