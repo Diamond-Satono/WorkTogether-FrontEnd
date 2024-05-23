@@ -69,7 +69,6 @@ watch(() => props.selectedDate, (newDate, oldDate) => {
 
           console.log('Date changed to:', formattedDate);
         } else {
-          console.error('Calendar reference is null');
         }
       } else {
         throw new Error('Invalid date format. Expected format is YYYY-MM-DD.');
