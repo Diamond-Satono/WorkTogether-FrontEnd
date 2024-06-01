@@ -63,6 +63,7 @@
         还没有账号，去注册<img src="@/assets/loginimgs/register.svg" />
       </div>
     </div>
+    <LoginLoading ref="loadingalert"/>
     <LoginSuccess ref="alert"/>
   </div>
 </template>
@@ -277,6 +278,7 @@ import { useRouter } from "vue-router";
 import useStore from "@/store/store";
 import {Authorization} from "@/store/token"
 import LoginSuccess from './LoginSuccess.vue';
+import LoginLoading from './LoginLoading.vue';
 import { UserInfo } from "@/store/userinfo";
 // const email = ref("");
 
@@ -296,6 +298,7 @@ const token = Authorization();
 const router = useRouter();
 
 const alert = ref();
+const loadingalert = ref();
 //用户公司、团队id
 const userInfo = UserInfo();
 //显示密码方法
@@ -312,6 +315,7 @@ function togglePasswordVisibility() {
 //登录
 async function Login() {
   try {
+    showLoading();
     // 发送登录请求到后端API
     const response = await fetch("http://localhost:8080/api/user/login", {
       method: "POST",
@@ -330,14 +334,14 @@ async function Login() {
     console.log(requestBody.value);
 
     // 邮箱不正确
-    if (data.msg === "邮箱格式错误/不支持该类邮箱") {
+    if (data.msg === "邮箱格式错误/不支持该类邮箱") {    
       emailError.value = true;
       noaccount.value = false;
       passwordError.value = false;
       console.error("邮箱不正确，请重新输入");
     }
     // 密码错误,显示错误信息
-    else if (data.msg === "密码错误") {
+    else if (data.msg === "密码错误") {   
       passwordError.value = true;
       noaccount.value = false;
       emailError.value = false;
@@ -347,6 +351,7 @@ async function Login() {
       emailError.value = false;
       passwordError.value = false;
     } else {
+      
       // 登录成功
       showAlert();
       noaccount.value = false;
@@ -363,6 +368,9 @@ async function Login() {
     }
   } catch (error) {
     console.error("There was a problem with the login:", error);
+  }
+  finally {
+    closeLoading(); 
   }
 }
 
@@ -442,5 +450,15 @@ const showAlert = () => {
   alert.value.displayAlert('登录成功', 1500);
   console.log("弹窗显示");
   setTimeout(goToHomePage, 1500); // 延迟1.5秒后跳转到HomePage页面
+};
+
+const showLoading = () => {
+  loadingalert.value.displayAlert('登录中');
+  console.log("弹窗显示");
+};
+
+const closeLoading = () => {
+  loadingalert.value.closeAlert();
+  console.log("Loading弹窗关闭");
 };
 </script>
