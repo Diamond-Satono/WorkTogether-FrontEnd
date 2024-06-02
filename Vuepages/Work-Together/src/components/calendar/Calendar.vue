@@ -15,44 +15,44 @@
         <a style="color: #ff7f50;" @click="toggleSubMenu('calendar')">
           <fa icon="folder-open" /> 日历
         </a>
-        <ul class="submenu" v-show="subMenuStatus.calendar">
+        <!-- <ul class="submenu" v-show="subMenuStatus.calendar">
           <li><a>
               <fa icon="file" /> 1
             </a></li>
-        </ul>
+        </ul> -->
       </li>
       <li id="settings">
         <i class="fas fa-file"></i>
-        <a @click="toggleSubMenu('settings')">
-          <fa icon="folder-open" /> 设置
+        <a href="/address" @click="toggleSubMenu('settings')">
+          <fa icon="folder-open" /> 通讯录
         </a>
-        <ul class="submenu" v-show="subMenuStatus.settings">
+        <!-- <ul class="submenu" v-show="subMenuStatus.settings">
           <li><a>
               <fa icon="file" /> 1
             </a></li>
-        </ul>
+        </ul> -->
       </li>
       <li id="userinfo">
         <i class="fas fa-file"></i>
-        <a @click="toggleSubMenu('userinfo')">
-          <fa icon="folder-open" /> 个人信息
+        <a href="/notice" @click="toggleSubMenu('userinfo')">
+          <fa icon="folder-open" /> 通知
         </a>
-        <ul class="submenu" v-show="subMenuStatus.userinfo">
+        <!-- <ul class="submenu" v-show="subMenuStatus.userinfo">
           <li><a>
               <fa icon="file" /> 1
             </a></li>
-        </ul>
+        </ul> -->
       </li>
       <li id="tasks">
         <i class="fas fa-file"></i>
         <a @click="toggleSubMenu('tasks')">
-          <fa icon="folder-open" /> 任务管理
+          <fa icon="folder-open" /> 设置
         </a>
-        <ul class="submenu" v-show="subMenuStatus.tasks">
+        <!-- <ul class="submenu" v-show="subMenuStatus.tasks">
           <li><a>
               <fa icon="file" /> 1
             </a></li>
-        </ul>
+        </ul> -->
       </li>
     </ul>
     <!-- 切换切换团队窗口 -->
@@ -86,6 +86,15 @@
       </div>
 
       <div class="topbar-right">
+        <div id="notice-button">                       
+            <button id="notice-popup" @click="toggleNoticeMenu"><img src="@/assets/img/notice_icon.png" alt="notice"></button>
+            
+            <div v-if="isNoticeMenuOpen" id="notice-bubble">
+              <!-- 弹窗内容 -->
+              <noticebubble />
+            </div>
+        </div>
+
         <!-- 用户信息 -->
         <div class="user-info">
           <img src="@/assets/img/icon.png" alt="User Avatar">
@@ -145,6 +154,7 @@
 <script>
 import CalendarL from './CalendarL.vue';
 import CalendarR from './CalendarR.vue';
+import noticebubble from '@/components/notice/noticebubble.vue';
 
 export default {
   name: 'Calendar',
@@ -167,12 +177,14 @@ export default {
       // 使用 props 接收从子组件传递过来的值
       selectedDate: '',//格式：2024-5-19
       currentActive: null,//格式：allschedule
-      currentTypeColor: ''  //格式：#FF0000
+      currentTypeColor: '' , //格式：#FF0000
+      isNoticeMenuOpen: false, // 新增变量
     }
   },
   components: {
     CalendarL,
-    CalendarR
+    CalendarR,
+    noticebubble
   },
   /*     computed: {
         // 将 showChild1 改为计算属性
@@ -203,6 +215,9 @@ export default {
     updateColor(color) {
       this.currentTypeColor = color;
       console.log('Current type color:', this.currentTypeColor)
+    },
+    toggleNoticeMenu() {
+      this.isNoticeMenuOpen = !this.isNoticeMenuOpen;
     }
 
 
@@ -678,4 +693,31 @@ a {
 #user-button2:hover {
   background-color: #cfd2d4;
 }
+
+  #notice-button{
+    margin-right: 50px;
+  }
+  #notice-popup{
+    width:  30px;
+    height: 30px;
+    background-color: #fff;
+    border: none;
+  }
+  #notice-popup:hover{
+    /* background-color: #cfd2d4; */
+    cursor: pointer;
+  }
+
+  #notice-bubble {
+    position: absolute;
+    top: 80px; /* 根据需要调整 */
+    right: 20px; /* 根据需要调整 */
+    width: 450px;
+    height: 780px;
+    z-index: 1001;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
 </style>
