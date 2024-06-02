@@ -127,20 +127,16 @@
   
       <div id="main-content">
         <!-- 这里放置页面的主要内容 -->
-        
-  
+        <noticemain />
       </div>
-  
-  
+    
     </div>
-  
-  
-  
   
   </template>
   
   <script>
   import noticebubble from '@/components/notice/noticebubble.vue'
+  import noticemain from '@/components/notice/noticemain.vue';
   
   export default {
     name: 'notice',
@@ -168,7 +164,8 @@
       }
     },
     components:{
-      noticebubble
+      noticebubble,
+      noticemain
     },
     
     methods: {
