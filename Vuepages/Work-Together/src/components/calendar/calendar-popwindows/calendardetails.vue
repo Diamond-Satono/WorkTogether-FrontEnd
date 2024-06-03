@@ -267,7 +267,7 @@
         return `${hours}:${minutes}`;
       },
       viewMember() {
-        const url = `http://localhost:8080/api/group/member/2`;
+        const url = `http://localhost:8080/api/group/member/${userInfo.value.groupId}`;
         fetch(url, {
           method: 'GET',
           headers: {
