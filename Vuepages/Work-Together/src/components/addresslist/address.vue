@@ -124,10 +124,6 @@
   
       <div id="main-content">
         <!-- 这里放置页面的主要内容 -->
-        <!-- <div id="info-mode">
-          <div id="menu-name"><img class="icon-little" src="@/assets/img/address_icon.png" alt="Icon">团队通讯录</div>
-        </div>
-        <div id="bottom-line"></div> -->
         <div id="carlendar-content">
           <!-- <component :is="componentToShow"></component> -->
           <div id="carlendar-L">
