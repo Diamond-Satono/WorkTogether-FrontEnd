@@ -19,21 +19,21 @@
       </li>
       <li id="settings">
         <i class="fas fa-file"></i>
-        <a @click="toggleSubMenu('settings')">
+        <a @click="toggleSubMenu('settings')" href="/address">
           <fa icon="folder-open" /> 通讯录
         </a>
         
       </li>
       <li id="userinfo">
         <i class="fas fa-file"></i>
-        <a @click="toggleSubMenu('userinfo')">
+        <a @click="toggleSubMenu('userinfo')" href="/notice">
           <fa icon="folder-open" /> 通知
         </a>
         
       </li>
       <li id="tasks">
         <i class="fas fa-file"></i>
-        <a @click="toggleSubMenu('tasks')">
+        <a @click="toggleSubMenu('tasks')" >
           <fa icon="folder-open" /> 设置
         </a>
         

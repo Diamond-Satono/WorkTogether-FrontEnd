@@ -351,7 +351,7 @@ async function Login() {
       emailError.value = false;
       passwordError.value = false;
     } else {
-      
+      closeLoading(); 
       // 登录成功
       showAlert();
       noaccount.value = false;
@@ -365,6 +365,7 @@ async function Login() {
       // 确保 GetCompanyId 成功执行后再执行 GetGroupId
       await GetCompanyId();
       await GetGroupId();
+      
     }
   } catch (error) {
     console.error("There was a problem with the login:", error);
