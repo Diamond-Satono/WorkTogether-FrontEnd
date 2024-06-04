@@ -127,11 +127,13 @@
         <div id="carlendar-content">
           <!-- <component :is="componentToShow"></component> -->
           <div id="carlendar-L">
-            <addressL />
+            <addressL @member-selected="handleMemberSelected" />
           </div>
           <div id="vertical-line"></div> <!-- 新增的竖直线 -->
           <div id="carlendar-R">
-            <addressR />
+            
+            <addressR v-if="showAddressR" @edit-info="showAddressR = false" :memberId="selectedMemberId"></addressR>
+            <addressR2 v-else :memberId="selectedMemberId" @cancel-edit="handleCancelEdit" @save-edit="handleSaveEdit"></addressR2>
           </div>
         </div>
   
@@ -154,13 +156,13 @@
     name: 'address',
     data() {
       return {
-        subMenuStatus: {
+        /* subMenuStatus: {
           home: false,
           calendar: true,
           settings: true,
           userinfo: true,
           tasks: true
-        },
+        }, */
         isMenuOpen: false, // 用于控制气泡菜单的显示与隐藏
         isMenuOpen2: false, // 用于左下角控制气泡菜单的显示与隐藏
         selectedOption: 'basic',
@@ -173,6 +175,8 @@
         currentActive: null,//格式：allschedule
         currentTypeColor: '',  //格式：#FF0000
         isNoticeMenuOpen: false, // 新增变量
+        selectedMemberId: null, // 存储选中的成员 ID
+        showAddressR: true // 默认显示 addressR 组件
       }
     },
     components:{
@@ -192,7 +196,7 @@
         this.isMenuOpen2 = !this.isMenuOpen2; // 点击按钮时切换菜单的显示状态
       },
       // 定义方法来更新 selectedDate
-      updateSelectedDate(date) {
+      /* updateSelectedDate(date) {
         this.selectedDate = date;
         console.log('Selected date:', this.selectedDate);
       },
@@ -204,10 +208,19 @@
       updateColor(color) {
         this.currentTypeColor = color;
         console.log('Current type color:', this.currentTypeColor)
-      },
+      }, */
       toggleNoticeMenu() {
         this.isNoticeMenuOpen = !this.isNoticeMenuOpen;
-      }
+      },
+      handleMemberSelected(memberId) {
+        this.selectedMemberId = memberId; // 更新选中的成员 ID
+      },
+      handleCancelEdit() {
+        this.showAddressR = true; // 切换到 addressR
+      },
+      handleSaveEdit() {
+        this.showAddressR = true; // 保存并切换到 addressR
+      },
       
   
     }
@@ -295,6 +308,9 @@
   }
   
   #right-content {
+    position: fixed;
+    height: 100%;
+    background: #FFF;
     background-color: #F5F7FA;
     margin-left: 250px;
     width: 86.5%;
@@ -712,7 +728,7 @@
   #vertical-line {
     width: 1px;
     background-color: #BBBBBB;
-    height: 100%;
+    height: 105%;
   }
 
 
