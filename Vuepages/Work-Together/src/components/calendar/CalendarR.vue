@@ -545,15 +545,24 @@ function showcalendardetails(info: any) {
   console.log("currentModal=", currentModal.value);
 }
 
+function isEventPast(eventStartTime :any) {
+  const currentTime = new Date();
+  return currentTime > new Date(eventStartTime);
+}
+
 function showReviseSchedule(info: any) {
   if (currentTippyInstance) {
     currentTippyInstance.destroy();
   }
   scheduleId.value = info.event.id;
+  const eventStartTime = info.event.start;
+  if (isEventPast(eventStartTime)) {
+    alert("当前时间已经超过事件的开始时间，无法编辑！");
+    return;
+  }
   currentModal.value = "ReviseSchedule";
   console.log("currentModal=", currentModal.value);
 }
-
 
 //关闭弹窗
 function closeModal() {
