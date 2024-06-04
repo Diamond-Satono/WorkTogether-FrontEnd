@@ -91,7 +91,7 @@
             
             <div v-if="isNoticeMenuOpen" id="notice-bubble">
               <!-- 弹窗内容 -->
-              <noticebubble />
+              <noticebubble @close-modal="closeModal" />
 
             </div>
 
@@ -194,6 +194,11 @@
       },
       toggleNoticeMenu() {
         this.isNoticeMenuOpen = !this.isNoticeMenuOpen;
+      },
+      // 监听子组件发出的 close-modal 事件
+      closeModal() {
+        this.isNoticeMenuOpen = false;
+        console.log('Modal closed');
       }
   
   
