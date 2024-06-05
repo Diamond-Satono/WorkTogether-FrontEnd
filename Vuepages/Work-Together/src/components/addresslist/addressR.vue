@@ -9,7 +9,7 @@
       <div id="info1">
         <span id="mem-phone"><img src='@/assets/img/phone.png' alt="avatar" class="member-icon"> {{ member.phone }}</span>
         <span id="mem-email"><img src='@/assets/img/email.png' alt="avatar" class="member-icon"> {{ member.email }}</span>
-        <button id="edit-info" @click="$emit('edit-info')">编辑信息</button>
+        <button id="edit-info" v-if="isMyself" @click="$emit('edit-info')">编辑信息</button>
       </div>
       <div id="bottom-line"></div> <!-- 下方的线 -->
       <div id="info2">
@@ -65,6 +65,10 @@ export default {
       type: Number,
       required: true,
     },
+    isMyself: {
+      type: Boolean,
+      required: true,
+    },
   },
   data() {
     return {
@@ -101,6 +105,7 @@ export default {
       .then(data => {
         this.member = data.data; // 假设返回的数据中成员信息在 data.data 中
         console.log(data);
+        console.log(this.isMyself);
       })
       .catch(error => {
         console.error('There was a problem with the fetch operation:', error);
@@ -108,10 +113,14 @@ export default {
     },
   },
   created() {
+    console.log('当前用户id： '+this.memberId);
     if (this.memberId) {
       this.fetchMemberDetails(this.memberId);
     }
   },
+  components: {
+    todayschedule
+  }
 };
 </script>
 

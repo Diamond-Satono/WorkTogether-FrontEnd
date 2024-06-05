@@ -45,7 +45,8 @@ export default {
   data() {
     return {
       searchQuery: '',
-      originalMembers: {} // 成员数据保存在这个对象中
+      originalMembers: {},
+      myMemberId: null // 添加存储当前用户ID的变量
     };
   },
   computed: {
@@ -98,16 +99,18 @@ export default {
         this.originalMembers = data.data;
         console.log(this.originalMembers);
         console.log('groupId is:'+userInfo.value.groupId);
-        const memberId=data.data.myself[0].id;
+        const memberId = data.data.myself[0].id;
+        this.myMemberId = memberId; // 存储当前用户的 ID
         console.log('memberId is:'+memberId);
-        this.$emit('member-selected', memberId);
+        this.selectMember(memberId); // 默认选中myself用户
       })
       .catch(error => {
         console.error('There was a problem with the fetch operation:', error);
       });
     },
     selectMember(memberId) {
-      this.$emit('member-selected', memberId);
+      const isMyself = memberId === this.myMemberId;
+      this.$emit('member-selected', { memberId, isMyself });
     },
   },
   created() {

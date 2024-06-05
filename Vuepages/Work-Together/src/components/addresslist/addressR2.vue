@@ -153,30 +153,40 @@
             Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]));
             
             let formData = new FormData();
-            if (this.avatarFile) {  // 使用 avatarFile 而不是 member.avatar
-                formData.append('avatar', this.avatarFile);
-            } else {
-                console.log("No file to upload or file data is invalid.");
+            if (this.avatarFile && this.avatarFile.size > 0) {  // 确保文件有效
+                formData.append('image', this.avatarFile);
+            }else {
+                // 添加一个空的 Blob 对象作为文件字段，并提供一个默认文件名
+                formData.append('image', null);
             }
 
+            // 遍历 formData 并打印内容
+            formData.forEach((value, key) => {
+                console.log(`${key}:`, value);
+            });
+            console.log('头像文件：'+this.avatarFile);
+
             fetch(url, {
-                method: 'PUT',
+                method: 'POST',
                 headers: {
                     //'Content-Type': 'application/json',
                     'Authorization': token.value,
                     //'companyId': userInfo.companyId.value
-            },
+                },
                 body: formData
             }).then(response => {
                 if (response.ok) {
+                    console.log('头像文件：'+this.avatarFile);
                     this.$emit('save-edit'); // 通知父组件已保存
+                    this.$emit('data-saved'); // 数据保存成功后发射事件
                 } else {
                     throw new Error('Failed to save changes');
                 }
             }).catch(error => {
                 console.error('Save error:', error);
             });
-        },
+        }
+
     },
     created() {
       if (this.memberId) {
