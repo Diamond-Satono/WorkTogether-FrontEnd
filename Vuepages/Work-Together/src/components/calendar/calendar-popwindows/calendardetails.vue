@@ -252,7 +252,7 @@
             return this.members.find(member => member.id === userId);
           }).filter(participant => participant);
           console.log(this.schedule);
-          //console.log(data.data);
+          
         })
         .catch(error => {
           console.error('获取日程时发生错误:', error);
@@ -292,7 +292,7 @@
         })
         .then(data => {
           this.members = data.data;
-          console.log(this.members);
+          //console.log(this.members);
         })
         .catch(error => {
           console.error('Error fetching user data:', error);
