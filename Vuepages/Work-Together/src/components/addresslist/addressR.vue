@@ -125,6 +125,9 @@ export default {
 </script>
 
 <style scoped>
+body {
+  font-family: 'SimHei', '黑体', 'Arial', sans-serif; /* 黑体字体及备选字体 */
+}
 .modal{
   background-color: #f5f5f5;
   width: 100%;
@@ -278,6 +281,7 @@ export default {
   font-size: 18px;
   margin-bottom: 20px;
   margin-left: 10px;
+  margin-top: 10px;
 }
 .de-line{
   display: flex;

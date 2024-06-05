@@ -34,9 +34,13 @@
             <div class="info-line">
                 <div class="info-left">工作地址</div>
                 <select id="input-right" v-model="member.address">
-                    <option value="北京">北京</option>
-                    <option value="上海">上海</option>
                     <option value="中国">中国</option>
+                    <option value="中国香港">中国香港</option>
+                    <option value="美国">美国</option>
+                    <option value="加拿大">加拿大</option>
+                    <option value="法国">法国</option>
+                    <option value="瑞士">瑞士</option>
+                    <option value="德国">德国</option>
                 </select>
             </div>
             <div class="info-line">
