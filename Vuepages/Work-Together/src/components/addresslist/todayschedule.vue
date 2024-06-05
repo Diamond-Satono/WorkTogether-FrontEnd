@@ -10,13 +10,19 @@
         <i>{{ arg.event.title }}</i>
         <div class="eventdescription">{{ arg.event.extendedProps.description }}</div>
         <div class="icons">
-        <div class="avatar-container" v-for="(user, index) in arg.event.extendedProps.avatarsAndNames" :key="index">
-          <img class="avatar" :src="user.avatar" :alt="user.name" :title="user.name">
+          <div class="avatar-container" v-for="(user, index) in arg.event.extendedProps.avatarsAndNames" :key="index">
+            <img class="avatar" :src="user.avatar" :alt="user.name" :title="user.name">
+          </div>
         </div>
-      </div>
       </template>
     </FullCalendar>
   </div>
+  <!-- 动态加载组件 -->
+  <Transition :name="transitionName" mode="out-in">
+    <component :is="currentModal" v-if="currentModal" @close-modal="closeModal" @refresh-calendar="refreshCalendar"
+      :scheduleId="scheduleId">
+    </component>
+  </Transition>
 </template>
 
 <script setup lang="ts">
@@ -102,6 +108,7 @@ const calendarOptions = ref<CalendarOptions>({
   displayEventEnd: true,//显示结束时间
   displayEventTime: true,
   eventDisplay: 'block',
+  eventClick: handleEventClick,
   eventsSet: handleEvents,
 
   /* you can update a remote database when these fire:
@@ -234,6 +241,40 @@ async function fetchEventDetails(scheduleId: any) {
     return {};
   }
 }
+
+const scheduleId = ref('')
+const currentModal = ref("");
+const transitionName = ref("fade");
+//处理events点击事件
+function handleEventClick(clickInfo: EventClickArg) {
+  showcalendardetails(clickInfo);
+}
+
+function showcalendardetails(info: any) {
+
+  scheduleId.value = info.event.id;
+  currentModal.value = "calendardetails";
+  console.log("currentModal=", currentModal.value);
+}
+
+//关闭弹窗
+function closeModal() {
+  currentModal.value = "";
+  console.log("ModalClosed");
+}
+//刷新日历重新获取事件
+async function refreshCalendar() {
+  // 获取 FullCalendar 的 API
+  let calendarApi = calendarRef.value.getApi();
+
+  // 清空所有 events
+  let events = calendarApi.getEvents();
+  events.forEach((event: EventApi) => event.remove());
+
+
+  await fetchMyEvents(props.memberId);
+
+}
 </script>
 
 <style>
@@ -263,6 +304,7 @@ async function fetchEventDetails(scheduleId: any) {
 .fc-list-event {
   height: 150px;
   /* background-color: rgba(229, 229, 234, 0.35); */
+  cursor: pointer;
 }
 
 .eventdescription {
@@ -274,7 +316,6 @@ async function fetchEventDetails(scheduleId: any) {
 }
 
 .icons {
-  
   display: flex;
   justify-content: flex-end;
   /* 固定右端 */
