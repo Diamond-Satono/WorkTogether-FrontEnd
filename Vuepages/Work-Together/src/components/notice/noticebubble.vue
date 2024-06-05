@@ -7,19 +7,20 @@
         :class="{ activeTab: activeTab === 'Latest' }"
         @click="() => { activeTab = 'Latest'; currentPage = 1; pageSize = 5; hasMore = true; fetchNoticeData(); }">
         最新
-        <span class="NumTips">{{unreadCount}}</span>
+        <span class="NumTips" v-if="unreadCount > 0">{{unreadCount}}</span>
       </div>
       <div
         class="tab"
         :class="{ activeTab: activeTab === 'pendingdeal' }"
         @click="() => { activeTab = 'pendingdeal'; currentPage = 1; pageSize = 5; hasMore = true; fetchNoticeData(); }">
         待处理
-        <span class="NumTips">{{handleLaterCount}}</span>
+        <span class="NumTips" v-if="handleLaterCount > 0">{{handleLaterCount}}</span>
       </div>
       <div>
         <img
           src="@/assets/notice/allread.png"
-          class="search"          
+          style="cursor: pointer;"
+          @click="toAllRead"
         />
       </div>
       <div>
@@ -31,27 +32,29 @@
       </div>
     </div>
     <div v-if="activeTab === 'Latest'" class="tabContent">
-      <div v-for="notice in noticeList" :key="notice.id" class="noticecolumn" @click="toRead(notice.user.id)">
-        <img :src="notice.user.avatar" alt="User Avatar" class="user-avatar" style="max-width: 13%; height: auto;">
+      <div v-for="notice in noticeList" :key="notice.id" class="noticecolumn" @click="handleNotice(notice)">
+        <!-- <img :src="notice.user.avatar" alt="User Avatar" class="user-avatar" style="max-width: 13%; height: auto;"> -->
+        <img :src="notice.user.avatar" alt="User Avatar" class="user-avatar" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">
         <div>
           <div class="notice-content">
             <span style="color: rgba(16, 16, 16, 0.35);">{{ notice.user.name }}</span>
             {{ notice.context }}
           </div>
-          <div class="notice-title"><img src="@/assets/notice/nameIcon.png" alt="">{{ notice.scheduleTitle }}</div>
+          <div class="notice-title"><img src="@/assets/notice/nameIcon.png" alt="">&nbsp;{{ notice.scheduleTitle }}</div>
           <div class="notice-time" style="color: rgba(16, 16, 16, 0.35);">{{ notice.createTime }}</div>
         </div>
       </div>
     </div>
     <div v-if="activeTab === 'pendingdeal'" class="tabContent">
-      <div v-for="notice in noticeList" :key="notice.id" class="noticecolumn" @click="toRead(notice.user.id)">
-        <img :src="notice.user.avatar" alt="User Avatar" class="user-avatar" style="max-width: 13%; height: auto;">
+      <div v-for="notice in noticeList" :key="notice.id" class="noticecolumn" @click="handleNotice(notice)">
+        <!-- <img :src="notice.user.avatar" alt="User Avatar" class="user-avatar" style="max-width: 13%; height: auto;"> -->
+        <img :src="notice.user.avatar" alt="User Avatar" class="user-avatar" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">
         <div>
           <div class="notice-content">
             <span style="color: rgba(16, 16, 16, 0.35);">{{ notice.user.name }}</span>
             {{ notice.context }}
           </div>
-          <div class="notice-title"><img src="@/assets/notice/nameIcon.png" alt="">{{ notice.scheduleTitle }}</div>
+          <div class="notice-title"><img src="@/assets/notice/nameIcon.png" alt="">&nbsp;{{ notice.scheduleTitle }}</div>
           <div class="notice-time" style="color: rgba(16, 16, 16, 0.35);">{{ notice.createTime }}</div>
         </div>
       </div>
@@ -59,7 +62,7 @@
     <div class="up-down">
       <div>
         <img
-          src="@/assets/notice/bg-up.png" v-if="currentPage !== 1" @click="upData" style="cursor: pointer;margin-right: 5px;"
+          src="@/assets/notice/bg-up.png" v-if="currentPage !== 1" @click="upData" style="cursor: pointer;margin-right: 10px;"
         />
         <img
           src="@/assets/notice/bg-down.png" v-if="hasMore" @click="dowmData" style="cursor: pointer;"
@@ -77,15 +80,16 @@
         &nbsp;&nbsp;
         只显示未读
       </div>
-      <div class="noticeCenter">
-        <a href="/notice">
-          <img
-            src="@/assets/notice/noticeCenter.png"          
-          />
-        </a>
+      <div class="noticeCenter" @click="confirmGoToNoticeCenter">
+        <img
+          src="@/assets/notice/noticeCenter.png"          
+        />
       </div>
     </div>
   </div>
+  <component :is="currentModal" v-if="currentModal" @close-modal="closeModal"
+    :scheduleId="scheduleId">
+  </component>
 </template>
 
 <script setup lang="ts">
@@ -94,6 +98,11 @@ import {Authorization} from "@/store/token";
 import { UserInfo } from "@/store/userinfo";
 const token = Authorization();
 const userInfo = UserInfo();
+function confirmGoToNoticeCenter() {
+  if (confirm("是否前往通知中心？")) {
+      window.location.href = "/notice";
+  }
+}
 // 初始化默认标签页为“最新”
 const activeTab = ref('Latest');
 const noticeList = ref([
@@ -294,7 +303,7 @@ async function fetchUnReadNoticeData() {
     // 根据 activeTab 的值构建查询参数
     let queryParams = `page=${currentPage.value}&size=${pageSize.value}`;
     if (activeTab.value === 'Latest') {
-      queryParams += `&isRead=false&handleLater=null`;
+      queryParams += `&isRead=false`;
     } else if (activeTab.value === 'pendingdeal') {
       queryParams += `&isRead=false&handleLater=true`;
     }
@@ -333,6 +342,33 @@ async function fetchUnReadNoticeData() {
     isLoading.value = false;
   }
 }
+//设置弹窗
+const currentModal = ref("");
+const scheduleId = ref('')
+function showcalendardetails(id :any) {
+  scheduleId.value = id;
+  currentModal.value = "calendardetails";
+  console.log("currentModal=", currentModal.value);
+}
+//关闭弹窗
+function closeModal() {
+  currentModal.value = "";
+  console.log("ModalClosed");
+}
+//点击单个
+function handleNotice(notice :any) {
+  console.log("notice=", notice);
+  if(notice.isRead === false) {
+    toRead(notice.id);    
+  }
+  showcalendardetails(notice.scheduleId);
+  // router.push({
+  //   name: 'noticeDetail',
+  //   params: {
+  //     id: notice.id,
+  //   },
+  // });
+}
 //单个已读
 function toRead(id :any) {
   fetch(`http://localhost:8080/api/message/toIsRead/${id}`, {
@@ -347,20 +383,74 @@ function toRead(id :any) {
       console.log(response);
       // 检查响应状态
       if (!response.ok) {
-          alert("更新状态失败")
+          alert("更新单个状态为已读失败")
           throw new Error('Network error');
       }
       // 解析响应为 JSON 格式
       return response.json();
   })
   .then(data => {
-      // 请求成功，更新消息数据
-      
-      console.log("data=", data);
-                          
+      // 请求成功    
+      console.log("单个已读=", data);
+      hasMore.value = true;
+      fetchAllNoticeData();
+      if(showUnread.value === true)
+        fetchUnReadNoticeData();
+      else
+        fetchNoticeData();
   })
   .catch(error => {
       console.error('Error upate isRead', error);
+      // Handle the error, e.g., show a message to the user
+  });
+}
+//未读消息id数组
+const unReadIds = ref<any>([]);
+// 将所有未读消息的id放入unReadIds数组
+function updateUnReadIds() {
+  // 使用 filter 筛选出所有未读消息，然后使用 map 提取它们的 id
+  unReadIds.value = allNoticeList.value.filter(notice => !notice.isRead).map(notice => notice.id);
+  console.log("unReadIds=", unReadIds.value);  
+}
+//全部已读
+function toAllRead() {
+  if(!confirm("是否设置全部已读？"))
+    return;
+  // 确保未读消息ID数组是最新的
+  updateUnReadIds();
+  // 构建请求体
+  const body = JSON.stringify({
+    idList: unReadIds.value // 使用unReadIds中的ID数组
+  });
+  fetch(`http://localhost:8080/api/message/toIsRead/ByIds`, {
+    method: 'PUT',
+    headers: {
+        'Content-Type': 'application/json', // 设置 Content-Type 请求头为 JSON
+        'Authorization': token.value, // 设置 Authorization 请求头，用于身份验证
+        'companyId': companyIdString // 设置 companyId 请求头，用于传递公司 ID
+    },
+    body: body // 添加请求体
+  })
+  .then(response => {
+      console.log(response);
+      // 检查响应状态
+      if (!response.ok) {
+          alert("更新所有状态为已读失败")
+          throw new Error('Network error');
+      }
+      // 解析响应为 JSON 格式
+      return response.json();
+  })
+  .then(data => {
+      // 请求成功
+      alert("全部已读成功")
+      console.log("全部已读=", data);
+      fetchAllNoticeData();
+      hasMore.value = true;
+      fetchNoticeData();
+  })
+  .catch(error => {
+      console.error('Error upate toAllRead', error);
       // Handle the error, e.g., show a message to the user
   });
 }
@@ -408,7 +498,7 @@ onMounted(() => {
   height: 30px;
   cursor: pointer;
   vertical-align: middle; /* 设置垂直居中对齐 */
-  margin-top: -1%;
+  margin-top: -10%;
   margin-left: 70%;
 }
 .noticecolumn {
@@ -420,6 +510,7 @@ onMounted(() => {
   border-radius: 10px;
   display: flex;
   align-items: start;
+  cursor: pointer;
 }
 .notice-content {
   color: #060907;

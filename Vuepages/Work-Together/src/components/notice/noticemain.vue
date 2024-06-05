@@ -12,16 +12,16 @@
         </div>
         <div
           class="tab"
-          :class="{ activeTab: activeTab === 'pendingdeal' }"
-          @click="() => { activeTab = 'pendingdeal'; currentPage = 1; pageSize = 5; hasMore = true; fetchNoticeData(); }">
-          待处理
+          :class="{ activeTab: activeTab === 'unReadTab' }"
+          @click="() => { activeTab = 'unReadTab'; currentPage = 1; pageSize = 5; hasMore = true; fetchNoticeData(); }">
+          未读
           <!-- <span class="NumTips">{{handleLaterCount}}</span> -->
         </div>
         <div
           class="tab"
-          :class="{ activeTab: activeTab === 'pendingdeal' }"
-          @click="() => { activeTab = 'pendingdeal'; currentPage = 1; pageSize = 5; hasMore = true; fetchNoticeData(); }">
-          最新
+          :class="{ activeTab: activeTab === 'ReadTab' }"
+          @click="() => { activeTab = 'ReadTab'; currentPage = 1; pageSize = 5; hasMore = true; fetchNoticeData(); }">
+          已读
           <!-- <span class="NumTips">{{unreadCount}}</span> -->
         </div>
         <div
@@ -33,88 +33,116 @@
         </div>
       </div>
       <div class="Allbtn">
-        <button class="AlltoRead">
+        <button class="AlltoRead" @click="toAllRead">
           <img
             src="@/assets/notice/allread.png"            
           />全部已读
         </button>
-        <button class="AlltoLater">
+        <button class="AlltoLater" @click="toAllLater">
           <img
             src="@/assets/notice/allPendingdeal.png"
           />全部待处理
         </button>
       </div>
     </div>
+    <!-- 最新 -->
     <div v-if="activeTab === 'Latest'" class="tabContent">
       <div v-for="notice in noticeList" :key="notice.id" class="noticecolumn">
-        <div class="noticebody">
-          <img :src="notice.user.avatar" alt="User Avatar" class="user-avatar" style="max-width: 6%; max-height: 5%;">
+        <div class="noticebody" @click="handleNotice(notice)">
+          <img :src="notice.user.avatar" alt="User Avatar" class="user-avatar" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">
           <div>
             <div class="notice-content">
               <span style="color: rgba(16, 16, 16, 0.35);">{{ notice.user.name }}</span>
               {{ notice.context }}
             </div>
-            <div class="notice-title"><img src="@/assets/notice/nameIcon.png" alt="">{{ notice.scheduleTitle }}</div>
+            <div class="notice-title"><img src="@/assets/notice/nameIcon.png" alt="">&nbsp;{{ notice.scheduleTitle }}</div>
             <div class="notice-time" style="color: rgba(16, 16, 16, 0.35);">{{ notice.createTime }}</div>
           </div>
         </div>
         <div class="noticesign">
           <img src="@/assets/notice/redcycle.png" alt="" style="margin-right: 20px;" v-if="notice.isRead === false">
-          <img src="@/assets/notice/deal.png" alt="" v-if="notice.handleLater === true">
-          <img src="@/assets/notice/Pendingdeal.png" alt="" v-if="notice.handleLater === false">
+          <img src="@/assets/notice/Pendingdeal.png" alt="" v-if="notice.handleLater === true" class="dealbnt" @click="Individualdeal(notice)">
+          <img src="@/assets/notice/deal.png" alt="" v-if="notice.handleLater === false" class="dealbnt" @click="Individualdeal(notice)">
         </div>
       </div>
     </div>
-    <div v-if="activeTab === 'pendingdeal'" class="tabContent">
+    <!-- 未读 -->
+    <div v-if="activeTab === 'unReadTab'" class="tabContent">
       <div v-for="notice in noticeList" :key="notice.id" class="noticecolumn">
-        <div class="noticebody">
-          <img :src="notice.user.avatar" alt="User Avatar" class="user-avatar" style="max-width: 6%; max-height: 5%;">
+        <div class="noticebody" @click="handleNotice(notice)">
+          <!-- <img :src="notice.user.avatar" alt="User Avatar" class="user-avatar" style="max-width: 6%; max-height: 5%;"> -->
+          <img :src="notice.user.avatar" alt="User Avatar" class="user-avatar" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">
           <div>
             <div class="notice-content">
               <span style="color: rgba(16, 16, 16, 0.35);">{{ notice.user.name }}</span>
               {{ notice.context }}
             </div>
-            <div class="notice-title"><img src="@/assets/notice/nameIcon.png" alt="">{{ notice.scheduleTitle }}</div>
+            <div class="notice-title"><img src="@/assets/notice/nameIcon.png" alt="">&nbsp;{{ notice.scheduleTitle }}</div>
             <div class="notice-time" style="color: rgba(16, 16, 16, 0.35);">{{ notice.createTime }}</div>
           </div>
         </div>
         <div class="noticesign">
           <img src="@/assets/notice/redcycle.png" alt="" style="margin-right: 20px;" v-if="notice.isRead === false">
-          <img src="@/assets/notice/deal.png" alt="" v-if="notice.handleLater === true">
-          <img src="@/assets/notice/Pendingdeal.png" alt="" v-if="notice.handleLater === false">
+          <img src="@/assets/notice/Pendingdeal.png" alt="" v-if="notice.handleLater === true" class="dealbnt" @click="Individualdeal(notice)">
+          <img src="@/assets/notice/deal.png" alt="" v-if="notice.handleLater === false" class="dealbnt" @click="Individualdeal(notice)">
+        </div>
+      </div>
+    </div>
+    <!-- 已读 -->
+    <div v-if="activeTab === 'ReadTab'" class="tabContent">
+      <div v-for="notice in noticeList" :key="notice.id" class="noticecolumn">
+        <div class="noticebody"@click="handleNotice(notice)">
+          <img :src="notice.user.avatar" alt="User Avatar" class="user-avatar" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">
+          <div>
+            <div class="notice-content">
+              <span style="color: rgba(16, 16, 16, 0.35);">{{ notice.user.name }}</span>
+              {{ notice.context }}
+            </div>
+            <div class="notice-title"><img src="@/assets/notice/nameIcon.png" alt="">&nbsp;{{ notice.scheduleTitle }}</div>
+            <div class="notice-time" style="color: rgba(16, 16, 16, 0.35);">{{ notice.createTime }}</div>
+          </div>
+        </div>
+        <div class="noticesign">
+          <img src="@/assets/notice/redcycle.png" alt="" style="margin-right: 20px;" v-if="notice.isRead === false">
+          <img src="@/assets/notice/Pendingdeal.png" alt="" v-if="notice.handleLater === true" class="dealbnt" @click="Individualdeal(notice)">
+          <img src="@/assets/notice/deal.png" alt="" v-if="notice.handleLater === false" class="dealbnt" @click="Individualdeal(notice)">
+        </div>
+      </div>
+    </div>
+    <!-- 待处理 -->
+    <div v-if="activeTab === 'pendingdeal'" class="tabContent">
+      <div v-for="notice in noticeList" :key="notice.id" class="noticecolumn">
+        <div class="noticebody" @click="handleNotice(notice)">
+          <img :src="notice.user.avatar" alt="User Avatar" class="user-avatar" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">
+          <div>
+            <div class="notice-content">
+              <span style="color: rgba(16, 16, 16, 0.35);">{{ notice.user.name }}</span>
+              {{ notice.context }}
+            </div>
+            <div class="notice-title"><img src="@/assets/notice/nameIcon.png" alt="">&nbsp;{{ notice.scheduleTitle }}</div>
+            <div class="notice-time" style="color: rgba(16, 16, 16, 0.35);">{{ notice.createTime }}</div>
+          </div>
+        </div>
+        <div class="noticesign">
+          <img src="@/assets/notice/redcycle.png" alt="" style="margin-right: 20px;" v-if="notice.isRead === false">
+          <img src="@/assets/notice/Pendingdeal.png" alt="" v-if="notice.handleLater === true" class="dealbnt" @click="Individualdeal(notice)">
+          <img src="@/assets/notice/deal.png" alt="" v-if="notice.handleLater === false" class="dealbnt" @click="Individualdeal(notice)">
         </div>
       </div>
     </div>
     <div class="up-down">
       <div>
-        <img
-          src="@/assets/notice/bg-down.png" v-if="hasMore" @click="dowmData" style="cursor: pointer;"
-        />
-        <img
-          src="@/assets/notice/bg-up.png" v-else @click="upData" style="cursor: pointer;"
-        />
+        <button v-if="currentPage === 1" style="margin-right: 15px;" disabled>上一页</button>
+        <button @click="upData" v-if="currentPage !== 1" style="cursor: pointer;margin-right: 15px;">上一页</button>
+        <span style="color: #1684FC;">{{currentPage}}</span>/{{ totalPage }}
+        <button @click="dowmData" v-if="hasMore" style="cursor: pointer; margin-left: 15px;">下一页</button>
+        <button v-if="!hasMore" style="cursor: pointer; margin-left: 15px;" disabled>下一页</button>
       </div>
-    </div>
-    <div class="show">
-      <div class="unread">
-        <img
-          src="@/assets/notice/unshowNonread.png" v-if="!showUnread" @click="toggleUnread"
-        />
-        <img
-          src="@/assets/notice/showNonread.png" v-else @click="toggleUnread"
-        />
-        &nbsp;&nbsp;
-        只显示未读
-      </div>
-      <div class="noticeCenter">
-        <a href="/notice">
-          <img
-            src="@/assets/notice/noticeCenter.png"          
-          />
-        </a>
-      </div>
-    </div>
+    </div>    
   </div>
+  <component :is="currentModal" v-if="currentModal" @close-modal="closeModal"
+    :scheduleId="scheduleId">
+  </component>
 </template>
 
 <script setup lang="ts">
@@ -178,10 +206,16 @@ const allNoticeList = ref([
 const unreadCount = computed(() => {
   return allNoticeList.value.filter(notice => !notice.isRead).length;
 });
+// 计算属性，统计已读读消息的数量
+const readCount = computed(() => {
+  return allNoticeList.value.filter(notice => notice.isRead).length;
+});
 // 计算属性，统计待处理消息的数量
 const handleLaterCount = computed(() => {
   return allNoticeList.value.filter(notice => notice.handleLater).length;
 });
+//总页数
+const totalPage = ref(10);
 //获取消息列表
 const companyId = userInfo.value.companyId; // 根据实际情况替换
 const companyIdString = companyId.toString();
@@ -212,7 +246,7 @@ function fetchAllNoticeData() {
         console.log(token.value);  
         console.log("allNoticeList.value=", allNoticeList.value);
         console.log("allNoticeListsize=", allNoticeList.value.length);
-        
+        totalPage.value = Math.ceil(allNoticeList.value.length / pageSize.value);
     })
     .catch(error => {
         console.error('Error fetching allNoticeList data:', error);
@@ -232,14 +266,29 @@ async function fetchNoticeData() {
 
   isLoading.value = true;
   try {
-    const url = ref();
-    if(activeTab.value === 'Latest') {
-      url.value = `http://localhost:8080/api/message/${groupId.value}?page=${currentPage.value}&size=${pageSize.value}`;
-    } else {
-      url.value = `http://localhost:8080/api/message/handleLater/${groupId.value}?page=${currentPage.value}&size=${pageSize.value}`;
+    // 根据 activeTab 的值构建查询参数
+    let queryParams = `page=${currentPage.value}&size=${pageSize.value}`;
+    if (activeTab.value === 'Latest') {
+    } else if (activeTab.value === 'unReadTab') {
+      queryParams += `&isRead=false`;
+    } else if (activeTab.value === 'ReadTab') {
+      queryParams += `&isRead=true`;
+    } else if (activeTab.value === 'pendingdeal') {
+      queryParams += `&handleLater=true`;
     }
+    console.log("queryParams=" + queryParams);
+    // const url = ref();
+    // if(activeTab.value === 'Latest') {
+    //   url.value = `http://localhost:8080/api/message/${groupId.value}?page=${currentPage.value}&size=${pageSize.value}`;
+    // } else if(activeTab.value === 'unReadTab') {
+    //   url.value = `http://localhost:8080/api/message/${groupId.value}?page=${currentPage.value}&size=${pageSize.value}`;
+    // } else if(activeTab.value === 'ReadTab') {
+    //   url.value = `http://localhost:8080/api/message/${groupId.value}?page=${currentPage.value}&size=${pageSize.value}`;
+    // } else {
+    //   url.value = `http://localhost:8080/api/message/handleLater/${groupId.value}?page=${currentPage.value}&size=${pageSize.value}`;
+    // }
     const response = await fetch(
-      url.value,
+      `http://localhost:8080/api/message/${groupId.value}?${queryParams}`,
       {
         method: 'GET',
         headers: {
@@ -256,26 +305,41 @@ async function fetchNoticeData() {
 
     const data = await response.json();
     if(activeTab.value === 'Latest') {
+      totalPage.value = Math.ceil(allNoticeList.value.length / pageSize.value);
       if (data.data.length < pageSize.value || currentPage.value * pageSize.value === allNoticeList.value.length) {
         hasMore.value = false;
       }
+    } else if (activeTab.value === 'unReadTab') {
+      totalPage.value = Math.ceil(unreadCount.value / pageSize.value);
+      if (data.data.length < pageSize.value || currentPage.value * pageSize.value === unreadCount.value) {
+        hasMore.value = false;
+      }
+    } else if (activeTab.value === 'ReadTab') {
+      totalPage.value = Math.ceil(readCount.value / pageSize.value);
+      if (data.data.length < pageSize.value || currentPage.value * pageSize.value === readCount.value) {
+        hasMore.value = false;
+      }
     } else {
+      totalPage.value = Math.ceil(handleLaterCount.value / pageSize.value);
       if (data.data.length < pageSize.value || currentPage.value * pageSize.value === handleLaterCount.value) {
         hasMore.value = false;
       }
-    }    
+    }
 
     // noticeList.value = [...noticeList.value, ...data.data];
     noticeList.value = data.data;
     //currentPage.value++; // 增加页码
-    if(activeTab.value === 'Latest')
+    if(activeTab.value === 'Latest') {
       console.log("LatestnoticeList.value=", noticeList.value);
-    else
-    console.log("LaternoticeList.value=", noticeList.value);
+    } else if (activeTab.value === 'unReadTab') {
+      console.log("UnreadnoticeList.value=", noticeList.value);
+    } else if (activeTab.value === 'ReadTab') {
+      console.log("ReadnoticeList.value=", noticeList.value);
+    } else {
+      console.log("LaternoticeList.value=", noticeList.value);
+    }
     console.log(currentPage.value);
-    console.log("num="+currentPage.value * pageSize.value);
-    
-        
+    console.log("num="+currentPage.value * pageSize.value);           
   } catch (error) {
     console.error('Error fetching noticeList data:', error);
   } finally {
@@ -285,73 +349,206 @@ async function fetchNoticeData() {
 //下一页
 function dowmData() {
   currentPage.value++;
-  if(showUnread.value === true)
-    fetchUnReadNoticeData();
-  else
-    fetchNoticeData();
+  fetchNoticeData();
 }
 //上一页
 function upData() {
   if(currentPage.value > 1) {
     currentPage.value--;
     hasMore.value = true;
-    if(showUnread.value === true)
-      fetchUnReadNoticeData();
-    else
-      fetchNoticeData();
-  }
-}
-
-//显示未读
-const showUnread = ref(false);
-function toggleUnread() {
-  showUnread.value = !showUnread.value;
-  currentPage.value = 1;
-  pageSize.value = 5;
-  hasMore.value = true;
-  if(showUnread.value === true)
-    fetchUnReadNoticeData();
-  else
     fetchNoticeData();
-}
-//获取未读消息列表
-async function fetchUnReadNoticeData() {
-  if (isLoading.value || !hasMore.value) return;
-
-  isLoading.value = true;
-  try {
-    const response = await fetch(
-      `http://localhost:8080/api/message/isRead/${groupId.value}/0?page=${currentPage.value}&size=${pageSize.value}`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': token.value,
-          'companyId': companyIdString,
-        },
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error('Network response was not ok.');
-    }
-
-    const data = await response.json();
-    if (data.data.length < pageSize.value || currentPage.value * pageSize.value === unreadCount.value) {
-      hasMore.value = false;
-    }
-
-    // noticeList.value = [...noticeList.value, ...data.data];
-    noticeList.value = data.data;
-    //currentPage.value++; // 增加页码
-    console.log("UnreadnoticeList.value=", noticeList.value);
-    console.log(currentPage.value);
-        
-  } catch (error) {
-    console.error('Error fetching UnreadnoticeList data:', error);
-  } finally {
-    isLoading.value = false;
   }
+}
+//设置弹窗
+const currentModal = ref("");
+const scheduleId = ref('')
+function showcalendardetails(id :any) {
+  scheduleId.value = id;
+  currentModal.value = "calendardetails";
+  console.log("currentModal=", currentModal.value);
+}
+//关闭弹窗
+function closeModal() {
+  currentModal.value = "";
+  console.log("ModalClosed");
+}
+//点击单个
+function handleNotice(notice :any) {
+    console.log("notice=", notice);
+  if(notice.isRead === false) {
+    toRead(notice.id);
+  }
+  showcalendardetails(notice.scheduleId);
+  // router.push({
+  //   name: 'calendardetails',
+  //   params: {
+  //     id: notice.id,
+  //   },
+  // });
+}
+//单个已读
+function toRead(id :any) {
+  fetch(`http://localhost:8080/api/message/toIsRead/${id}`, {
+    method: 'PUT',
+    headers: {
+        'Content-Type': 'application/json', // 设置 Content-Type 请求头为 JSON
+        'Authorization': token.value, // 设置 Authorization 请求头，用于身份验证
+        'companyId': companyIdString // 设置 companyId 请求头，用于传递公司 ID
+    }
+  })
+  .then(response => {
+      console.log(response);
+      // 检查响应状态
+      if (!response.ok) {
+          alert("更新单个状态为已读失败")
+          throw new Error('Network error');
+      }
+      // 解析响应为 JSON 格式
+      return response.json();
+  })
+  .then(data => {
+      // 请求成功    
+      console.log("单个已读=", data);
+      fetchAllNoticeData();
+      hasMore.value = true;
+      fetchNoticeData();
+  })
+  .catch(error => {
+      console.error('Error upate isRead', error);
+      // Handle the error, e.g., show a message to the user
+  });
+}
+//单个待处理
+function Individualdeal(notice :any) {
+  let b = notice.handleLater === false ? '1' : '0'; // 根据notice.handleLater的值确定b的值
+  let PathParams = `/${notice.id}/${b}`;
+  fetch(`http://localhost:8080/api/message/toLater${PathParams}`, {
+    method: 'PUT',
+    headers: {
+        'Content-Type': 'application/json', // 设置 Content-Type 请求头为 JSON
+        'Authorization': token.value, // 设置 Authorization 请求头，用于身份验证
+        'companyId': companyIdString // 设置 companyId 请求头，用于传递公司 ID
+    }
+  })
+  .then(response => {
+      console.log(response);
+      // 检查响应状态
+      if (!response.ok) {
+          alert("待处理的转换失败")
+          throw new Error('Network error');
+      }
+      // 解析响应为 JSON 格式
+      return response.json();
+  })
+  .then(data => {
+      // 请求成功    
+      console.log("单个待处理转换=", data);
+      fetchAllNoticeData();
+      hasMore.value = true;
+      fetchNoticeData();
+  })
+  .catch(error => {
+      console.error('Error upate isRead', error);
+      // Handle the error, e.g., show a message to the user
+  });
+}
+//未读消息id数组
+const unReadIds = ref<any>([]);
+//非待处理消息id数组
+const notLaterIds = ref<any>([]);
+// 将所有未读消息的id放入unReadIds数组
+function updateUnReadIds() {
+  // 使用 filter 筛选出所有未读消息，然后使用 map 提取它们的 id
+  unReadIds.value = allNoticeList.value.filter(notice => !notice.isRead).map(notice => notice.id);
+  console.log("unReadIds=", unReadIds.value);  
+}
+// 将所有非待处理消息的id放入unReadIds数组
+function updatenotLaterIds() {
+  // 使用 filter 筛选出所有未读消息，然后使用 map 提取它们的 id
+  notLaterIds.value = allNoticeList.value.filter(notice => !notice.handleLater).map(notice => notice.id);
+  console.log("notLaterIds=", notLaterIds.value);  
+}
+//全部已读
+function toAllRead() {
+  if(!confirm("是否设置全部已读？"))
+    return;
+  // 确保未读消息ID数组是最新的
+  updateUnReadIds();
+  // 构建请求体
+  const body = JSON.stringify({
+    idList: unReadIds.value // 使用unReadIds中的ID数组
+  });
+  fetch(`http://localhost:8080/api/message/toIsRead/ByIds`, {
+    method: 'PUT',
+    headers: {
+        'Content-Type': 'application/json', // 设置 Content-Type 请求头为 JSON
+        'Authorization': token.value, // 设置 Authorization 请求头，用于身份验证
+        'companyId': companyIdString // 设置 companyId 请求头，用于传递公司 ID
+    },
+    body: body // 添加请求体
+  })
+  .then(response => {
+      console.log(response);
+      // 检查响应状态
+      if (!response.ok) {
+          alert("更新所有状态为已读失败")
+          throw new Error('Network error');
+      }
+      // 解析响应为 JSON 格式
+      return response.json();
+  })
+  .then(data => {
+      // 请求成功    
+      console.log("全部已读=", data);
+      fetchAllNoticeData();
+      hasMore.value = true;
+      fetchNoticeData();
+  })
+  .catch(error => {
+      console.error('Error upate toAllRead', error);
+      // Handle the error, e.g., show a message to the user
+  });
+}
+//全部待处理
+function toAllLater() {
+  if(!confirm("是否设置全部待处理？"))
+    return;
+  // 确保非待处理消息ID数组是最新的
+  updatenotLaterIds();
+  // 构建请求体
+  const body = JSON.stringify({
+    idList: notLaterIds.value // 使用unReadIds中的ID数组
+  });
+  fetch(`http://localhost:8080/api/message/toLater/ByIds/1`, {
+    method: 'PUT',
+    headers: {
+        'Content-Type': 'application/json', // 设置 Content-Type 请求头为 JSON
+        'Authorization': token.value, // 设置 Authorization 请求头，用于身份验证
+        'companyId': companyIdString // 设置 companyId 请求头，用于传递公司 ID
+    },
+    body: body // 添加请求体
+  })
+  .then(response => {
+      console.log(response);
+      // 检查响应状态
+      if (!response.ok) {
+          alert("更新所有状态为待处理失败")
+          throw new Error('Network error');
+      }
+      // 解析响应为 JSON 格式
+      return response.json();
+  })
+  .then(data => {
+      // 请求成功    
+      console.log("全部待处理=", data);
+      fetchAllNoticeData();
+      hasMore.value = true;
+      fetchNoticeData();
+  })
+  .catch(error => {
+      console.error('Error upate toAllPendingdeal', error);
+      // Handle the error, e.g., show a message to the user
+  });
 }
 
 onMounted(() => {
@@ -367,8 +564,8 @@ onMounted(() => {
 .tabs {
   display: flex;
   justify-content: space-between;
-  border-bottom: 1px solid #bbbbbb;
   margin-top: 1%;
+  margin-bottom: 2%;
   margin-left: 3%;
   margin-right: 3%;
   font-size: 21px;
@@ -447,7 +644,8 @@ onMounted(() => {
 }
 .noticebody {
   display: flex;
-  align-items: center;
+  /* align-items: center; */
+  cursor: pointer;
 }
 .noticesign {
   display: flex;
@@ -464,27 +662,26 @@ onMounted(() => {
 .notice-time {
   margin-top: 2%;
 }
+.dealbnt {
+  cursor: pointer;
+}
 .up-down {
+  margin-top: 1%;
+  /* margin-left: 3%;
+  margin-right: 3%; */
   position: fixed;
-  top: 800px;
-  width: 23%;
+  bottom: 6%; 
+  width: 80%;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.show {
-  position: fixed;
-  top: 820px;/*按照实际修改*/
-  margin-left: 2%;
-  width: 20%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.unread {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
+.up-down button {
+  background-color: #FFFFFF;
+  border: 1px solid #BBBBBB;
+  border-radius: 2px;
+  padding: 5px 10px;
+  font-size: 16px
 }
 
 </style>
