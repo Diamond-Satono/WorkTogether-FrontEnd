@@ -302,7 +302,7 @@ async function refreshCalendar() {
 }
 
 .fc-list-event {
-  height: 150px;
+  height: 120px;
   /* background-color: rgba(229, 229, 234, 0.35); */
   cursor: pointer;
 }
