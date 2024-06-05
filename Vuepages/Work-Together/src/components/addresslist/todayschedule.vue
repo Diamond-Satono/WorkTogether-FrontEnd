@@ -8,9 +8,21 @@
       <template v-slot:eventContent='arg'>
         <b>{{ arg.timeText }}</b>
         <i>{{ arg.event.title }}</i>
+        <div class="eventdescription">{{ arg.event.extendedProps.description }}</div>
+        <div class="icons">
+          <div class="avatar-container" v-for="(user, index) in arg.event.extendedProps.avatarsAndNames" :key="index">
+            <img class="avatar" :src="user.avatar" :alt="user.name" :title="user.name">
+          </div>
+        </div>
       </template>
     </FullCalendar>
   </div>
+  <!-- 动态加载组件 -->
+  <Transition :name="transitionName" mode="out-in">
+    <component :is="currentModal" v-if="currentModal" @close-modal="closeModal" @refresh-calendar="refreshCalendar"
+      :scheduleId="scheduleId">
+    </component>
+  </Transition>
 </template>
 
 <script setup lang="ts">
@@ -26,6 +38,26 @@ import { UserInfo } from '@/store/userinfo'
 import { Authorization } from '@/store/token'
 import tippy from 'tippy.js'
 import 'tippy.js/dist/tippy.css';
+
+const props = defineProps({
+  memberId: Number
+});
+
+watch(() => props.memberId, (newId, oldId) => {
+  console.log('currentId updated:', newId);
+});
+
+watch(() => props.memberId, async (newId) => {
+  // 获取 FullCalendar 的 API
+  let calendarApi = calendarRef.value.getApi();
+
+  // 清空所有 events
+  let events = calendarApi.getEvents();
+  events.forEach((event: EventApi) => event.remove());
+
+  // 使用新的 memberId 调用 fetchMyEvents
+  await fetchMyEvents(newId);
+});
 
 //公司id和团队id
 const userInfo = UserInfo()
@@ -73,9 +105,10 @@ const calendarOptions = ref<CalendarOptions>({
   dayMaxEvents: true,
   weekends: true,
   locale: esLocale,
-  displayEventEnd: false,//显示结束时间
+  displayEventEnd: true,//显示结束时间
   displayEventTime: true,
   eventDisplay: 'block',
+  eventClick: handleEventClick,
   eventsSet: handleEvents,
 
   /* you can update a remote database when these fire:
@@ -96,15 +129,25 @@ function handleEvents(events: EventApi[]) {
   currentEvents.value = events
 }
 
-// 钩子函数
+
 onMounted(async () => {
-  await fetchMyEvents();
+  await fetchMyEvents(props.memberId);
 })
 
-//获取我的全部日程
-async function fetchMyEvents() {
+interface ScheduleUser {
+  id: number;
+  scheduleId: number;
+  userId: number;
+  name: string;
+  joinStatus: number;
+  refuseReason: string | null;
+  isDeleted: boolean;
+  avatar: string;
+}
+
+async function fetchMyEvents(memberId: any) {
   try {
-    const response = await fetch(`http://localhost:8080/api/schedule/user/all?groupId=${userInfo.value.groupId}`, {
+    const response = await fetch(`http://localhost:8080/api/schedule/member?id=${memberId}&groupId=${userInfo.value.groupId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -118,15 +161,19 @@ async function fetchMyEvents() {
     }
 
     const data = await response.json();
-
-    // 检查 data 结构并提取 events 数组
     const events = data.data || [];
     if (!Array.isArray(events)) {
       throw new Error("Events data is not an array");
     }
 
+    const apiEvents = await Promise.all(events.map(async (event) => {
+      const eventDetails = await fetchEventDetails(event.id);
+      const scheduleUsers = eventDetails.data.scheduleUsers || [];
+      const avatarsAndNames = scheduleUsers.map((user: ScheduleUser) => ({
+        name: user.name,
+        avatar: user.avatar
+      }));
 
-    const apiEvents = events.map((event: any) => {
       let color;
       switch (event.type) {
         case 0:
@@ -145,15 +192,19 @@ async function fetchMyEvents() {
           color = 'rgba(175,82,222,0.48)';
           break;
       }
+
       return {
         id: `${event.id}`,
         title: event.title,
         start: event.startTime,
         end: event.endTime ? event.endTime : undefined,
         color: color, // 设置事件的颜色
-        textColor: 'black'
+        textColor: 'black',
+        description: event.description,
+        avatarsAndNames: avatarsAndNames // 添加头像和名字信息
       };
-    });
+    }));
+
     if (calendarRef.value) {
       let calendarApi = calendarRef.value.getApi();
       apiEvents.forEach(event => calendarApi.addEvent(event));
@@ -164,15 +215,76 @@ async function fetchMyEvents() {
     console.error("There was a problem fetching the events:", error);
   }
 }
+
+
+//获取日程详细信息
+
+async function fetchEventDetails(scheduleId: any) {
+  try {
+    const response = await fetch(`http://localhost:8080/api/schedule/getScheduleInfoByid?scheduleId=${scheduleId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": token.value,
+        "companyId": userInfo.value.companyId,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("There was a problem fetching the schedule info:", error);
+    return {};
+  }
+}
+
+const scheduleId = ref('')
+const currentModal = ref("");
+const transitionName = ref("fade");
+//处理events点击事件
+function handleEventClick(clickInfo: EventClickArg) {
+  showcalendardetails(clickInfo);
+}
+
+function showcalendardetails(info: any) {
+
+  scheduleId.value = info.event.id;
+  currentModal.value = "calendardetails";
+  console.log("currentModal=", currentModal.value);
+}
+
+//关闭弹窗
+function closeModal() {
+  currentModal.value = "";
+  console.log("ModalClosed");
+}
+//刷新日历重新获取事件
+async function refreshCalendar() {
+  // 获取 FullCalendar 的 API
+  let calendarApi = calendarRef.value.getApi();
+
+  // 清空所有 events
+  let events = calendarApi.getEvents();
+  events.forEach((event: EventApi) => event.remove());
+
+
+  await fetchMyEvents(props.memberId);
+
+}
 </script>
 
-<style scoped>
+<style>
 .app-main i {
   font-style: normal;
+  font-size: 18px;
 }
 
 .title {
-  margin-left: 3%;
+  margin-left: 2%;
 }
 
 .titlewords {
@@ -187,5 +299,48 @@ async function fetchMyEvents() {
 
 .fc {
   margin: 0 auto;
+}
+
+.fc-list-event {
+  height: 120px;
+  /* background-color: rgba(229, 229, 234, 0.35); */
+  cursor: pointer;
+}
+
+.eventdescription {
+  font-size: 18px;
+  color: #8E8E93;
+  margin-left: 1%;
+  margin-top: 2%;
+  position: relative;
+}
+
+.icons {
+  display: flex;
+  justify-content: flex-end;
+  /* 固定右端 */
+  align-items: center;
+  flex-wrap: nowrap;
+  /* 确保图片不换行 */
+  overflow: hidden;
+  /* 隐藏超出容器的内容 */
+}
+
+.avatar-container {
+  position: relative;
+  display: inline-block;
+  margin-left: -10px;
+  /* 负的左外边距以控制图片之间的间距 */
+}
+
+.avatar {
+  width: 40px;
+  /* 调整为合适的宽度 */
+  height: 40px;
+  /* 调整为合适的高度 */
+  border-radius: 50%;
+  /* 使图片成为圆形 */
+  object-fit: cover;
+  /* 确保图片不失真 */
 }
 </style>

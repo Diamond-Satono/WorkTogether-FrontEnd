@@ -6,11 +6,12 @@
     <div id="bottom-line"></div>
 
     <div class="member-menu">
+      <fa class="serch-icon" icon="magnifying-glass"></fa>
       <input id="search-bar" type="text" v-model="searchQuery" placeholder="搜索成员" />
       <!-- <h3>我自己</h3> -->
       <ul>
         <li v-for="member in filteredMyself" :key="member.id" @click="selectMember(member.id)">
-          <img :src="member.avatar || '@/assets/img/default_avatar.png'" alt="avatar" class="member-avatar">
+          <img :src="member.avatar || '@/assets/img/icon.png'" alt=" " class="member-avatar">
           <div class="member-info">
             <span class="member-name">{{ member.name }}</span>
             <span class="member-job">{{ member.job }}</span>
@@ -21,7 +22,7 @@
         <h3>{{ letter }}</h3>
         <ul>
           <li v-for="member in members" :key="member.id" @click="selectMember(member.id)">
-            <img :src="member.avatar || '@/assets/img/default_avatar.png'" alt="avatar" class="member-avatar">
+            <img :src="member.avatar || '@/assets/img/icon.png'" alt=" " class="member-avatar">
             <div class="member-info">
               <span class="member-name">{{ member.name }}</span>
               <span class="member-job">{{ member.job }}</span>
@@ -45,7 +46,8 @@ export default {
   data() {
     return {
       searchQuery: '',
-      originalMembers: {} // 成员数据保存在这个对象中
+      originalMembers: {},
+      myMemberId: null // 添加存储当前用户ID的变量
     };
   },
   computed: {
@@ -98,16 +100,18 @@ export default {
         this.originalMembers = data.data;
         console.log(this.originalMembers);
         console.log('groupId is:'+userInfo.value.groupId);
-        const memberId=data.data.myself[0].id;
+        const memberId = data.data.myself[0].id;
+        this.myMemberId = memberId; // 存储当前用户的 ID
         console.log('memberId is:'+memberId);
-        this.$emit('member-selected', memberId);
+        this.selectMember(memberId); // 默认选中myself用户
       })
       .catch(error => {
         console.error('There was a problem with the fetch operation:', error);
       });
     },
     selectMember(memberId) {
-      this.$emit('member-selected', memberId);
+      const isMyself = memberId === this.myMemberId;
+      this.$emit('member-selected', { memberId, isMyself });
     },
   },
   created() {
@@ -146,6 +150,14 @@ export default {
   width: 30px;
   height: 30px;
 }
+.serch-icon{
+  color: #c7c7ccf8;
+  width: 28px;
+  height: 28px;
+  position: relative;
+  top: 5px;
+  left: 12px;
+}
 #search-bar {
   width: 75%;
   height: 30px;
@@ -154,12 +166,15 @@ export default {
   margin-top: 10px;
   border-radius: 8px;
   padding: 5px 10px;
+  background-color: #c7c7cc5d;
+  border:none;
 }
 .member-avatar {
-  width: 30px;
-  height: 30px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  margin-right: 10px;
+  margin-right: 15px;
+  background-color: #f0f0f0;
 }
 .member-info {
   display: inline-block;
@@ -168,10 +183,13 @@ export default {
 .member-name {
   font-weight: bold;
   display: block;
+  font-size: 18px;
 }
 .member-job {
   color: gray;
   display: block;
+  font-size: 15px;
+  margin-top: 3px;
 }
 .member-menu ul {
   list-style: none;

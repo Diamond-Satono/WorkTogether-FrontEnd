@@ -34,9 +34,13 @@
             <div class="info-line">
                 <div class="info-left">工作地址</div>
                 <select id="input-right" v-model="member.address">
-                    <option value="北京">北京</option>
-                    <option value="上海">上海</option>
                     <option value="中国">中国</option>
+                    <option value="中国香港">中国香港</option>
+                    <option value="美国">美国</option>
+                    <option value="加拿大">加拿大</option>
+                    <option value="法国">法国</option>
+                    <option value="瑞士">瑞士</option>
+                    <option value="德国">德国</option>
                 </select>
             </div>
             <div class="info-line">
@@ -153,30 +157,40 @@
             Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]));
             
             let formData = new FormData();
-            if (this.avatarFile) {  // 使用 avatarFile 而不是 member.avatar
-                formData.append('avatar', this.avatarFile);
-            } else {
-                console.log("No file to upload or file data is invalid.");
+            if (this.avatarFile && this.avatarFile.size > 0) {  // 确保文件有效
+                formData.append('image', this.avatarFile);
+            }else {
+                // 添加一个空的 Blob 对象作为文件字段，并提供一个默认文件名
+                formData.append('image', null);
             }
 
+            // 遍历 formData 并打印内容
+            formData.forEach((value, key) => {
+                console.log(`${key}:`, value);
+            });
+            console.log('头像文件：'+this.avatarFile);
+
             fetch(url, {
-                method: 'PUT',
+                method: 'POST',
                 headers: {
                     //'Content-Type': 'application/json',
                     'Authorization': token.value,
                     //'companyId': userInfo.companyId.value
-            },
+                },
                 body: formData
             }).then(response => {
                 if (response.ok) {
+                    console.log('头像文件：'+this.avatarFile);
                     this.$emit('save-edit'); // 通知父组件已保存
+                    this.$emit('data-saved'); // 数据保存成功后发射事件
                 } else {
                     throw new Error('Failed to save changes');
                 }
             }).catch(error => {
                 console.error('Save error:', error);
             });
-        },
+        }
+
     },
     created() {
       if (this.memberId) {

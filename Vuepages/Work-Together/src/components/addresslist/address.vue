@@ -127,13 +127,13 @@
         <div id="carlendar-content">
           <!-- <component :is="componentToShow"></component> -->
           <div id="carlendar-L">
-            <addressL @member-selected="handleMemberSelected" />
+            <addressL ref="addressLComponent" @member-selected="handleMemberSelected" />
           </div>
           <div id="vertical-line"></div> <!-- 新增的竖直线 -->
           <div id="carlendar-R">
             
-            <addressR v-if="showAddressR" @edit-info="showAddressR = false" :memberId="selectedMemberId"></addressR>
-            <addressR2 v-else :memberId="selectedMemberId" @cancel-edit="handleCancelEdit" @save-edit="handleSaveEdit"></addressR2>
+            <addressR v-if="showAddressR" @edit-info="showAddressR = false" :memberId="selectedMemberId" :isMyself="isMyself"></addressR>
+            <addressR2 v-else :memberId="selectedMemberId" @cancel-edit="handleCancelEdit" @save-edit="handleSaveEdit" @data-saved="refreshAddressL"></addressR2>
           </div>
         </div>
   
@@ -153,78 +153,54 @@
   import addressR from '@/components/addresslist/addressR.vue'
   
   export default {
-    name: 'address',
-    data() {
-      return {
-        /* subMenuStatus: {
-          home: false,
-          calendar: true,
-          settings: true,
-          userinfo: true,
-          tasks: true
-        }, */
-        isMenuOpen: false, // 用于控制气泡菜单的显示与隐藏
-        isMenuOpen2: false, // 用于左下角控制气泡菜单的显示与隐藏
-        selectedOption: 'basic',
-        /* showChild1: true, // 控制显示子组件1还是子组件2的标志 */
-        /*         child1Component: member, // 子组件1
-                child2Component: group  // 子组件2 */
-        //从组件CalendarL中获取数据
-        // 使用 props 接收从子组件传递过来的值
-        selectedDate: '',//格式：2024-5-19
-        currentActive: null,//格式：allschedule
-        currentTypeColor: '',  //格式：#FF0000
-        isNoticeMenuOpen: false, // 新增变量
-        selectedMemberId: null, // 存储选中的成员 ID
-        showAddressR: true // 默认显示 addressR 组件
-      }
+  name: 'address',
+  data() {
+    return {
+      isMenuOpen: false,
+      isMenuOpen2: false,
+      selectedOption: 'basic',
+      selectedDate: '',
+      currentActive: null,
+      currentTypeColor: '',
+      isNoticeMenuOpen: false,
+      selectedMemberId: null,
+      showAddressR: true,
+      isMyself: false // 新增变量，记录是否为当前用户
+    };
+  },
+  components: {
+    noticebubble,
+    addressL,
+    addressR
+  },
+  methods: {
+    toggleSubMenu(item) {
+      this.subMenuStatus[item] = !this.subMenuStatus[item];
     },
-    components:{
-      noticebubble,
-      addressL,
-      addressR
+    toggleMenu() {
+      this.isMenuOpen = !this.isMenuOpen;
     },
-
-    methods: {
-      toggleSubMenu(item) {
-        this.subMenuStatus[item] = !this.subMenuStatus[item];
-      },
-      toggleMenu() {
-        this.isMenuOpen = !this.isMenuOpen; // 点击按钮时切换菜单的显示状态
-      },
-      toggleMenu2() {
-        this.isMenuOpen2 = !this.isMenuOpen2; // 点击按钮时切换菜单的显示状态
-      },
-      // 定义方法来更新 selectedDate
-      /* updateSelectedDate(date) {
-        this.selectedDate = date;
-        console.log('Selected date:', this.selectedDate);
-      },
-      // 定义方法来更新 currentActive 和 currentTypeColor
-      updateActive(active) {
-        this.currentActive = active;
-        console.log('Current active:', this.currentActive);
-      },
-      updateColor(color) {
-        this.currentTypeColor = color;
-        console.log('Current type color:', this.currentTypeColor)
-      }, */
-      toggleNoticeMenu() {
-        this.isNoticeMenuOpen = !this.isNoticeMenuOpen;
-      },
-      handleMemberSelected(memberId) {
-        this.selectedMemberId = memberId; // 更新选中的成员 ID
-      },
-      handleCancelEdit() {
-        this.showAddressR = true; // 切换到 addressR
-      },
-      handleSaveEdit() {
-        this.showAddressR = true; // 保存并切换到 addressR
-      },
-      
-  
+    toggleMenu2() {
+      this.isMenuOpen2 = !this.isMenuOpen2;
+    },
+    toggleNoticeMenu() {
+      this.isNoticeMenuOpen = !this.isNoticeMenuOpen;
+    },
+    handleMemberSelected({ memberId, isMyself }) {
+      this.selectedMemberId = memberId;
+      this.isMyself = isMyself; // 更新 isMyself 变量
+    },
+    handleCancelEdit() {
+      this.showAddressR = true;
+    },
+    handleSaveEdit() {
+      this.showAddressR = true;
+    },
+    refreshAddressL() {
+      this.$refs.addressLComponent.fetchMembers();
     }
   }
+};
   </script>
   
   <style scoped>
