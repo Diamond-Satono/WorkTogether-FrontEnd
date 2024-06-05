@@ -12,14 +12,7 @@
             <span class="menu-type">日历</span>
             <span id="type-span">
               <label id="typetitle" for="type">类型:</label>
-              <select v-model="schedule.type">
-                <option value="1">面试</option>
-                <option value="0">会议</option>
-                <option value="3">培训</option>
-                <option value="2">出差</option>
-                <option value="5">个人日程</option>
-                <option value="4">其他</option>
-              </select>
+              <span id="type-text">{{ scheduleTypeText }}</span>
             </span>
             <button id="delete-button" @click="showDeleteConfirm()">删除</button>
             <delete-confirm :title="schedule.title" :scheduleId="scheduleId" @closeDialog="closeDialog" v-if="isDialogVisible" />
@@ -63,16 +56,19 @@
           </div>
           <!-- 组织人 -->
           <div class="organizer">
-            <label class="subtitle">组织人:</label>
-            <div v-if="organizer">
-              <img :src="organizer.avatar" :alt="organizer.name" class="participant-avatar" />
-            </div>
+            <div class="subtitle">组织人:</div>
+            <span v-if="organizer" class="participant-wrapper">
+              <img :src="organizer.avatar" class="participant-avatar" />
+            </span>
+            <span id="organizer-name" v-if="organizer">{{ organizer.name }}</span>
           </div>
           <!-- 参与人 -->
           <div class="participants">
             <label class="subtitle">参与人:</label>
-            <div v-for="(participant, index) in this.schedule.participants" :key="participant.id" class="participant-wrapper">
-              <img :src="participant.avatar" :alt="participant.name" class="participant-avatar" />
+            <div>
+              <span v-for="(participant, index) in this.schedule.participants" :key="participant.id" class="participant-wrapper">
+                <img :src="participant.avatar" :alt="participant.name" class="participant-avatar" />
+              </span>
             </div>
           </div>
           <!-- 描述 -->
@@ -166,7 +162,7 @@
         status2: {
           userId:[]
         },
-        organizer: [],
+        organizer: null,
         currentStatus: '',  // 默认状态为暂定
         members: [], // 存储从后端获取的团队成员
         
@@ -213,6 +209,17 @@
       },
       declinedParticipants() {
         return this.getParticipantsByStatus(this.status2.userId);
+      },
+      scheduleTypeText() {
+        const typeMap = {
+          "1": "面试",
+          "0": "会议",
+          "3": "培训",
+          "2": "出差",
+          "5": "个人日程",
+          "4": "其他"
+        };
+        return typeMap[this.schedule.type] || '';
       }
     },
     methods: {
@@ -547,10 +554,17 @@
   .description {
     margin: 25px 60px;
   }
-  .participants{
+  /* .participants{
     display: flex;
-  }
+  } */
   
+  #organizer-name{
+    font-size: 20px;
+    position: relative;
+    top: -10px;
+    left: 10px;
+    font-weight: bold;
+  }
   
   .schedule-time {
     display: flex;
@@ -572,8 +586,8 @@
   }
   
   .avatar {
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     margin-right: 10px;
   }
@@ -635,6 +649,12 @@
   #typetitle {
     margin-right: 15px;
     font-size: 20px;
+    font-weight: bold;
+  }
+
+  #type-text{
+    font-size: 20px;
+    font-weight: bold;
   }
   
   #right-title {
@@ -687,7 +707,12 @@
   }
 
   .participant-wrapper {
-    position: relative;
+    position: relative; 
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-left: 10px;
+    
   }
   
   .participant-avatar {
