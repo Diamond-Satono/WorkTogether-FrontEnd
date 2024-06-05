@@ -41,7 +41,7 @@
     
       <!-- <div id="bottom-line2"></div> -->
       <div id="calendar-container">
-        <todayschedule />
+        <todayschedule :memberId="memberId"/>
       </div>
 
     </div>
