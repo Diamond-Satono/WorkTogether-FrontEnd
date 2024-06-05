@@ -2,10 +2,10 @@
   <div class="modal">
     <div id="member-details" v-if="member">
       <div id="icon-container">
-        <img :src="member.avatar || '@/assets/img/icon.png'" alt="avatar" class="member-avatar">
+        <img :src="member.avatar || '@/assets/img/icon.png'" alt="" class="member-avatar">
       </div>     
       <div id="mem-name">{{ member.name }}</div>
-      <div id="mem-address">Address: {{ member.address }}</div>
+      <div id="mem-address"><fa id="fa-address" icon="location-dot"></fa> {{ member.address }}</div>
       <div id="info1">
         <span id="mem-phone"><img src='@/assets/img/phone.png' alt="avatar" class="member-icon"> {{ member.phone }}</span>
         <span id="mem-email"><img src='@/assets/img/email.png' alt="avatar" class="member-icon"> {{ member.email }}</span>
@@ -13,9 +13,9 @@
       </div>
       <div id="bottom-line"></div> <!-- 下方的线 -->
       <div id="info2">
-        <div id="mem-intro">{{ member.introduction }}</div>
+        <div id="mem-intro"><fa id="fa-intro" icon="hand"></fa>{{ member.introduction }}</div>
         <div id="mem-details">
-          <div id="detail-title">详细信息</div>
+          <div id="detail-title"><fa class="fa-yellow" icon="circle-info"></fa> 详细信息</div>
           <div class="de-line">
             <div class="detail-left">联系电话</div>
             <div class="detail-right">{{ member.phone }}</div>
@@ -126,21 +126,22 @@ export default {
 
 <style scoped>
 .modal{
-  background-color: #eceaea;
+  background-color: #f5f5f5;
   width: 100%;
   height: 100vh;
   overflow-y: auto; /* 允许内容溢出时垂直滚动 */
+  overflow-x: hidden;
 }
 #icon-container{
   display: flex;
   width: 160px;
   height: 160px;
-  background-color: rgb(218, 208, 208);
+  background-color: #dfdddd;
   border-radius: 50%;
   align-items: center; /* 水平居中 */
   justify-content: center; /* 垂直居中 */
   position: relative;
-  top:-115px;
+  top:-120px;
   left:90px; 
   
 }
@@ -162,7 +163,7 @@ export default {
   /* border: 1px solid black; */
   width: auto;
   position: relative;
-  top:-240px;
+  top:-250px;
   left:280px;
   font-size: 30px;;
   font-weight: 550;
@@ -176,12 +177,16 @@ export default {
   font-size: 16px;;
   font-weight: 500;
   color: #8E8E93;
+  display: flex;
+  align-items: center; /* 水平居中 */
+  justify-content: center; /* 垂直居中 */
 }
 #info1{
   /* border: 1px solid black; */
   display: flex;
   position: relative;
   width: 75%;
+  height: 40px;
   top:-180px;
   left:300px;
   font-size: 20px;;
@@ -249,12 +254,12 @@ export default {
   position:relative;
   top:0px;
   left:3%;
-  width: 52%;
+  width: 50%;
   min-height: 100px;
   font-size: 18px;
   font-weight: 500;
   background-color: #ffe1d6;
-  padding: 10px;
+  padding: 30px 30px;
   border-radius: 10px;
 }
 #mem-details{
@@ -262,7 +267,7 @@ export default {
   top:0px;
   margin-left: 80px;
   width:35%;
-  height: 350px;
+  height: 330px;
   font-size: 18px;;
   font-weight: 500;
   background-color: #e1f3fc;
@@ -301,6 +306,23 @@ export default {
   background-color: #fff;
   align-items: flex-start;
 }
+  .fa-yellow{
+    color: #FFCB01;
+  }
+  #fa-intro{
+    color: #FFCB01;
+    position: relative;
+    display: block;
+    left: -10px;
+    top:-10px;
+    width: 20px;
+    height: 20px;
+  }
+  #fa-address{
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+  }
 
 
 </style>
