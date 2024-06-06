@@ -655,12 +655,12 @@ onMounted(() => {
   color: #060907;
 }
 .notice-title {
-  margin-top: 2%;
+  margin-top: 5px;
   display: flex;
   align-items: center;
 }
 .notice-time {
-  margin-top: 2%;
+  margin-top: 5px;
 }
 .dealbnt {
   cursor: pointer;
