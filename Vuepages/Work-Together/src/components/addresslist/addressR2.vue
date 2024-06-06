@@ -76,11 +76,11 @@
         avatarFile: null,  // 新增状态变量来存储文件对象
       };
     },
-    watch: {
+    /* watch: {
       memberId(newId) {
         this.fetchMemberDetails(newId);
       },
-    },
+    }, */
     methods: {
       fetchMemberDetails(id) {
         const baseUrl = 'http://localhost:8080/api/group/memberInfo';
