@@ -43,20 +43,24 @@ const props = defineProps({
   memberId: Number
 });
 
-watch(() => props.memberId, (newId, oldId) => {
-  console.log('currentId updated:', newId);
-});
+let currentFetchId = 0; // 当前fetch的唯一标识符
 
-watch(() => props.memberId, async (newId) => {
+watch(() => props.memberId, async (newId, oldId) => {
+  console.log('currentId updated:', newId);
+
   // 获取 FullCalendar 的 API
   let calendarApi = calendarRef.value.getApi();
 
   // 清空所有 events
   let events = calendarApi.getEvents();
-  events.forEach((event: EventApi) => event.remove());
+  await Promise.all(events.map((event: EventApi) => event.remove()));
+
+  // 增加fetch标识符
+  currentFetchId++;
+  const fetchId = currentFetchId;
 
   // 使用新的 memberId 调用 fetchMyEvents
-  await fetchMyEvents(newId);
+  await fetchMyEvents(newId, fetchId);
 });
 
 //公司id和团队id
@@ -122,16 +126,12 @@ function handleWeekendsToggle() {
   calendarOptions.value.weekends = !calendarOptions.value.weekends // update a property
 }
 
-
-
-
 function handleEvents(events: EventApi[]) {
   currentEvents.value = events
 }
 
-
 onMounted(async () => {
-  await fetchMyEvents(props.memberId);
+  await fetchMyEvents(props.memberId, currentFetchId);
 })
 
 interface ScheduleUser {
@@ -145,7 +145,7 @@ interface ScheduleUser {
   avatar: string;
 }
 
-async function fetchMyEvents(memberId: any) {
+async function fetchMyEvents(memberId: any, fetchId: number) {
   try {
     const response = await fetch(`http://localhost:8080/api/schedule/member?id=${memberId}&groupId=${userInfo.value.groupId}`, {
       method: "GET",
@@ -155,6 +155,11 @@ async function fetchMyEvents(memberId: any) {
         "companyId": userInfo.value.companyId,
       },
     });
+
+    if (fetchId !== currentFetchId) {
+      console.log(`Fetch ${fetchId} canceled`);
+      return; // 如果不是最新的fetch请求，则取消
+    }
 
     if (!response.ok) {
       throw new Error("Network response was not ok");
@@ -216,7 +221,6 @@ async function fetchMyEvents(memberId: any) {
   }
 }
 
-
 //获取日程详细信息
 
 async function fetchEventDetails(scheduleId: any) {
@@ -251,7 +255,6 @@ function handleEventClick(clickInfo: EventClickArg) {
 }
 
 function showcalendardetails(info: any) {
-
   scheduleId.value = info.event.id;
   currentModal.value = "calendardetails";
   console.log("currentModal=", currentModal.value);
@@ -271,11 +274,14 @@ async function refreshCalendar() {
   let events = calendarApi.getEvents();
   events.forEach((event: EventApi) => event.remove());
 
+  // 增加fetch标识符
+  currentFetchId++;
+  const fetchId = currentFetchId;
 
-  await fetchMyEvents(props.memberId);
-
+  await fetchMyEvents(props.memberId, fetchId);
 }
 </script>
+
 
 <style>
 .app-main i {
