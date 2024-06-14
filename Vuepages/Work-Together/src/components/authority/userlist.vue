@@ -12,7 +12,7 @@
           <i class="fas fa-file"></i>  
           <a @click="toggleSubMenu('organization')"><fa icon="folder-open" /> 组织架构</a>
           <ul class="submenu" v-show="subMenuStatus.organization">
-            <li v-show="groupstate"><i class="fas fa-file"></i> <a style="color: #ff7f50;"><fa icon="file" />  团队管理</a></li>
+            <li v-show="groupstate"><i class="fas fa-file"></i> <a href="/groupmanage"><fa icon="file" />  团队管理</a></li>
             <li v-show="departmentstate"><i class="fas fa-file"></i> <a href="/departmentManage"><fa icon="file" />  成员与部门</a></li>
           </ul>
         </li>
@@ -27,7 +27,7 @@
           <i class="fas fa-file"></i>  
           <a @click="toggleSubMenu('authority')"><fa icon="folder-open" />  权限列表</a>
           <ul class="submenu" v-show="subMenuStatus.authority">
-            <li><i class="fas fa-users"></i> <a href="/userlist"><fa icon="file" />  用户列表</a></li>
+            <li><i class="fas fa-users"></i> <a style="color: #ff7f50;"><fa icon="file" />  用户列表</a></li>
             <li><i class="fas fa-user-tag"></i> <a href="/rolelist"><fa icon="file" />  角色列表</a></li>
             <li><i class="fas fa-list"></i> <a href="/menulist"><fa icon="file" />  菜单列表</a></li>
             <li><i class="fas fa-server"></i> <a href="resourcelist"><fa icon="file" />  资源列表</a></li>
@@ -44,8 +44,8 @@
           <div id="symbol">深</div>
           <div id="page-info">
               <span id="name-en">深圳大学/</span>
-              <span id="name-list">组织架构/</span>
-              <span id="name-page">团队管理</span>
+              <span id="name-list">权限列表/</span>
+              <span id="name-page">成员列表</span>
           </div>   
         </div>
 
@@ -77,24 +77,7 @@
 
       <div id="main-content">
           <!-- 这里放置页面的主要内容 -->
-        <div id="info-mode">
-            <button :class="{ active: selectedOption === 'basic' }" 
-            @click="showComponent1() ;selectOption('basic')"
-            id="mode1">
-            成员
-          </button>
-          <button :class="{ active: selectedOption === 'development' }" 
-            @click="showComponent2() ; selectOption('development')"
-            id="mode2">
-            团队
-          </button>
-        </div>
-
-        <div id="bottom-line"></div> <!-- 下方的线 -->
-        <div id="list-content">
-          <component :is="componentToShow"></component>
-
-        </div>
+        <user></user>
 
       </div>
 
@@ -111,11 +94,11 @@
   const userInfo = UserInfo();
   import { listInfo } from '@/store/liststate';
   const liststate = listInfo();
-  import groupmember from './groupmember.vue';
-  import group from './group.vue';
+
+  import user from '@/components/authority/user.vue';
 
   export default {
-    name: 'GroupManage',
+    name: 'userlist',
     data() {
       return {
         subMenuStatus: {
@@ -125,24 +108,13 @@
           authority: true
         },
         isMenuOpen: false, // 用于控制气泡菜单的显示与隐藏
-        selectedOption: 'basic',
-        showChild1: true, // 控制显示子组件1还是子组件2的标志
-        child1Component: groupmember, // 子组件1
-        child2Component: group,  // 子组件2
         groupstate: liststate.value.group,
         departmentstate: liststate.value.department,
         enterprisestate: liststate.value.enterprise,
       }
     },
     components: {
-      groupmember,
-      group
-    },
-    computed: {
-      // 将 showChild1 改为计算属性
-      componentToShow() {
-        return this.showChild1 ? 'groupmember' : 'group';
-      }
+        user,
     },
     methods: {
       toggleSubMenu(item) {
@@ -151,15 +123,7 @@
       toggleMenu() {
         this.isMenuOpen = !this.isMenuOpen; // 点击按钮时切换菜单的显示状态
       },
-      selectOption(option) {
-        this.selectedOption = option;
-      },
-      showComponent1() {
-        this.showChild1 = true; // 点击按钮1时显示子组件1
-      },
-      showComponent2() {
-        this.showChild1 = false; // 点击按钮2时显示子组件2
-      }
+      
       
       
   
@@ -439,6 +403,11 @@
     width: 100%;
     top:6px;
     background-color: #fff;
+  }
+
+  #test{
+    width: 150px;
+    height: 50px;
   }
 
   </style>

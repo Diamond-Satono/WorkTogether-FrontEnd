@@ -4,37 +4,36 @@
     <img src="@/assets/img/wt_logo.png" alt="Icon">
     <!-- Sidebar-->
     <ul>
-      <li id="home" @click="toggleSubMenu('home')">
-        <i class="fas fa-file"></i> 
-        <router-link to="/"><a>首页</a></router-link>
-      </li>
-      <li id="organization" @click="toggleSubMenu('organization')">
-        <i class="fas fa-file"></i>  
-        <a>组织架构</a>
-        <ul class="submenu" v-show="subMenuStatus.organization">
-          <li><i class="fas fa-file"></i> <a>成员管理</a></li>
-          <li><i class="fas fa-file"></i> <a>团队管理</a></li>
-          <li><i class="fas fa-file"></i> <a>部门管理</a></li>
-        </ul>
-      </li>
-      <li id="enterprise" @click="toggleSubMenu('enterprise')">
-        <i class="fas fa-file"></i>  
-        <a>企业管理</a>
-        <ul class="submenu" v-show="subMenuStatus.enterprise">
-          <li><i class="fas fa-file"></i> <a>企业概览</a></li>
-        </ul>
-      </li>
-      <li id="authority" @click="toggleSubMenu('authority')">
-        <i class="fas fa-file"></i>  
-        <a>权限列表</a>
-        <ul class="submenu" v-show="subMenuStatus.authority">
-          <li><i class="fas fa-users"></i> <a>用户列表</a></li>
-          <li><i class="fas fa-user-tag"></i> <a>角色列表</a></li>
-          <li><i class="fas fa-list"></i> <a>菜单列表</a></li>
-          <li><i class="fas fa-server"></i> <a>资源列表</a></li>
-        </ul>
-      </li>
-    </ul>
+        <li id="home" @click="toggleSubMenu('home')">
+          <i class="fas fa-file"></i> 
+          <a href="/HomePage"><fa icon="folder-open" />  首页</a>
+        </li>
+        <li id="organization">
+          <i class="fas fa-file"></i>  
+          <a @click="toggleSubMenu('organization')"><fa icon="folder-open" /> 组织架构</a>
+          <ul class="submenu" v-show="subMenuStatus.organization">
+            <li v-show="groupstate"><i class="fas fa-file"></i> <a href="/groupmanage"><fa icon="file" />  团队管理</a></li>
+            <li v-show="departmentstate"><i class="fas fa-file"></i> <a href="/departmentManage"><fa icon="file" />  成员与部门</a></li>
+          </ul>
+        </li>
+        <li id="enterprise">
+          <i class="fas fa-file"></i>  
+          <a @click="toggleSubMenu('enterprise')"><fa icon="folder-open" />  企业管理</a>
+          <ul class="submenu" v-show="subMenuStatus.enterprise">
+            <li v-show="enterprisestate"><i class="fas fa-file"></i> <a style="color: #ff7f50;"><fa icon="file" />  企业概览</a></li>
+          </ul>
+        </li>
+        <li id="authority">
+          <i class="fas fa-file"></i>  
+          <a @click="toggleSubMenu('authority')"><fa icon="folder-open" />  权限列表</a>
+          <ul class="submenu" v-show="subMenuStatus.authority">
+            <li><i class="fas fa-users"></i> <a href="/userlist"><fa icon="file" />  用户列表</a></li>
+            <li><i class="fas fa-user-tag"></i> <a href="/rolelist"><fa icon="file" />  角色列表</a></li>
+            <li><i class="fas fa-list"></i> <a href="/menulist"><fa icon="file" />  菜单列表</a></li>
+            <li><i class="fas fa-server"></i> <a href="resourcelist"><fa icon="file" />  资源列表</a></li>
+          </ul>
+        </li>
+      </ul>
     <router-view></router-view>
   </div>
 
@@ -52,6 +51,16 @@
           <div class="role">用户身份</div>
         </div>
       </div>
+      <div id="user-operation">
+              <!-- 触发气泡菜单的按钮 -->
+                <button id="user-button" @click="toggleMenu"><fa icon="caret-down" /></button>
+                <div v-if="isMenuOpen" class="bubble-menu">
+                  <ul class="user-bubble">
+                    <li class="bubble-choice"><a href="#">切换账号</a></li>
+                    <li class="bubble-choice"><a href="#">退出登录</a></li>
+                  </ul>
+                </div>
+            </div>
     </div>
   </div>
 
@@ -197,6 +206,10 @@
 </template>
 
 <script>
+import { UserInfo } from '@/store/userinfo';
+const userInfo = UserInfo();
+import { listInfo } from '@/store/liststate';
+const liststate = listInfo();
 import SwitchEnterprise from './SwitchEnterprise.vue';
 import CreateEnterprise from './CreateEnterprise.vue';
 import LogoutEnterprise from './LogoutEnterprise.vue';
@@ -207,10 +220,10 @@ export default {
   data() {
     return {
       subMenuStatus: {
-        home: false,
-        organization: false,
-        enterprise: false,
-        authority: false
+        home: true,
+        organization: true,
+        enterprise: true,
+        authority: true
       },
       texts: ['QIYEBIANHAO001', 'szu.edu.cn', '软件开发','100人以上','1983-01-01','31586万元人民币','深圳市政府','财政核拨','深圳市南山区粤海街道3688号','属地：广东'], // 初始文字内容数组
       editMode: false, // 编辑模式状态，初始为false表示不处于编辑模式
@@ -218,6 +231,10 @@ export default {
       currentDialog: '', // 当前显示的弹窗组件名称
       isDialogVisible: false, // 是否显示弹窗
       selectedOption: 'basic',
+      isMenuOpen: false, // 用于控制气泡菜单的显示与隐藏
+      groupstate: liststate.value.group,
+      departmentstate: liststate.value.department,
+      enterprisestate: liststate.value.enterprise,
     }
   },
   components:{
@@ -229,7 +246,9 @@ export default {
     toggleSubMenu(item) {
       this.subMenuStatus[item] = !this.subMenuStatus[item];
     },
-    
+    toggleMenu() {
+        this.isMenuOpen = !this.isMenuOpen; // 点击按钮时切换菜单的显示状态
+      },
     toggleEditMode() {
       // 切换所有文本的编辑模式
       this.editMode = !this.editMode;
@@ -285,67 +304,57 @@ body {
 }
 #sidebar {
   position: fixed;
-  width: 250px;
-  height: 100%;
-  background: #fff;
-  color: #fff;
-  padding-top: 20px;
+    width: 200px;
+    height: 100%;
+    background: #FFF; /* 设置侧边栏背景色 */
+    color: #948F8F; /* 设置文字颜色 */
+    padding-top: 20px;
+    padding-left: 18px;
 }
 .submenu {
-  
-  padding-left: 50px;
+  padding-left: 30px;
 }
 .submenu.open {
   display: block;
 }
 
-#sidebar {
-  position: fixed;
-  width: 250px;
-  height: 100%;
-  background: #FFF; /* 设置侧边栏背景色 */
-  color: #948F8F; /* 设置文字颜色 */
-  padding-top: 20px;
-  padding-left: 24px;
-}
-
 ul {
   list-style: none; /* 移除默认的列表样式 */
-  padding: 10px 0;
+    padding: 10px 5px;
 }
 
 li {
-  padding: 10px 0;
-  font-size: 20px; /* 设置字体大小 */
+  padding: 12px 0;
 }
 
 a {
   text-decoration: none; /* 移除链接下划线 */
-  color: inherit; /* 继承父元素文字颜色 */
-  display: block;
-  padding: 10px 0; /* 设置菜单项的内边距 */
-  transition: background-color 0.3s ease; /* 添加悬停效果的过渡动画 */
+    color: inherit; /* 继承父元素文字颜色 */
+    display: block;
+    padding: 10px 0; /* 设置菜单项的内边距 */
+    transition: background-color 0.3s ease; /* 添加悬停效果的过渡动画 */
 }
 
 #sidebar a {
   text-decoration: none;
-  color: #948F8F; /* 设置默认文字颜色 */
-  display: block;
-  padding: 4px 20px;
-  transition: color 0.3s; /* 添加颜色过渡动画 */
-  font-size: 20px; /* 设置字体大小 */
+    color: #948F8F; /* 设置默认文字颜色 */
+    display: block;
+    padding: 4px 20px;
+    transition: color 0.3s; /* 添加颜色过渡动画 */
+    font-size: 17px; /* 设置字体大小 */
 }
 
 #sidebar a:hover {
   color: #ff7f50; /* 设置悬停时的文字颜色 */
+    cursor: pointer; /* 鼠标悬停时显示手型光标 */
 }
 
 
 .logo {
   display: block;
-  margin: 10px auto; /* 设置logo居中并与菜单项有一定的间距 */
-  width: 180px; /* 设置logo宽度 */
-  height: auto; /* 根据宽度自动调整高度 */
+    margin: 10px; /* 设置logo居中并与菜单项有一定的间距 */
+    width: 200px; /* 设置logo宽度 */
+    height: auto; /* 根据宽度自动调整高度 */
 }
 
 
@@ -421,11 +430,60 @@ a {
   color: #050505; /* 设置用户身份文字颜色 */
 }
 
+#user-operation{
+    margin-right: 25px;
+  }
+
 #topbar-bottom-line {
   border-bottom: 2px solid #BBBBBB; /* 画出下方的实线 */
   margin-left: 250px;
-  width: 83%; /* 设置线的宽度为，与页面宽度相符 */
+  width: 86%; /* 设置线的宽度为，与页面宽度相符 */
 }
+
+.bubble-menu {
+    position:absolute;
+    top: 75px; /* 根据需要调整菜单的位置 */
+    left: 1690px;
+    z-index: 1000; /* 确保菜单在顶层显示 */
+    background-color: #4D4D4D;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    width: 120px;
+    color: #FFF;
+  }
+  .bubble-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .bubble-menu ul li {
+    padding: 5px 10px;
+  }
+
+  .bubble-menu ul li:hover {
+    background-color: #4d4949;
+  }
+
+  #user-button{
+    background-color: #fff; /* 按钮背景色 */
+    color: #161515; /* 按钮文字颜色 */
+    border: none; /* 移除按钮边框 */
+    padding: 0 0; /* 按钮内边距 */
+    font-size: 15px; /* 按钮文字字号 */
+    cursor: pointer; /* 鼠标悬停样式为手型 */
+    transition: background-color 0.3s ease; /* 添加背景色过渡效果 */
+    width:20px;
+    height: 20px;
+    transform: scale(1.5); /* 设置图标大小为原来的 1.5 倍 */
+  }
+
+  /* 鼠标悬停时按钮背景色变深 */
+  #user-button:hover {
+    background-color: #cfd2d4;
+  }
 
 #main-content {
   margin-top: 20px; /* 设置与顶部栏的间距 */
