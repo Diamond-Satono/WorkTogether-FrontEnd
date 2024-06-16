@@ -615,19 +615,18 @@ onMounted(() => {
   margin-top: 2%;
   cursor: pointer;
   padding: 7px 80px;
-  color: #5AC8FA;
-  border-top: 1px solid #5AC8FA;
-  border-bottom: 1px solid #5AC8FA;
-  border-left: 1px solid #5AC8FA;
+  color: #101010;
 }
 
 /* 最后一个标签需要右边框 */
-.tabs .tab:last-child {
+/* .tabs .tab:last-child {
   border-right: 1px solid #5AC8FA;
-}
+} */
 .activeTab {
-  color: #FFFFFF;
-  background-color: #5AC8FA;;
+  /* color: #FFFFFF;
+  background-color: #5AC8FA;; */
+  color: #FB682F;
+  border-bottom: 3px solid #FB682F;
   /* border-bottom: 1px solid #1684FC; */
 }
 .noticecolumn {
