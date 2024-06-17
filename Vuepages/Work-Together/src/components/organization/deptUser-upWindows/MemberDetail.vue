@@ -123,6 +123,8 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from "vue";
 import {Authorization} from "@/store/token"
+import { UserInfo } from "@/store/userinfo";
+const userInfo = UserInfo();
 const tokens = Authorization();
 // 初始化默认标签页为“基本信息”
 const activeTab = ref('basicInfo');
@@ -164,7 +166,7 @@ function toggleEditMode() {
 function canceledit(){
   showDetail.value = !showDetail.value;
 }
-const companyId = 1; // 根据实际情况替换
+const companyId = userInfo.value.companyId; // 根据实际情况替换
 const companyIdString = companyId.toString();
 //拉取职位列表
 onMounted(() => {
