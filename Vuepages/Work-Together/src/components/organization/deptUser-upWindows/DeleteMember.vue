@@ -138,6 +138,8 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import {Authorization} from "@/store/token"
+import { UserInfo } from "@/store/userinfo";
+const userInfo = UserInfo();
 const tokens = Authorization();
 // 初始化默认标签页为“基本信息”
 const activeTab = ref('basicInfo');
@@ -167,7 +169,7 @@ function canceledit(){
   showDetail.value = !showDetail.value;
 }
 
-const companyId = 1; // 根据实际情况替换
+const companyId = userInfo.value.companyId; // 根据实际情况替换
 const companyIdString = companyId.toString();
 function handleDeleteClick() {
   const url = 'http://localhost:8080/api/user/delete_member?ids=' + props.user.id;

@@ -28,6 +28,8 @@
   <script setup lang="ts">
   import { ref } from "vue"
   import {Authorization} from "@/store/token"
+  import { UserInfo } from "@/store/userinfo";
+  const userInfo = UserInfo();
   const tokens = Authorization();
   const inputValue = ref("");
   const emit = defineEmits(["close-modal"]);
@@ -46,7 +48,7 @@
   console.log(props.batchIds);
   console.log(props.batchIds.values);
   
-  const companyId = 1; // 根据实际情况替换
+  const companyId = userInfo.value.companyId; // 根据实际情况替换
   const companyIdString = companyId.toString();
   function handleDeleteClick() {
     if (inputValue.value === "q123") {

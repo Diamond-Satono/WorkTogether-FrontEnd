@@ -34,7 +34,9 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import {Authorization} from "@/store/token"
+import { UserInfo } from "@/store/userinfo";
 const tokens = Authorization();
+const userInfo = UserInfo();
 
 // 定义是否为单个添加模式的响应式属性
 const isSingle = ref(true);
@@ -52,7 +54,7 @@ function fetchEmailData() {
   const url = 'http://localhost:8080/api/email/sendInviteCode';
   const data = {
     email: email.value,
-    companyId: "1"
+    companyId: userInfo.value.companyId
   };
   fetch(url, {
     method: 'POST',

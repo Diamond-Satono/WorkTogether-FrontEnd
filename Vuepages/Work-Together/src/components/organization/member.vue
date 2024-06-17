@@ -142,6 +142,8 @@
 <script setup lang="ts">
 import { onMounted, ref, Transition, onUnmounted, computed } from 'vue'
 import {Authorization} from "@/store/token"
+import { UserInfo } from "@/store/userinfo";
+const userInfo = UserInfo();
 const tokens = Authorization();
 const currentModal = ref("");
 const transitionName = ref("fade");
@@ -458,7 +460,7 @@ const highlightGroup = (event: MouseEvent) => {
   target.classList.add('highlighted');
   highlightedGroup.value = target;
 }
-const companyId = 1; // 根据实际情况替换
+const companyId = userInfo.value.companyId; // 根据实际情况替换
 const companyIdString = companyId.toString();
 const departmentCurrentName = ref("深圳大学");
 const departmentCurrentMember_num = ref("100");
@@ -479,7 +481,7 @@ onMounted(() => {
 });
 
 async function fetchdepartment() {
-  const companyId = 1; // 根据实际情况替换
+  const companyId = userInfo.value.companyId; // 根据实际情况替换
   const companyIdString = companyId.toString();
   // 从接口获取部门数据并更新表格
   const response = await fetch(
@@ -533,7 +535,7 @@ async function fetchChildDepartments(
   parentId: number,
   parentDepartment: Department
 ) {
-  const companyId = 1; // 根据实际情况替换
+  const companyId = userInfo.value.companyId; // 根据实际情况替换
   const companyIdString = companyId.toString();
 
   const childResponse = await fetch(

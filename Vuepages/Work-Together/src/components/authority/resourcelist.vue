@@ -77,7 +77,91 @@
 
       <div id="main-content">
           <!-- 这里放置页面的主要内容 -->
-        
+          <div id="button-zone">
+            <button id="button2" class="list-button">删除</button>
+            <button id="button3" class="list-button">全选</button>
+          </div>
+          <div id="list-zone">
+            <div id="list-content">
+
+              <table>
+                <!-- Table structure and data -->
+                <thead>
+                  <tr>
+                    <th>编号</th>
+                    <th>资源名称</th>
+                    <th>资源分类</th>
+                    <th>描述</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <!-- Sample row -->
+                  <tr>
+                    <td>1</td>
+                    <td>任务管理员1</td>
+                    <td>职位资源</td>
+                    <td>后勤部</td>
+                    <td class="button-container">
+                      <button class="detail_button">查看详情</button>
+                      
+                    </td>
+                  </tr>
+
+
+                  <tr>
+                    <td>2</td>
+                    <td>任务管理员2</td>
+                    <td>职位资源</td>
+                    <td>后勤部</td>
+                    <td class="button-container">
+                      <button class="detail_button">查看详情</button>
+                      
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td>3</td>
+                    <td>任务管理员3</td>
+                    <td>职位资源</td>
+                    <td>后勤部</td>
+                    <td class="button-container">
+                      <button class="detail_button">查看详情</button>
+                      
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td>4</td>
+                    <td>任务管理员4</td>
+                    <td>职位资源</td>
+                    <td>后勤部</td>
+                    <td class="button-container">
+                      <button class="detail_button">查看详情</button>
+                      
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td>5</td>
+                    <td>任务管理员5</td>
+                    <td>职位资源</td>
+                    <td>后勤部</td>
+                    <td class="button-container">
+                      <button class="detail_button">查看详情</button>
+                      
+                    </td>
+                  </tr>
+
+                  
+                  <!-- Repeat rows as needed -->
+                </tbody>
+              </table>
+
+            </div>
+
+          </div>
 
       </div>
 
@@ -401,10 +485,102 @@
     background-color: #fff;
   }
 
-  #test{
-    width: 150px;
-    height: 50px;
+
+
+  #list-content{
+    position: relative;
+    height:93%;
+    width: 100%;
+    top:6px;
+    background-color: #fff;
   }
+
+
+  #button-zone{
+    height: 7%;
+    /* border: 1px solid black; */
+    background-color: #f3f3f3;
+  }
+
+  #list-zone{
+    height: 92%;
+    /* border: 1px solid black; */
+    background-color: #f3f3f3;
+  }
+
+  .list-button{
+    width: 88px;
+    height: 35px;
+    margin: 10px 35px;
+    border-radius: 10px;
+    border: none;
+    font-size: 15px;
+  }
+  .list-button:hover{
+    cursor: pointer;
+  }
+
+  /* #button1{
+    color: #fff;
+    background-color: #34c759c5;
+    margin-left: 60px;
+  } */
+  #button2{
+    color: #fff;
+    background-color: #ff3a30ad;
+    margin-left: 60px;
+  }
+  #button3{
+    color: #fff;
+    background-color: #af52dea2;
+  }
+  #list-content{
+    background-color: #fff;
+    width: 95%;
+    height: 95%;
+    border-radius: 15px;
+    margin: 0 45px;
+    border: 1px solid black;
+  }
+
+  td{
+    text-align: center;
+    vertical-align: middle; /* 垂直居中 */
+    height: 80px;
+    font-size: 18px;
+    font-weight: bold;
+    border: 1px solid #BBBBBB;
+    border: none;
+    border-bottom: 1px solid #ddd; /* 为每行底部添加边框 */
+  }
+  th{
+    width: 250px;
+    height: 80px;
+    font-size: 18px;
+    border-bottom: 1px solid #ddd; /* 为每行底部添加边框 */
+  }
+  table{
+    margin-left: 40px;
+    width: 95%;
+  }
+
+  .detail_button{
+    width: 90px;
+    height: 32px;
+    font-size: 16px;
+    color: #34C758;
+    background-color: #34C75825;
+    border: none;
+    border-radius: 15px;
+    margin: 10px;
+  }
+  .detail_button:hover{
+    cursor: pointer;
+    background-color: #34C7583d
+  }
+
+
+
 
   </style>
   

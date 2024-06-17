@@ -34,6 +34,8 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import {Authorization} from "@/store/token"
+import { UserInfo } from "@/store/userinfo";
+const userInfo = UserInfo();
 const tokens = Authorization();
 
 //获取父组件参数
@@ -63,7 +65,7 @@ function fetchEmailData() {
       list: [email.value],
       groupId: props.group.id
   };
-  const companyId = 1; // 根据实际情况替换
+  const companyId = userInfo.value.companyId; // 根据实际情况替换
   const companyIdString = companyId.toString();
   fetch(url, {
       method: 'POST',

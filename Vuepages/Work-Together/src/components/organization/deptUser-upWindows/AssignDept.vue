@@ -29,6 +29,8 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from "vue";
 import {Authorization} from "@/store/token"
+import { UserInfo } from "@/store/userinfo";
+const userInfo = UserInfo();
 const tokens = Authorization();
 
 //获取父组件参数
@@ -56,7 +58,7 @@ watch(selectedDepartmentName, (newValue, oldValue) => {
     console.log(selectedDepartmentId.value);
     
 });
-const companyId = 1; // 根据实际情况替换
+const companyId = userInfo.value.companyId; // 根据实际情况替换
 const companyIdString = companyId.toString();
 //请求变更
 function handleAssignClick() {
