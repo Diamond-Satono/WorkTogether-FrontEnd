@@ -96,6 +96,8 @@
 <script setup lang="ts">
 import { onMounted, ref, Transition, onUnmounted, computed } from 'vue'
 import {Authorization} from "@/store/token"
+import { UserInfo } from "@/store/userinfo";
+const userInfo = UserInfo();
 const tokens = Authorization();
 const currentModal = ref("");
 const transitionName = ref("fade");
@@ -268,7 +270,7 @@ const highlightGroup = (event: MouseEvent) => {
   target.classList.add('highlighted');
   highlightedGroup.value = target;
 }
-const companyId = 1; // 根据实际情况替换
+const companyId = userInfo.value.companyId; // 根据实际情况替换
 const companyIdString = companyId.toString();
 //获取点击的部门信息
 const groupId = ref(1);

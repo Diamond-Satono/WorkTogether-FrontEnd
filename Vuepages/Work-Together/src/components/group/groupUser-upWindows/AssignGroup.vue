@@ -29,6 +29,8 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import {Authorization} from "@/store/token"
+import { UserInfo } from "@/store/userinfo";
+const userInfo = UserInfo();
 const tokens = Authorization();
 
 //获取父组件参数
@@ -53,7 +55,7 @@ console.log(props.group);
 // 使用ref创建响应式属性来存储选中的团队
 const selectedGroup = ref();
 
-const companyId = 1; // 根据实际情况替换
+const companyId = userInfo.value.companyId; // 根据实际情况替换
 const companyIdString = companyId.toString();
 //请求变更
 function handleAssignClick() {
