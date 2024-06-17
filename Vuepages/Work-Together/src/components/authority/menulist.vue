@@ -77,7 +77,81 @@
 
       <div id="main-content">
           <!-- 这里放置页面的主要内容 -->
-        
+          <div id="button-zone">
+            <button id="button1" class="list-button">启用</button>
+            <button id="button2" class="list-button">删除</button>
+            <button id="button3" class="list-button">全选</button>
+          </div>
+          <div id="list-zone">
+            <div id="list-content">
+
+              <table>
+                <!-- Table structure and data -->
+                <thead>
+                  <tr>
+                    <th>编号</th>
+                    <th>菜单名称</th>
+                    <th>菜单级数</th>
+                    <th>是否显示</th>
+                    <th>排序</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <!-- Sample row -->
+                  <tr>
+                    <td>1</td>
+                    <td>团队管理</td>
+                    <td>二级</td>
+                    <td><input class="ios-switch" type="checkbox" checked />
+                      <span class="slider round"></span></td>
+                    <td>1</td>
+                    <td class="button-container">
+                      <button class="edit_button">编辑</button>
+                      <button class="delete_button">删除</button>
+                    </td>
+                  </tr>
+
+
+                  <tr>
+                    <td>2</td>
+                    <td>成员与部门</td>
+                    <td>二级</td>
+                    <td><input class="ios-switch" type="checkbox" checked /></td>
+                    <td>2</td>
+                    <td class="button-container">
+                      <button class="edit_button">编辑</button>
+                      <button class="delete_button">删除</button>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td>3</td>
+                    <td>企业概览</td>
+                    <td>二级</td>
+                    <td><input class="ios-switch" type="checkbox" checked /></td>
+                    <td>1</td>
+                    <td class="button-container">
+                      <button class="edit_button">编辑</button>
+                      <button class="delete_button">删除</button>
+                    </td>
+                  </tr>
+
+                  
+                  <!-- Repeat rows as needed -->
+                </tbody>
+              </table>
+
+            </div>
+
+          </div>
+
+
+
+
+
+
 
       </div>
 
@@ -384,14 +458,6 @@
     border-bottom: 3px solid #fb5b1d;
   }
 
-  #bottom-line{
-    border-bottom: 1px solid #BBBBBB; /* 画出下方的实线 */
-    position: relative;
-    top:5px;
-    left:10px;
-    height: 0px;
-    width: 98%; /* 设置线的宽度为，与页面宽度相符 */
-  }
   
   #list-content{
     position: relative;
@@ -405,6 +471,109 @@
     width: 150px;
     height: 50px;
   }
+
+  #button-zone{
+    height: 7%;
+    /* border: 1px solid black; */
+    background-color: #f3f3f3;
+  }
+
+  #list-zone{
+    height: 92%;
+    /* border: 1px solid black; */
+    background-color: #f3f3f3;
+  }
+
+  .list-button{
+    width: 88px;
+    height: 35px;
+    margin: 10px 35px;
+    border-radius: 10px;
+    border: none;
+    font-size: 15px;
+  }
+  .list-button:hover{
+    cursor: pointer;
+  }
+
+  #button1{
+    color: #fff;
+    background-color: #34c759c5;
+    margin-left: 60px;
+  }
+  #button2{
+    color: #fff;
+    background-color: #ff3a30ad;
+  }
+  #button3{
+    color: #fff;
+    background-color: #af52dea2;
+  }
+  #list-content{
+    background-color: #fff;
+    width: 95%;
+    height: 95%;
+    border-radius: 15px;
+    margin: 0 45px;
+    border: 1px solid black;
+  }
+
+  td{
+    text-align: center;
+    vertical-align: middle; /* 垂直居中 */
+    height: 80px;
+    font-size: 18px;
+    font-weight: bold;
+    border: 1px solid #BBBBBB;
+    border: none;
+    border-bottom: 1px solid #ddd; /* 为每行底部添加边框 */
+  }
+  th{
+    width: 250px;
+    height: 80px;
+    font-size: 18px;
+    border-bottom: 1px solid #ddd; /* 为每行底部添加边框 */
+  }
+  table{
+    margin-left: 10px;
+  }
+
+  .ios-switch{
+    width: 25px;
+    height: 25px;
+  }
+
+  .edit_button{
+    width: 80px;
+    height: 32px;
+    font-size: 16px;
+    color: #007AFF;
+    background-color: #007bff25;
+    border: none;
+    border-radius: 15px;
+    margin: 10px;
+  }
+  .edit_button:hover{
+    cursor: pointer;
+    background-color: #007bff3d
+  }
+
+
+  .delete_button{
+    width: 80px;
+    height: 32px;
+    font-size: 16px;
+    color: #FF3A30;
+    background-color: #ff3a303a;
+    border: none;
+    border-radius: 15px;
+    margin: 10px;
+  }
+  .delete_button:hover{
+    cursor: pointer;
+    background-color: #ff3a3050
+  }
+
 
   </style>
   
