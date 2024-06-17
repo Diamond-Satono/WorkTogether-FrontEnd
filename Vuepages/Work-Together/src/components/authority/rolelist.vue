@@ -5,32 +5,28 @@
       <!-- Sidebar-->
       <ul>
         <li id="home" @click="toggleSubMenu('home')">
-          <i class="fas fa-file"></i> 
           <a href="/HomePage"><fa icon="folder-open" />  首页</a>
         </li>
         <li id="organization">
-          <i class="fas fa-file"></i>  
           <a @click="toggleSubMenu('organization')"><fa icon="folder-open" /> 组织架构</a>
           <ul class="submenu" v-show="subMenuStatus.organization">
-            <li v-show="groupstate"><i class="fas fa-file"></i> <a href="/groupmanage"><fa icon="file" />  团队管理</a></li>
-            <li v-show="departmentstate"><i class="fas fa-file"></i> <a href="/departmentManage"><fa icon="file" />  成员与部门</a></li>
+            <li v-show="groupstate"> <a href="/groupmanage"><fa icon="file" />  团队管理</a></li>
+            <li v-show="departmentstate"> <a href="/departmentManage"><fa icon="file" />  成员与部门</a></li>
           </ul>
         </li>
         <li id="enterprise">
-          <i class="fas fa-file"></i>  
           <a @click="toggleSubMenu('enterprise')"><fa icon="folder-open" />  企业管理</a>
           <ul class="submenu" v-show="subMenuStatus.enterprise">
-            <li v-show="enterprisestate"><i class="fas fa-file"></i> <a href="/enterpriseinfo"><fa icon="file" />  企业概览</a></li>
+            <li v-show="enterprisestate"> <a href="/enterpriseinfo"><fa icon="file" />  企业概览</a></li>
           </ul>
         </li>
         <li id="authority">
-          <i class="fas fa-file"></i>  
           <a @click="toggleSubMenu('authority')"><fa icon="folder-open" />  权限列表</a>
           <ul class="submenu" v-show="subMenuStatus.authority">
-            <li><i class="fas fa-users"></i> <a href="/userlist"><fa icon="file" />  用户列表</a></li>
-            <li><i class="fas fa-user-tag"></i> <a style="color: #ff7f50;"><fa icon="file" />  角色列表</a></li>
-            <li><i class="fas fa-list"></i> <a href="/menulist"><fa icon="file" />  菜单列表</a></li>
-            <li><i class="fas fa-server"></i> <a href="resourcelist"><fa icon="file" />  资源列表</a></li>
+            <li> <a href="/userlist"><fa icon="file" />  用户列表</a></li>
+            <li> <a style="color: #ff7f50;"><fa icon="file" />  角色列表</a></li>
+            <li> <a href="/menulist"><fa icon="file" />  菜单列表</a></li>
+            <li> <a href="resourcelist"><fa icon="file" />  资源列表</a></li>
           </ul>
         </li>
       </ul>
