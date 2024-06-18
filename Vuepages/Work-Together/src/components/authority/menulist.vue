@@ -63,8 +63,8 @@
                 <button id="user-button" @click="toggleMenu"><fa icon="caret-down" /></button>
                 <div v-if="isMenuOpen" class="bubble-menu">
                   <ul class="user-bubble">
-                    <li class="bubble-choice"><a href="#">切换账号</a></li>
-                    <li class="bubble-choice"><a href="#">退出登录</a></li>
+                    <li class="bubble-choice"><a href="/Login">退出登录</a></li>
+                    <li class="bubble-choice"><a href="/calendar">前往前台界面</a></li>
                   </ul>
                 </div>
             </div>
