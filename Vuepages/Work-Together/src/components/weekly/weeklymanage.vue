@@ -111,7 +111,7 @@
                 <ul class="user-bubble">
                   
                   <li class="bubble-choice"><a href="/Login">退出登录</a></li>
-                  <li class="bubble-choice"><a href="/homepage">进入后台界面</a></li>
+                  <li class="bubble-choice"><a href="/groupmanage">进入后台界面</a></li>
                 </ul>
               </div>
             </div>
@@ -171,7 +171,8 @@
       currentActive: null,
       currentTypeColor: '',
       isNoticeMenuOpen: false,
-      currentComponent: 'uploadweekly' // 新增变量，记录当前显示的组件
+      currentComponent: 'uploadweekly', // 新增变量，记录当前显示的组件
+      weeklytoRevise :''      //需要被修改的周报的ID
     };
   },
   components: {

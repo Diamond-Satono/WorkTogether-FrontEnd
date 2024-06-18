@@ -4,9 +4,9 @@
       <img class="logo" src="@/assets/img/wt_logo.png" alt="Icon">
       <!-- Sidebar-->
       <ul>
-        <li id="home" @click="toggleSubMenu('home')">
+        <!-- <li id="home" @click="toggleSubMenu('home')">
           <a href="/HomePage"><fa icon="folder-open" />  首页</a>
-        </li>
+        </li> -->
         <li id="organization">
           <a @click="toggleSubMenu('organization')"><fa icon="folder-open" /> 组织架构</a>
           <ul class="submenu" v-show="subMenuStatus.organization">

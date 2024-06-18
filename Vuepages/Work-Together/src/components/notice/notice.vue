@@ -114,7 +114,7 @@
                 <ul class="user-bubble">
                   
                   <li class="bubble-choice"><a href="/Login">退出登录</a></li>
-                  <li class="bubble-choice"><a href="/homepage">进入后台界面</a></li>
+                  <li class="bubble-choice"><a href="/groupmanage">进入后台界面</a></li>
                 </ul>
               </div>
             </div>

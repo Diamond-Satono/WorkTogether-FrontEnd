@@ -4,10 +4,10 @@
       <img class="logo" src="@/assets/img/wt_logo.png" alt="Icon">
       <!-- Sidebar-->
       <ul>
-        <li id="home" @click="toggleSubMenu('home')">
+        <!-- <li id="home" @click="toggleSubMenu('home')">
           <i class="fas fa-file"></i> 
           <a href="/HomePage"><fa icon="folder-open" />  首页</a>
-        </li>
+        </li> -->
         <li id="organization">
           <i class="fas fa-file"></i>  
           <a @click="toggleSubMenu('organization')"><fa icon="folder-open" /> 组织架构</a>
