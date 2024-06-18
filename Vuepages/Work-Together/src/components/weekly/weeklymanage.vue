@@ -170,7 +170,8 @@
       currentActive: null,
       currentTypeColor: '',
       isNoticeMenuOpen: false,
-      currentComponent: 'uploadweekly' // 新增变量，记录当前显示的组件
+      currentComponent: 'uploadweekly', // 新增变量，记录当前显示的组件
+      weeklytoRevise :''      //需要被修改的周报的ID
     };
   },
   components: {
