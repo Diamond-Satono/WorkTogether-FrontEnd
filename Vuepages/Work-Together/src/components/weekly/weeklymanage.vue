@@ -140,7 +140,8 @@
 
         </div>
         <div id="carlendar-R">
-            <component :is="currentComponent"></component>
+            <component :is="currentComponent"
+              @update:weeklyId="handleWeeklyIdUpdate"></component>
         </div>
   
       </div>
@@ -199,6 +200,11 @@
     },
     showComponent(componentName) {
       this.currentComponent = componentName;
+    },
+    handleWeeklyIdUpdate(weeklyId) {
+      this.currentComponent = 'uploadweekly';
+      console.log('Received weeklyId from child component:', weeklyId);
+      // 这里可以执行其他逻辑，例如更新状态或者调用API
     }
     
   }
