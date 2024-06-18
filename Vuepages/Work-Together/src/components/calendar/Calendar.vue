@@ -4,12 +4,12 @@
     <img class="logo" src="@/assets/img/wt_logo.png" alt="Icon">
     <!-- Sidebar-->
     <ul>
-      <li id="home" @click="toggleSubMenu('home')">
+      <!-- <li id="home" @click="toggleSubMenu('home')">
         <i class="fas fa-file"></i>
         <a href="/foregroundhomepage">
           <fa icon="folder-open" /> 首页
         </a>
-      </li>
+      </li> -->
       <li id="calendar">
         <i class="fas fa-file"></i>
         <a style="color: #ff7f50;" @click="toggleSubMenu('calendar')">
@@ -45,8 +45,8 @@
       </li>
       <li id="tasks">
         <i class="fas fa-file"></i>
-        <a @click="toggleSubMenu('tasks')">
-          <fa icon="folder-open" /> 设置
+        <a href="/weeklymanage" @click="toggleSubMenu('tasks')">
+          <fa icon="folder-open" /> 周报
         </a>
         <!-- <ul class="submenu" v-show="subMenuStatus.tasks">
           <li><a>
@@ -110,9 +110,9 @@
             </button>
             <div v-if="isMenuOpen" class="bubble-menu">
               <ul class="user-bubble">
-                <li class="bubble-choice"><a href="#">切换账号</a></li>
-                <li class="bubble-choice"><a href="#">退出登录</a></li>
-                <li class="bubble-choice"><a href="#">切换公司</a></li>
+                
+                <li class="bubble-choice"><a href="/Login">退出登录</a></li>
+                <li class="bubble-choice"><a href="/homepage">进入后台界面</a></li>
               </ul>
             </div>
           </div>

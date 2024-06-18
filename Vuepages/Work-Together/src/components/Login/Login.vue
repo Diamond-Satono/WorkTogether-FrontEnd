@@ -441,7 +441,7 @@ const goToRetrievePassword = () =>{
 
 const goToHomePage = () => {
   if (router) {
-    router.push({ name: "ForegroundHomePage" });
+    router.push({ name: "Calendar" });     /* 这里有改动 */
   } else {
     console.error("Router is not initialized.");
   }

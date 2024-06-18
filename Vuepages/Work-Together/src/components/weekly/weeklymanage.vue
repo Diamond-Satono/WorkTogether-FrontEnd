@@ -23,7 +23,7 @@
         </li>
         <li id="settings">
           <i class="fas fa-file"></i>
-          <a style="color: #ff7f50;" @click="toggleSubMenu('settings')">
+          <a href="/address" @click="toggleSubMenu('settings')">
             <fa icon="folder-open" /> 通讯录
           </a>
           <!-- <ul class="submenu" v-show="subMenuStatus.settings">
@@ -45,7 +45,7 @@
         </li>
         <li id="tasks">
           <i class="fas fa-file"></i>
-          <a href="/weeklymanage" @click="toggleSubMenu('tasks')">
+          <a style="color: #ff7f50;" @click="toggleSubMenu('tasks')">
             <fa icon="folder-open" /> 周报
           </a>
           <!-- <ul class="submenu" v-show="subMenuStatus.tasks">
@@ -81,7 +81,7 @@
           <div id="symbol">深</div>
           <div id="page-info">
             <span id="name-en">深圳大学/</span>
-            <span id="name-list">通讯录</span>
+            <span id="name-list">周报</span>
           </div>
         </div>
   
@@ -124,17 +124,23 @@
   
       <div id="main-content">
         <!-- 这里放置页面的主要内容 -->
-        <div id="carlendar-content">
-          <!-- <component :is="componentToShow"></component> -->
-          <div id="carlendar-L">
-            <addressL ref="addressLComponent" @member-selected="handleMemberSelected" />
-          </div>
-          <div id="vertical-line"></div> <!-- 新增的竖直线 -->
-          <div id="carlendar-R">
-            
-            <addressR v-if="showAddressR" @edit-info="showAddressR = false" :memberId="selectedMemberId" :isMyself="isMyself"></addressR>
-            <addressR2 v-else :memberId="selectedMemberId" @cancel-edit="handleCancelEdit" @save-edit="handleSaveEdit" @data-saved="refreshAddressL"></addressR2>
-          </div>
+        <div id="carlendar-L">
+            <ul class="subside">
+                <li class="subchoice">
+                    <a href="#" @click="showComponent('uploadweekly')">提交周报</a>
+                </li>
+                <li class="subchoice">
+                    <a href="#" @click="showComponent('myreview')">我的评审</a>
+                </li>
+                <li class="subchoice">
+                    <a href="#" @click="showComponent('myweekly')">我的周报</a>
+                </li>
+            </ul>
+
+
+        </div>
+        <div id="carlendar-R">
+            <component :is="currentComponent"></component>
         </div>
   
       </div>
@@ -149,11 +155,12 @@
   
   <script>
   import noticebubble from '@/components/notice/noticebubble.vue';
-  import addressL from '@/components/addresslist/addressL.vue'
-  import addressR from '@/components/addresslist/addressR.vue'
+  import uploadweekly from '@/components/weekly/uploadweekly.vue';
+  import myreview from '@/components/weekly/myreview.vue';
+  import myweekly from '@/components/weekly/myweekly.vue';
   
   export default {
-  name: 'address',
+  name: 'weeklymanage',
   data() {
     return {
       isMenuOpen: false,
@@ -163,15 +170,14 @@
       currentActive: null,
       currentTypeColor: '',
       isNoticeMenuOpen: false,
-      selectedMemberId: null,
-      showAddressR: true,
-      isMyself: false // 新增变量，记录是否为当前用户
+      currentComponent: 'uploadweekly' // 新增变量，记录当前显示的组件
     };
   },
   components: {
     noticebubble,
-    addressL,
-    addressR
+    uploadweekly,
+    myreview,
+    myweekly,
   },
   methods: {
     toggleSubMenu(item) {
@@ -191,19 +197,10 @@
       this.isNoticeMenuOpen = false;
       console.log('Modal closed');
     },
-    handleMemberSelected({ memberId, isMyself }) {
-      this.selectedMemberId = memberId;
-      this.isMyself = isMyself; // 更新 isMyself 变量
-    },
-    handleCancelEdit() {
-      this.showAddressR = true;
-    },
-    handleSaveEdit() {
-      this.showAddressR = true;
-    },
-    refreshAddressL() {
-      this.$refs.addressLComponent.fetchMembers();
+    showComponent(componentName) {
+      this.currentComponent = componentName;
     }
+    
   }
 };
   </script>
@@ -473,6 +470,8 @@
     height: 91%;
     left: 20px;
     top: 6px;
+
+    display: flex;
   }
   
   #info-mode {
@@ -529,8 +528,22 @@
     position: relative;
     /* background-color: #4D4D4D; */
     height: 100%;
-    width: 25%;
-  
+    width: 10%;
+    background-color: #FFFCF2;
+  }
+  .subside{
+    /* background-color: #FF6200; */
+    width:100%;
+    padding: 0;
+  }
+  .subchoice{
+    width:auto;
+    font-size: 18px;
+    font-weight: bold;
+    padding-left:20px;
+  }
+  .subchoice:hover{
+    background-color: #fcf2e3;
   }
   
   #carlendar-R {
