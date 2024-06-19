@@ -247,10 +247,12 @@ const submitterName = ref("");
   font-size: 25px;
   font-family: 'PingFang';
   display: flex;
+  justify-content: space-between;
+  /* 在两端对齐内容 */
 }
 
 .reporttitle img {
-  margin-left: 380px;
+  margin-left: auto;
   width: 60px;
   /* 设置所需的宽度 */
   height: 60px;
@@ -268,7 +270,7 @@ const submitterName = ref("");
   margin-left: 10px;
   margin-top: 35px;
   color: rgba(16, 16, 16, 0.70);
-
+  margin-right: 30px;
 }
 
 .statusandsubmitter {
