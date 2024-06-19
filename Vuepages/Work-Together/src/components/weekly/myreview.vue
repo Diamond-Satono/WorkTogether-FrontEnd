@@ -10,6 +10,20 @@
         &nbsp;&nbsp;
         我评审的
       </div>
+      <div class="function-bar">
+        <div class="tabs">
+          <div v-if="isneed === false">
+            <span style="color: #FF6200">已评审</span>
+            &nbsp;&nbsp;&nbsp;
+            <span @click="toOther">待评审</span>
+          </div>
+          <div v-else>
+            <span @click="toOther">已评审</span>
+            &nbsp;&nbsp;&nbsp;
+            <span style="color: #FF6200">待评审</span>
+          </div>
+        </div>
+      </div>
       <table>
         <!-- Table structure and data -->
         <thead>
@@ -20,7 +34,7 @@
           <th>提交成员</th>
         </tr>
         </thead>
-        <tbody v-if="isauditing">
+        <tbody v-if="isneed === false">
         <!-- Sample row -->
         <tr v-for="row in myReports" :key="row.id">
           <td style="color: rgba(16, 16, 16, 0.6);">
@@ -32,6 +46,7 @@
 
          
           <td><button class="auditing" @click="toView(row)">已审核</button></td>
+          <td><img :src="row.imgUrl" alt="" style="width:60px; height: 60px;border-radius: 50%;"></td>
 
         </tr>
         </tbody>
@@ -46,6 +61,7 @@
           <td>{{ row.reportTime }}</td>
 
           <td><button class="submited" @click="toView(row)">已提交</button></td>
+          <td><img :src="row.imgUrl" alt="" style="width: 60px; height: 60px;border-radius: 50%;"></td>
           
         </tr>
         </tbody>
@@ -97,11 +113,11 @@ const myReports = ref([
     reportTime: "2024-06-07T17:53:13"
   }
 ]);
-const isauditing = ref(true);
+const isneed = ref(false);
 //获取所有用户列表
 function fetchAllReportData() {
   let body;
-  if(isauditing.value === true) {
+  if(isneed.value === false) {
     body = {
       "status": 1
     }
@@ -111,7 +127,7 @@ function fetchAllReportData() {
     }
   }
   fetch(`http://localhost:8080/api/report/getReportByCondition`, {
-      method: 'GET',
+      method: 'POST',
       headers: {
           'Content-Type': 'application/json', // 设置 Content-Type 请求头为 JSON
           'Authorization': token.value, // 设置 Authorization 请求头，用于身份验证
@@ -191,11 +207,7 @@ function toFillin(row :any){
 //设置弹窗
 const currentModal = ref("");
 const currentRowData = ref('');
-const isneed = ref(false);
 function toView(row :any) {
-  if(row.status === 1) {
-    isneed.value = true;
-  }
   currentRowData.value = row;
   // currentModal.value = "GroupMemberDetail";
   currentModal.value = "WeeklyReportDetailsReviewed";
@@ -205,6 +217,11 @@ function toView(row :any) {
 function closeModal() {
   currentModal.value = "";
   console.log("ModalClosed");
+}
+//切换tab
+function toOther() {
+  isneed.value = !isneed.value;
+  fetchAllReportData();
 }
 </script>
 
@@ -227,6 +244,19 @@ function closeModal() {
   font-size: 24px;
   display: flex;
   align-items: center;
+}
+.function-bar {
+  width: 90%;
+  margin-top: 30px;
+  margin-bottom: 25px;
+  margin-left: 5%;
+  margin-right: 5%;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+}
+.tabs {
+  cursor: pointer;
 }
 table {
   width: 90%;
