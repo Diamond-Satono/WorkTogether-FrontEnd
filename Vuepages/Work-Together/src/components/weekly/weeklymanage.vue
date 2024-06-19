@@ -174,7 +174,7 @@
       currentActive: null,
       currentTypeColor: '',
       isNoticeMenuOpen: false,
-      currentComponent: 'uploadweekly', // 新增变量，记录当前显示的组件
+      currentComponent: 'myweekly', // 新增变量，记录当前显示的组件
       weeklytoRevise :'',      //需要被修改的周报的ID
       weeklyYeartoRevise :'',      //需要被填写的周报的年
       weeklyNumtoRevise :''      //需要被填写的周报的周
