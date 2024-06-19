@@ -164,7 +164,7 @@ function fetchAllUserData() {
 }
 // 添加分页状态
 const currentPage = ref(1);
-const pageSize = ref(2); // 假设每页显示10条数据
+const pageSize = ref(7); // 假设每页显示10条数据
 const isLoading = ref(false);
 const hasMore = ref(true);
 //分页消息

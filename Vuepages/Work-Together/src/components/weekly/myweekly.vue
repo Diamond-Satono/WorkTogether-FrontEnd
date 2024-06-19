@@ -50,6 +50,11 @@
         </tbody>
       </table>
     </div>
+    <!-- 弹窗组件 -->
+    <component :is="currentModal" v-if="currentModal"
+      @close-modal="closeModal"
+      :report="currentRowData">
+    </component>
   </div>  
 </template>
 
@@ -210,9 +215,19 @@ function toEdit(row :any){
 function toFillin(row :any){
   emit('update:weeklyId', row.id, row.year, row.weekNum);
 }
-//查看周报
-function toView(row :any){
-  console.log(row);
+//设置弹窗
+const currentModal = ref("");
+const currentRowData = ref('')
+function toView(row :any) {
+  currentRowData.value = row;
+  // currentModal.value = "GroupMemberDetail";
+  currentModal.value = "WeeklyReportDetailsReviewed";
+  console.log("currentModal=", currentModal.value);
+}
+//关闭弹窗
+function closeModal() {
+  currentModal.value = "";
+  console.log("ModalClosed");
 }
 </script>
 
@@ -276,7 +291,7 @@ td {
   border: none;
   font-size: 17px;
   font-weight: bold;
-  cursor: pointer;
+  /* cursor: pointer; */
 }
 .submited {
   width: 110px;
