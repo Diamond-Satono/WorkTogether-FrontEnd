@@ -75,6 +75,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { UserInfo } from '@/store/userinfo';
+import { Authorization } from '@/store/token';
 interface Role {
   id: number
   name: string
@@ -83,6 +84,7 @@ interface Role {
   createTime: string
   status: boolean
 }
+const token = Authorization();
 const userInfo = UserInfo();
 const companyId = userInfo.value.companyId;
 const roles = ref<Role[]>([])
@@ -100,7 +102,12 @@ const currentRole = ref<Role>({
 
 const fetchRoles = async () => {
   try {
-    const response = await fetch(`http://localhost:8080/api/auth/cid/${companyId}`)
+    const response = await fetch(`http://localhost:8080/api/auth/cid/${companyId}`, {
+      headers: {
+        'Authorization': token.value,
+        'companyId': userInfo.value.companyId.toString() 
+      }
+    })
     const data = await response.json()
     roles.value = data.data
     console.log("角色信息", roles.value);
@@ -108,6 +115,7 @@ const fetchRoles = async () => {
     console.error('发生错误:', error)
   }
 }
+
 
 const filteredRoles = computed(() => {
   return roles.value
