@@ -140,8 +140,11 @@
 
         </div>
         <div id="carlendar-R">
-            <component :is="currentComponent" :weeklyId="weeklytoRevise"
-              @update:weeklyId="handleWeeklyIdUpdate"></component>
+            <component :is="currentComponent"
+            :weeklyId="weeklytoRevise"
+            :year="weeklyYeartoRevise"
+            :week="weeklyNumtoRevise"
+            @update:weeklyId="handleWeeklyIdUpdate"></component>
         </div>
   
       </div>
@@ -172,7 +175,9 @@
       currentTypeColor: '',
       isNoticeMenuOpen: false,
       currentComponent: 'uploadweekly', // 新增变量，记录当前显示的组件
-      weeklytoRevise :''      //需要被修改的周报的ID
+      weeklytoRevise :'',      //需要被修改的周报的ID
+      weeklyYeartoRevise :'',      //需要被填写的周报的年
+      weeklyNumtoRevise :''      //需要被填写的周报的周
     };
   },
   components: {
@@ -202,10 +207,12 @@
     showComponent(componentName) {
       this.currentComponent = componentName;
     },
-    handleWeeklyIdUpdate(weeklyId) {
-      this.currentComponent = 'uploadweekly';
+    handleWeeklyIdUpdate(weeklyId, weeklyYear, weeklyNum) {      
       this.weeklytoRevise = weeklyId;
-      console.log('Received weeklyId from child component:', weeklyId);
+      this.weeklyYeartoRevise = weeklyYear;
+      this.weeklyNumtoRevise = weeklyNum;
+      console.log('Received weeklyId from child component:', weeklyId, weeklyYear, weeklyNum);
+      this.currentComponent = 'uploadweekly';
       // 这里可以执行其他逻辑，例如更新状态或者调用API
     }
     

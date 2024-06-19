@@ -1,43 +1,56 @@
 <template>
-  <div>
+  <!-- <div>
     我的周报
     {{ getWeekRange(2024, 22) }}
-  </div>
-  <table>
-    <!-- Table structure and data -->
-    <thead>
-    <tr>
-      <!-- <th></th> -->
-      <th>周</th>
-      <th>时间</th>
-      <th>状态</th>
-      <th>操作</th>
-    </tr>
-    </thead>
-    <tbody>
-    <!-- Sample row -->
-    <tr v-for="row in myReports" :key="row.id">
-      <td style="color: rgba(16, 16, 16, 0.6);">
-        {{ row.year }}年第{{ row.weekNum }}周<br>
-        {{ getWeekRange(row.year, row.weekNum) }}
-      </td>
-      <td>{{ row.reportTime }}</td>
-      <td v-if="row.status === -1" style="color: #ff0000;">未提交</td>
-      <td v-else-if="row.status === 0" style="color: #00ff00;">已提交</td>
-      <td v-else-if="row.status === 1" style="color: #0000ff;">已审核</td>
-      
-      <td v-if="row.status === 0">
-        <button class="detail_button">去编辑</button>
-      </td>
-      <td v-else-if="row.status === 1">
-        <!-- <button class="detail_button">去编辑</button> -->
-      </td>
-      <td v-else>
-        <button class="detail_button">去填写</button>
-      </td>
-    </tr>
-    </tbody>
-  </table>
+  </div> -->
+  <div class="container">
+    <div class="model-content">
+      <div class="model-bar">
+        <img src="@/assets/weekly/myweeklyIcon.png" alt="">
+        &nbsp;&nbsp;
+        我的周报
+      </div>
+      <table>
+        <!-- Table structure and data -->
+        <thead>
+        <tr>
+          <!-- <th></th> -->
+          <th>周</th>
+          <th>时间</th>
+          <th>状态</th>
+          <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Sample row -->
+        <tr v-for="row in myReports" :key="row.id">
+          <td style="color: rgba(16, 16, 16, 0.6);">
+            {{ row.year }}年第{{ row.weekNum }}周<br>
+            {{ getWeekRange(row.year, row.weekNum) }}
+          </td>
+
+          <td v-if="row.status !==-1">{{ row.reportTime }}</td>
+          <td v-else><span style="font-weight: bolder;">-</span></td>
+
+          <td v-if="row.status === -1" style="color: #ff0000;"><button class="unsubmit">未提交</button></td>
+          <td v-else-if="row.status === 0" style="color: #00ff00;"><button class="submited" @click="toView(row)">已提交</button></td>
+          <td v-else-if="row.status === 1" style="color: #0000ff;"><button class="auditing" @click="toView(row)">已审核</button></td>
+          
+          <td v-if="row.status === 0" class="makecenter">
+            <img src="@/assets/weekly/toeditIcon.png" alt="">
+            <button class="edit_button" @click="toEdit(row)">去编辑</button>
+          </td>
+          <td v-else-if="row.status === 1">
+          </td>
+          <td v-else class="makecenter">
+            <img src="@/assets/weekly/tofillinIcon.png" alt="">
+            <button class="fillin_button" @click="toFillin(row)">去填写</button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>  
 </template>
 
 <script setup lang="ts">
@@ -51,9 +64,9 @@ const companyIdString = companyId.toString();
 const groupId = ref(userInfo.value.groupId);
 const myReports = ref([
   {
-    id: 1802277163324932097,
-    userId: 1,
-    reviewerId: 1,
+    id: "1802277163324932097",
+    userId: "1",
+    reviewerId: "1",
     year: 2024,
     weekNum: 24,
     text1: "aliqua",
@@ -64,9 +77,9 @@ const myReports = ref([
     reportTime: "2024-06-16T17:53:13"
   },
   {
-    id: 1802277163324932011,
-    userId: 1,
-    reviewerId: 1,
+    id: "1802277163324932011",
+    userId: "1",
+    reviewerId: "1",
     year: 2024,
     weekNum: 22,
     text1: "aliqua",
@@ -107,6 +120,8 @@ function fetchAllReportData() {
           const allReports = [...missingReports, ...myReports.value];
           // 按weekNum逆序排序
           allReports.sort((a, b) => b.weekNum - a.weekNum);
+          // 按year逆序排序
+          allReports.sort((a, b) => b.year - a.year);
           // 更新myReports的值
           myReports.value = allReports;
         }
@@ -118,14 +133,21 @@ function fetchAllReportData() {
     });
 }
 function fillMissingWeeks(reports :Array<any>) {
-  const existingWeeks = new Set(reports.map(report => report.weekNum));
+  const existingWeeks = new Set();
+  const yearFirstReport = reports[0].year;
   const missingWeeks = [];
+  reports.forEach(report => {
+    // 只有当报告年份等于当前年份时，才添加到existingWeeks集合
+    if (report.year === yearFirstReport) {
+      existingWeeks.add(report.weekNum);
+    }
+  });
   for (let weekNum = reports[0].weekNum-1; weekNum > 0; weekNum--) {
     if (!existingWeeks.has(weekNum)) {
       const newReport = {
-        id: -1,
-        userId: -1,
-        reviewerId: -1,
+        id: "-1",
+        userId: "-1",
+        reviewerId: "-1",
         year: reports[0].year,
         weekNum: weekNum,
         text1: "",
@@ -144,16 +166,6 @@ function fillMissingWeeks(reports :Array<any>) {
 // 在组件挂载后调用这个方法
 onMounted(() => {
   fetchAllReportData();
-  // if (myReports.value.length > 0) {
-  //   // 首先，填充缺失的周报数据
-  //   const missingReports = fillMissingWeeks(myReports.value);
-  //   // 将新创建的报告插入到原始数组中，然后进行排序
-  //   const allReports = [...missingReports, ...myReports.value];
-  //   // 按weekNum逆序排序
-  //   allReports.sort((a, b) => b.weekNum - a.weekNum);
-  //   // 更新myReports的值
-  //   myReports.value = allReports;
-  // }
 });
 
 function formatDate(date :any) {
@@ -188,90 +200,118 @@ function getWeekRange(year :any, weekNum :any) {
 
   return `${start} - ${end}`;
 }
-// 使用函数
-const weekRange = getWeekRange(2024, 24);
-console.log(`2024年第24周的时间是${weekRange}`);
 
-// function getWeekRange(year :any, weekNum :any) {
-//   const date = new Date();
-//   date.setUTCFullYear(year); // 设置年份
-//   date.setUTCMonth(0); // 设置月份为0，即1月
-//   date.setUTCDate(1); // 设置日期为1
-
-//   let day = date.getUTCDay(); // 获取当前日期是星期几
-//   // 如果1月1日不是星期日，向前调整到最近的星期一
-//   if (day !== 0) {
-//     date.setUTCDate(1 - day + 1);
-//   }
-
-//   // 计算到指定周的天数
-//   const weekDays = (weekNum - 1) * 7;
-//   date.setUTCDate(date.getUTCDate() + weekDays);
-
-//   // 获取该周的开始日期和结束日期
-//   const startOfWeek = new Date(date);
-//   startOfWeek.setUTCDate(startOfWeek.getUTCDate() - startOfWeek.getUTCDay() + 1); // 周一
-
-//   const endOfWeek = new Date(startOfWeek);
-//   endOfWeek.setUTCDate(endOfWeek.getUTCDate() + 6); // 周日
-
-//   // 格式化日期为 YYYY-MM-DD
-//   const formatDate = (date :any) => {
-//     const d = new Date(date);
-//     let month = '' + (d.getMonth() + 1);
-//     let day = '' + d.getDate();
-//     if (month.length < 2) month = '0' + month;
-//     if (day.length < 2) day = '0' + day;
-//     return [d.getFullYear(), month, day].join('-');
-//   };
-
-//   return {
-//     start: formatDate(startOfWeek),
-//     end: formatDate(endOfWeek)
-//   };
-// }
-
-// 使用函数
-// const { start, end } = getWeekRange(2024, 24);
-// console.log(`2024年第24周的时间是${start} - ${end}`);
 const emit = defineEmits(['update:weeklyId']);
-const weeklyId = ref(111);
-function send(){
-  emit('update:weeklyId', weeklyId.value);
+//“去编辑”按钮
+function toEdit(row :any){
+  emit('update:weeklyId', row.id, row.year, row.weekNum);
 }
-
+//“去填写”按钮
+function toFillin(row :any){
+  emit('update:weeklyId', row.id, row.year, row.weekNum);
+}
+//查看周报
+function toView(row :any){
+  console.log(row);
+}
 </script>
 
 <style scoped>
-table {
+.container {
   width: 100%;
-  border-collapse: separate; /* 改变表格的边框合并方式 */
-  border-spacing: 0; /* 设置单元格间距为0 */
-  margin-top: 10px;
-  background-color: #FFFFFF;
-  border-radius: 20px;
+  height: 100%;
+}
+.model-content {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+}
+.model-bar {
+  width: 90%;
+  margin-top: 30px;
+  margin-bottom: 25px;
+  margin-left: 5%;
+  margin-right: 5%;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
 }
 table {
-  width: 100%;
-  border-collapse: collapse; 
+  width: 90%;
+  margin-top: 10px;
+  margin-left: 5%;
+  margin-right: 5%;
+  border-collapse: collapse; /* 改变表格的边框合并方式 */
+  border-spacing: 0; /* 设置单元格间距为0 */
+  background-color: #FFFFFF;
+  border-radius: 20px;
+  box-shadow: 0px 0px 8px 8px rgba(87, 86, 215, 0.1);
 }
 th {
   padding: 20px 0px;
   text-align: center;
   background-color: rgba(87, 86, 215, 0.11);
   width: 14%;
-  /* width: 70px; */
+  font-size: 20px;
 }
 td {
   padding: 20px 0px;
   text-align: center;
+  font-size: 17px;
+}
+.makecenter {
+  margin: 10px 0px;
+  text-align: center;
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 /* 按钮 */
-.detail_button {
+.unsubmit {
+  width: 110px;
+  height: 40px;
+  background-color: rgba(252, 202, 0, 0.22);
+  color: #FCCA00;
+  border: none;
+  font-size: 17px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.submited {
+  width: 110px;
+  height: 40px;
+  background-color: rgba(255, 98, 0, 0.22);
+  color: #FF6200;
+  border: none;
+  font-size: 17px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.auditing {
+  width: 110px;
+  height: 40px;
+  background-color: rgba(87, 86, 215, 0.22);
+  color: #5756D7;
+  border: none;
+  font-size: 17px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.edit_button {
   background-color: white;
   border: none;
-  color: #ff6200;
-  font-size: 16px;
+  color: #4C69EF;
+  font-size: 17px;
+  cursor: pointer;
+  outline: none; /* 去掉点击时的外边框 */
+  box-shadow: none; /* 去掉点击时的阴影效果 */
+}
+.fillin_button {
+  background-color: white;
+  border: none;
+  color: #FF4D4F;
+  font-size: 17px;
   cursor: pointer;
   outline: none; /* 去掉点击时的外边框 */
   box-shadow: none; /* 去掉点击时的阴影效果 */
