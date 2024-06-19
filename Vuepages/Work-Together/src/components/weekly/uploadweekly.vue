@@ -10,7 +10,7 @@
         <div class="week-switcher">
           <button class="week-change" @click="prevWeek" :disabled="isPrevDisabled">＜</button>
           <div class="week-info">
-            <div class="week-title">{{ currentYear }}年第{{ currentWeek }}周</div>
+            <div class="week-title">{{ selectedYear }}年第{{ selectedWeek }}周</div>
             <div class="week-dates">{{ currentWeekRange }}</div>
           </div>
           <button class="week-change" @click="nextWeek" :disabled="isNextDisabled">＞</button>
@@ -22,25 +22,25 @@
             <div class="title-weekly">
               1. 本周你完成了哪些工作？最有成就感的是什么?
             </div>
-            <textarea class="weekly-text" id="area1"></textarea>
+            <textarea class="weekly-text" id="area1" v-model="safeNowWeekly.text1"></textarea>
           </div>
           <div class="weekly-container" id="w-container2">
             <div class="title-weekly">
               2. 下周你计划做什么？要完成什么目标？
             </div>
-            <textarea class="weekly-text" id="area2"></textarea>
+            <textarea class="weekly-text" id="area2" v-model="safeNowWeekly.text2"></textarea>
           </div>
           <div class="weekly-container" id="w-container3">
             <div class="title-weekly">
               3. 本周工作你遇到的困难是什么？希望得到哪些帮助？
             </div>
-            <textarea class="weekly-text" id="area3"></textarea>
+            <textarea class="weekly-text" id="area3" v-model="safeNowWeekly.text3"></textarea>
           </div>
           <div class="weekly-container" id="w-container4">
             <div class="title-weekly">
               4. 本周工作中，有什么想要与团队分享的？
             </div>
-            <textarea class="weekly-text" id="area4"></textarea>
+            <textarea class="weekly-text" id="area4" v-model="safeNowWeekly.text4"></textarea>
           </div>
       </div>
     </div>
@@ -53,7 +53,7 @@
       <div id="reviewer-select">
         <div id="reviewer-topbar">
           <div id="re-icon-pic">
-            <img id="reviewer-icon" src="@/assets/img/icon.png" alt="">
+            <img id="reviewer-icon" :src="reviewerIconNow" alt="">
           </div>
           <div id="re-topbar-t1">去选一个评审人吧</div>
           <div id="re-topbar-t2">与团队成员互相督促，共同进步</div>
@@ -67,7 +67,7 @@
           <div v-for="(members, letter) in filteredGroupedMembers" :key="letter">
             <h3>{{ letter }}</h3>
             <ul>
-              <li v-for="member in members" :key="member.id" @click="selectMember(member.id)">
+              <li v-for="member in members" :key="member.id" @click="selectMember(member.id,member.avatar)">
                 <img :src="member.avatar || '@/assets/img/icon.png'" alt=" " class="member-avatar">
                 <div class="member-info">
                   <span class="member-name">{{ member.name }}</span>
@@ -79,7 +79,7 @@
         </div>
         <!-- down -->
         <div id="submit-zone">
-          <button id="submit-weekly">提交</button>
+          <button id="submit-weekly" @click="uploadData()">提交</button>
         </div>
 
 
@@ -103,6 +103,14 @@ export default {
     weeklyId: {
         type: String,
         default: ''
+      },
+      year: {
+        type: String,
+        default: ''
+      },
+      week: {
+        type: String,
+        default: ''
       }
     },
     data() {
@@ -113,17 +121,38 @@ export default {
         searchQuery: '',
         originalMembers: {},
         myMemberId: null, // 添加存储当前用户ID的变量
-        reviewerIconNow: '',
+        reviewerIconNow: '',//评审人头像
+        reviewerId:'',  //评审人id
+        weeklys: null,
+        isCreated: false, //判断选中的第几周的周报是否已经被创建了
+        selectedYear: this.currentYear, // 新增，存放年的值
+        selectedWeek: this.currentWeek, // 新增，存放周的值
+        NowWeeklyId:this.weeklyId,
+        yearnum:this.year,
+        weeknum:this.week,
+        NowWeekly:null, // 初始化为 null
+        localWeekly: {
+          text1: '',
+          text2: '',
+          text3: '',
+          text4: ''
+        },
+        
+        
       };
     },
     computed: {
+      safeNowWeekly() {
+        return this.NowWeekly || this.localWeekly;
+      },
       currentYear() {
         return this.startDate.getFullYear();
       },
       currentWeek() {
+        
         const start = new Date(this.startDate.getFullYear(), 0, 1);
         const diff = (this.startDate - start + ((start.getTimezoneOffset() - this.startDate.getTimezoneOffset()) * 60000)) / 86400000;
-        return Math.ceil((diff + start.getDay() + 1) / 7);
+        return Math.ceil((diff + start.getDay() + 1) / 7)-1;
       },
       currentWeekRange() {
         return `${this.formatDate(this.startDate)} - ${this.formatDate(this.endDate)}`;
@@ -153,7 +182,7 @@ export default {
       getStartOfWeek(date) {
         const start = new Date(date);
         const day = start.getDay();
-        const diff = start.getDate() - day + (day === 0 ? -6 : 1);
+        const diff = start.getDate() - day;
         return new Date(start.setDate(diff));
       },
       getEndOfWeek(date) {
@@ -169,7 +198,16 @@ export default {
         newStartDate.setDate(newStartDate.getDate() - 7);
         newEndDate.setDate(newEndDate.getDate() - 7);
         this.startDate = this.getStartOfWeek(newStartDate);
-        this.endDate = this.getEndOfWeek(newEndDate);
+        this.endDate = this.getEndOfWeek(newStartDate);
+        this.selectedYear = this.startDate.getFullYear();
+        this.selectedWeek = this.calculateWeek(this.startDate);
+        //console.log('年和周:'+this.selectedYear+this.selectedWeek);
+        this.checkIfCreated2();
+        //console.log('现在的id是：'+this.NowWeeklyId);
+        if(this.NowWeeklyId){
+          this.fetchWeeklysContent();
+        }
+        
       },
       nextWeek() {
         if (!this.isNextDisabled) {
@@ -179,7 +217,20 @@ export default {
           newEndDate.setDate(newEndDate.getDate() + 7);
           this.startDate = this.getStartOfWeek(newStartDate);
           this.endDate = this.getEndOfWeek(newEndDate);
+          this.selectedYear = this.startDate.getFullYear();
+          this.selectedWeek = this.calculateWeek(this.startDate);
+          //console.log('年和周:'+this.selectedYear+this.selectedWeek);
+          this.checkIfCreated2();
+          //console.log('现在的id是：'+this.NowWeeklyId);
+          if(this.NowWeeklyId){
+            this.fetchWeeklysContent();
+          }
         }
+      },
+      calculateWeek(date) {
+        const start = new Date(date.getFullYear(), 0, 1);
+        const diff = (date - start + ((start.getTimezoneOffset() - date.getTimezoneOffset()) * 60000)) / 86400000;
+        return Math.ceil((diff + start.getDay() + 1) / 7) - 1;
       },
       fetchMembers() {
         const baseUrl = 'http://localhost:8080/api/group/members';
@@ -205,25 +256,214 @@ export default {
         .then(data => {
           this.originalMembers = data.data;
           console.log(this.originalMembers);
-          console.log('groupId is:'+userInfo.value.groupId);
+          //console.log('groupId is:'+userInfo.value.groupId);
           const memberId = data.data.myself[0].id;
           this.myMemberId = memberId; // 存储当前用户的 ID
-          console.log('memberId is:'+memberId);
-          this.selectMember(memberId); // 默认选中myself用户
+          //console.log('memberId is:'+memberId);
         })
         .catch(error => {
           console.error('There was a problem with the fetch operation:', error);
         });
       },
-      selectMember(memberId) {
+      selectMember(memberId,memberAva) {
         //点击成员之后的逻辑
-        const isMyself = memberId === this.myMemberId;
-        //this.$emit('member-selected', { memberId, isMyself });
-        console.log(this.weeklyId)
+        this.reviewerId = memberId;
+        this.reviewerIconNow = memberAva;
+        
+        //console.log('reviewerid is:'+this.reviewerId);
       },
+      fetchWeeklys() {
+        const baseUrl = 'http://localhost:8080/api/report/getMyReports';
+        const url = new URL(baseUrl);
+
+        fetch(url, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': token.value,
+          }
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          this.weeklys = data.data;
+          console.log(this.weeklys);
+          //this.checkIfCreated(); // 检查是否已创建
+          this.updateSelectedWeek(); // 更新 selectedYear 和 selectedWeek
+        })
+        .catch(error => {
+          console.error('There was a problem with the fetch operation:', error);
+        });
+      },
+      checkIfCreated() {
+        this.isCreated = this.weeklys.some(report => 
+          report.year === this.selectedYear && report.weekNum === this.selectedWeek
+        );
+        
+        //console.log('是否被创建:'+this.isCreated);
+      },
+      checkIfCreated2() {
+        const foundReport = this.weeklys.find(report => 
+            report.year === this.selectedYear && report.weekNum === this.selectedWeek
+        );
+        if (!foundReport) {
+            this.isCreated = false;
+            this.NowWeeklyId = -1;
+        } else {
+            this.isCreated = true;
+            this.NowWeeklyId = foundReport.id;
+        }
+        //console.log('是否被创建:' + this.isCreated);
+      },
+      updateSelectedWeek() {
+        const foundWeekly = this.weeklys.find(weekly => weekly.id === this.NowWeeklyId);
+        if (foundWeekly) {
+          this.selectedYear = foundWeekly.year;
+          this.selectedWeek = foundWeekly.weekNum;
+          this.startDate = this.getStartOfWeek(new Date(foundWeekly.year, 0, (foundWeekly.weekNum) * 7));
+          this.endDate = this.getEndOfWeek(new Date(foundWeekly.year, 0, (foundWeekly.weekNum) * 7));
+        }else{
+          this.selectedYear = this.year;
+          this.selectedWeek = this.week;
+          this.startDate = this.getStartOfWeek(new Date(this.selectedYear, 0, (this.selectedWeek) * 7));
+          this.endDate = this.getEndOfWeek(new Date(this.selectedYear, 0, (this.selectedWeek) * 7));
+        }
+        this.checkIfCreated(); // 检查是否已创建
+        //console.log('年和周:'+this.selectedYear+this.selectedWeek);
+      },
+      fetchWeeklysContent(){
+        const baseUrl = 'http://localhost:8080/api/report/getReportById';
+        const url = new URL(baseUrl);
+        const params = { 
+            id: this.NowWeeklyId  // 使用 this.NowWeeklyId 作为 id 的值
+        };
+
+        // 添加查询参数到 URL 对象
+        Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+        fetch(url, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': token.value,
+          }
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          this.NowWeekly=data.data;
+          //console.log(this.NowWeekly);
+        })
+        .catch(error => {
+          console.error('There was a problem with the fetch operation:', error);
+        })
+      },
+      uploadData(){
+        if(this.NowWeeklyId==-1){
+          //创建周报
+          this.createNewWeekly();
+        }
+        else{
+          //修改周报
+          this.reviseWeeklyNow();
+        }
+      },
+      createNewWeekly(){
+        const baseUrl = 'http://localhost:8080/api/report';
+        const url = new URL(baseUrl);
+
+        // 创建请求的body参数
+        const bodyParams = {
+          reviewerId: this.reviewerId,
+          year:this.selectedYear,
+          weekNum:this.selectedWeek,
+          text1: this.safeNowWeekly.text1,
+          text2: this.safeNowWeekly.text2,
+          text3: this.safeNowWeekly.text3,
+          text4: this.safeNowWeekly.text4,
+        };
+
+        fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': token.value
+          },
+          body: JSON.stringify(bodyParams) // 将body参数序列化为JSON格式
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          //console.log('Successfully submitted:', data);
+          alert('创建成功。');
+        })
+        .catch(error => {
+          console.error('There was a problem with the fetch operation:', error);
+        });
+      },
+      reviseWeeklyNow(){
+        const baseUrl = 'http://localhost:8080/api/report';
+        const url = new URL(baseUrl);
+
+        // 创建请求的body参数
+        const bodyParams = {
+          id:this.NowWeeklyId,
+          reviewerId: this.reviewerId,
+          year:this.selectedYear,
+          weekNum:this.selectedWeek,
+          text1: this.safeNowWeekly.text1,
+          text2: this.safeNowWeekly.text2,
+          text3: this.safeNowWeekly.text3,
+          text4: this.safeNowWeekly.text4,
+        };
+
+        fetch(url, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': token.value
+          },
+          body: JSON.stringify(bodyParams) // 将body参数序列化为JSON格式
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          //console.log('Successfully submitted:', data);
+          alert('修改成功。');
+        })
+        .catch(error => {
+          console.error('There was a problem with the fetch operation:', error);
+        });
+      }
+        
     },
     created() {
+      /* this.selectedYear = this.currentYear;
+      this.selectedWeek = this.currentWeek; */
       this.fetchMembers();
+      this.fetchWeeklys();
+      this.fetchWeeklysContent();
+      //console.log('年和周:'+this.selectedYear+this.selectedWeek);
+      //console.log('传来的id是：'+this.NowWeeklyId)
+      //console.log('传来的年是：'+this.year)
+      //console.log('传来的周是：'+this.week)
+      //console.log('展示的时间'+this.currentYear+this.currentWeek)
+      //console.log('当前年和周：'+this.yearnum+this.weeknum)
     },
   
 };
