@@ -35,7 +35,7 @@
               <button class="assign_menu">分配菜单</button>
               <button class="assign_resource">分配资源</button>
               <button class="edit_button" @click="openEditModal(role)">编辑</button>
-              <button class="delete_button"  @click="confirmDelete(role.id)">删除</button>
+              <button class="delete_button" @click="confirmDelete(role.id)">删除</button>
             </td>
           </tr>
         </tbody>
@@ -44,7 +44,7 @@
     <Transition name="fade">
       <div v-if="isModalOpen">
         <div class="modal-background"></div>
-        <div class="modal" >
+        <div class="modal">
           <div class="modal-content">
             <span class="close" @click="closeModal">&times;</span>
             <p class="add_title">{{ isEditing ? '编辑角色' : '添加角色' }}</p>
@@ -105,7 +105,7 @@ const fetchRoles = async () => {
     const response = await fetch(`http://localhost:8080/api/auth/cid/${companyId}`, {
       headers: {
         'Authorization': token.value,
-        'companyId': userInfo.value.companyId.toString() 
+        'companyId': userInfo.value.companyId.toString()
       }
     })
     const data = await response.json()
@@ -130,7 +130,7 @@ const filteredRoles = computed(() => {
 
 const openAddModal = () => {
   isEditing.value = false
-  currentRole.value = { id: 0, name: '', describe: '', userNum: 0, createTime: '', status: true  }
+  currentRole.value = { id: 0, name: '', describe: '', userNum: 0, createTime: '', status: true }
   isModalOpen.value = true
 }
 
@@ -155,20 +155,33 @@ const confirmModal = async () => {
 
 const addRole = async () => {
   try {
+    // 构建只包含 name 和 describe 的对象
+    const roleToAdd = {
+      name: currentRole.value.name,
+      describe: currentRole.value.describe
+    };
+
     const response = await fetch('http://localhost:8080/api/auth', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(currentRole.value)
-    })
+      headers: {
+        'Content-Type': 'application/json',
+        'companyId': userInfo.value.companyId,
+        'Authorization': token.value
+      },
+      body: JSON.stringify(roleToAdd) // 使用新的对象
+    });
+
     if (response.ok) {
-      fetchRoles()
+      console.log(roleToAdd);
+      fetchRoles();
     } else {
-      console.error('Failed to add role')
+      console.error('Failed to add role');
     }
   } catch (error) {
-    console.error('Error:', error)
+    console.error('Error:', error);
   }
-}
+};
+
 
 const updateRole = async () => {
   try {
@@ -391,7 +404,7 @@ td {
   color: #409EFF;
   border: none;
   cursor: pointer;
-  background: none; 
+  background: none;
   font-size: 16px;
 }
 
@@ -401,7 +414,7 @@ td {
   color: #409EFF;
   border: none;
   cursor: pointer;
-  background: none; 
+  background: none;
   font-size: 16px;
 }
 
@@ -411,7 +424,7 @@ td {
   color: gray;
   border: none;
   cursor: pointer;
-  background: none; 
+  background: none;
   font-size: 16px;
 }
 
@@ -421,7 +434,7 @@ td {
   color: #cd320f;
   border: none;
   cursor: pointer;
-  background: none; 
+  background: none;
   font-size: 16px;
 }
 

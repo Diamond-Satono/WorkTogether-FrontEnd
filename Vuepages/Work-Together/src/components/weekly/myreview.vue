@@ -71,7 +71,7 @@
     <component :is="currentModal" v-if="currentModal"
       @close-modal="closeModal"
       :report="currentRowData"
-      :isneed="isneed">
+      :isneed="isneed" @refresh-table = "RefreshTable">
     </component>
   </div>  
 </template>
@@ -222,6 +222,11 @@ function closeModal() {
 function toOther() {
   isneed.value = !isneed.value;
   fetchAllReportData();
+}
+function RefreshTable(){
+  fetchAllReportData();
+  console.log("刷新列表！");
+  
 }
 </script>
 

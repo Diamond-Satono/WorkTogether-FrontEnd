@@ -8,11 +8,12 @@
         </div>
         <div class="separator"></div>
         <span class="titleword">我的周报</span>
+        <button class="clicktoreview" v-if="isneed">评审</button>
         <div class="imgcontainer"><img src="@/assets/weekly/closedetail.png" @click="closemodal"></div>
       </div>
       <div class="devider"></div>
       <div class="reporttitle">
-        {{ submitterName }}的周报-第{{props.report.weekNum}}周
+        {{ submitterName }}的周报-第{{ props.report.weekNum }}周
         <img src="">
         <span class="assessor">评审人</span>
       </div>
@@ -63,19 +64,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watchEffect,computed} from 'vue';
+import { ref, watchEffect, computed } from 'vue';
 import { Authorization } from '@/store/token'; // 导入 Authorization 函数
 const token = Authorization(); // 获取 token
-const apiUrl = 'http://localhost:8080/api/user'; // API 地址
 
 const props = defineProps({
   report: {
     type: Object,
-    default: null 
+    default: null
+  },
+  isneed: {
+    type: Boolean
   }
 });
 
-const emit = defineEmits(["close-modal"]);
+const emit = defineEmits(["close-modal", "refresh-table"]);
 
 function closemodal() {
   emit('close-modal');
@@ -98,6 +101,7 @@ watchEffect(() => {
 
 // 计算属性，根据 props.report.status 的值返回不同的图片路径
 const statusImageSrc = computed(() => {
+
   if (props.report && 'status' in props.report) {
     if (props.report.status === 0) {
       return "src/assets/weekly/tobereview.png";
@@ -131,7 +135,6 @@ watchEffect(() => {
 
     if (userId) {
       fetchUserData(userId).then(data => {
-        console.log("提交人信息:",data);
         const submitterAvatar = data.avatar;
         submitterName.value = data.name;
         const submitterImg = document.querySelector('.submittercontainer img') as HTMLImageElement;
@@ -146,7 +149,6 @@ watchEffect(() => {
 
     if (reviewerId) {
       fetchUserData(reviewerId).then(data => {
-        console.log("评审人信息:",data);
         const reviewerAvatar = data.avatar;
         const reviewerName = data.name;
         const reviewerImg = document.querySelector('.reporttitle img') as HTMLImageElement;
@@ -358,5 +360,19 @@ const submitterName = ref("");
   background-color: #BBBBBB;
   margin-top: 30px;
   margin-left: 40px;
+}
+
+.clicktoreview {
+  width: 90px;
+  height: 30px;
+  background-color: #FF3A30;
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+  border: #FF3A30 solid 1px;
+  font-size: 16px;
+  font-family: 'SiYuanHeiTi';
+  margin-left: 200px;
+  margin-top: 20px;
 }
 </style>

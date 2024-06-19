@@ -54,7 +54,8 @@
     <component :is="currentModal" v-if="currentModal"
       @close-modal="closeModal"
       :report="currentRowData"
-      :isneed="isneed">
+      :isneed="isneed" 
+      @refresh-table = "RefreshTable">
     </component>
   </div>  
 </template>
@@ -230,6 +231,12 @@ function toView(row :any) {
 function closeModal() {
   currentModal.value = "";
   console.log("ModalClosed");
+}
+
+function RefreshTable(){
+  fetchAllReportData();
+  console.log("刷新列表！");
+  
 }
 </script>
 
