@@ -190,17 +190,15 @@ function cancelReview() {
 
 async function handleConfirm() {
   try {
-    emit('close-modal');
-    emit('refresh-table');
-    const response = await fetch(`http://localhost:8080/api/report`, {
-      method: 'PUT',
+    const response = await fetch(`http://localhost:8080/api/report/reviewReport/?id=${props.report.id}`, {
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': token.value,
         'companyId': userInfo.value.companyId.toString()
-      },
-      body: JSON.stringify({ status: 1 }) // 设置评审状态为 1
+      }
     });
+    
     if (response.ok) {
       console.log('评审成功');
     } else {
@@ -209,6 +207,8 @@ async function handleConfirm() {
   } catch (error) {
     console.error('评审失败:', error);
   } finally {
+    emit('close-modal');
+    emit('refresh-table');
     showConfirmModal.value = false; // 关闭弹窗
   }
 }
