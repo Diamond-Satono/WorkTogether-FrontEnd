@@ -53,7 +53,8 @@
     <!-- 弹窗组件 -->
     <component :is="currentModal" v-if="currentModal"
       @close-modal="closeModal"
-      :report="currentRowData">
+      :report="currentRowData"
+      :isneed="isneed">
     </component>
   </div>  
 </template>
@@ -217,7 +218,8 @@ function toFillin(row :any){
 }
 //设置弹窗
 const currentModal = ref("");
-const currentRowData = ref('')
+const currentRowData = ref('');
+const isneed = ref(false);
 function toView(row :any) {
   currentRowData.value = row;
   // currentModal.value = "GroupMemberDetail";
