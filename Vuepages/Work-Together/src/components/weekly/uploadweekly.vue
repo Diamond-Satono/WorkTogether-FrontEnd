@@ -79,7 +79,7 @@
         </div>
         <!-- down -->
         <div id="submit-zone">
-          <button id="submit-weekly" @click="uploadData()">提交</button>
+          <button id="submit-weekly" @click="uploadData()"><fa class="weekly-icon" icon="circle-up"></fa>提交</button>
         </div>
 
 
@@ -479,7 +479,7 @@ export default {
   width: 70%;
   height: 100vh;
   background-color: #fff;
-  border-left: 1px solid #000000;
+  
 }
 #right-part{
   width: 30%;
@@ -662,6 +662,13 @@ export default {
   max-height: 42vh; /* 设置最大高度为父组件的80% */
   overflow-y: auto; /* 启用垂直滚动 */
 }
+.member-menu::-webkit-scrollbar {
+      display: none; /* Webkit浏览器（Chrome、Safari等） */
+    }
+.member-menu {
+  -ms-overflow-style: none;  /* IE和Edge */
+  scrollbar-width: none; /* Firefox */
+}
 .member-menu ul {
   list-style: none;
   padding: 0;
@@ -724,7 +731,7 @@ h3 {
 }
 #submit-weekly{
   margin: 10px 60px;
-  width: 135px;
+  width: 160px;
   height: 50px;
   font-size: 25px;
   background-color:#4C69EF;
@@ -736,5 +743,9 @@ h3 {
   cursor: pointer;
   background-color: #2f4ccc;
 }
+.weekly-icon{
+  margin-right: 20px;
+}
+
 
 </style>

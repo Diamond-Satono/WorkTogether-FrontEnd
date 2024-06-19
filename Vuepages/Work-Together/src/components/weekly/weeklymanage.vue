@@ -127,13 +127,13 @@
         <div id="carlendar-L">
             <ul class="subside">
                 <li class="subchoice">
-                    <a href="#" @click="showComponent('uploadweekly')">提交周报</a>
+                    <a href="#" @click="showComponent('uploadweekly')"><fa class="weekly-icon" icon="clipboard"></fa>提交周报</a>
                 </li>
                 <li class="subchoice">
-                    <a href="#" @click="showComponent('myreview')">我的评审</a>
+                    <a href="#" @click="showComponent('myreview')"><fa class="weekly-icon" icon="pen-fancy"></fa>我的评审</a>
                 </li>
                 <li class="subchoice">
-                    <a href="#" @click="showComponent('myweekly')">我的周报</a>
+                    <a href="#" @click="showComponent('myweekly')"><fa class="weekly-icon" icon="circle-user"></fa>我的周报</a>
                 </li>
             </ul>
 
@@ -739,7 +739,9 @@
     background-color: #BBBBBB;
     height: 105%;
   }
-
+  .weekly-icon{
+    margin-right: 10px;
+  }
 
 
   </style>
