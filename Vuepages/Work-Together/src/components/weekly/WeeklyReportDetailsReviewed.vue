@@ -8,7 +8,7 @@
         </div>
         <div class="separator"></div>
         <span class="titleword">我的周报</span>
-        <button class="clicktoreview" v-if="isneed">评审</button>
+        <button class="clicktoreview" v-if="isneed" @click="confirmReview">评审</button>
         <div class="imgcontainer"><img src="@/assets/weekly/closedetail.png" @click="closemodal"></div>
       </div>
       <div class="devider"></div>
@@ -60,14 +60,26 @@
         </div>
       </div>
     </div>
+    <transition name="fade">
+      <div class="smallmodal" v-if="showConfirmModal">
+        <div class="modal-content">
+          <p>确认评审此周报？</p>
+          <div class="button-container">
+            <button class="confirm-button" @click="handleConfirm">确认</button>
+            <button class="cancel-button" @click="cancelReview">取消</button>
+          </div>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, watchEffect, computed } from 'vue';
 import { Authorization } from '@/store/token'; // 导入 Authorization 函数
+import { UserInfo } from '@/store/userinfo';
 const token = Authorization(); // 获取 token
-
+const userInfo = UserInfo();
 const props = defineProps({
   report: {
     type: Object,
@@ -165,6 +177,41 @@ watchEffect(() => {
 
 const submitterName = ref("");
 
+// 控制确认弹窗显示与隐藏的变量
+const showConfirmModal = ref(false);
+
+function confirmReview() {
+  showConfirmModal.value = true;
+}
+
+function cancelReview() {
+  showConfirmModal.value = false;
+}
+
+async function handleConfirm() {
+  try {
+    emit('close-modal');
+    emit('refresh-table');
+    const response = await fetch(`http://localhost:8080/api/report`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': token.value,
+        'companyId': userInfo.value.companyId.toString()
+      },
+      body: JSON.stringify({ status: 1 }) // 设置评审状态为 1
+    });
+    if (response.ok) {
+      console.log('评审成功');
+    } else {
+      console.error('评审失败');
+    }
+  } catch (error) {
+    console.error('评审失败:', error);
+  } finally {
+    showConfirmModal.value = false; // 关闭弹窗
+  }
+}
 </script>
 
 <style scoped>
@@ -376,5 +423,87 @@ const submitterName = ref("");
   font-family: 'SiYuanHeiTi';
   margin-left: 200px;
   margin-top: 20px;
+}
+
+/* 弹窗淡入淡出动画 */
+.fade-enter-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+p {
+  font-size: 23px;
+}
+
+.smallmodal {
+  z-index: 1001;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.3);
+  /* 半透明背景 */
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 20px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  width: 400px;
+  /* 调整弹窗宽度 */
+  max-width: 90%;
+  /* 确保弹窗不会超出屏幕 */
+  border-radius: 8px;
+  text-align: center;
+  transition: opacity 0.3s ease;
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.confirm-button,
+.cancel-button {
+  flex: 1;
+  height: 40px;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.confirm-button {
+  background-color: #3498db;
+  /* 确认按钮的背景色 */
+  color: #fff;
+  border: #3498db;
+}
+
+.cancel-button {
+  background-color: #ccc;
+  /* 取消按钮的背景色 */
+  color: #fff;
+  margin-left: 10px;
+  border: #ccc;
+  /* 为了与确认按钮间隔 */
+}
+
+.confirm-button:hover,
+.cancel-button:hover {
+  opacity: 0.9;
 }
 </style>
