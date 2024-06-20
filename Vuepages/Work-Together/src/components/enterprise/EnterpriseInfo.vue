@@ -182,14 +182,14 @@
       <div id="contacts">
         <div id="con-title">企业联系人</div>
         <div id="con-peo1">
-          <h3 class="peo-title">联系人1</h3>
+          <h3 class="peo-title">朱国荣</h3>
           <p class="pi1">g17d729@qq.com</p>
           <p class="pi2">(86)25508966</p>
           <p class="pi3">外事部主任</p>
           <img class="con-icon" src="@/assets/img/icon.png" alt="User Avatar">
         </div>
         <div id="con-peo2">
-          <h3 class="peo-title">联系人2</h3>
+          <h3 class="peo-title">王小明</h3>
           <p class="pi1">k17d729@qq.com</p>
           <p class="pi2">(86)25508966</p>
           <p class="pi3">人事部主任</p>

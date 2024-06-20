@@ -3,7 +3,7 @@
       <div class="modal-content">
         <div class="modal-name"><img src="@/assets/img/ex_en.png" alt="Icon"> 注销企业</div>
         <div class="tip">是否注销该企业</div>
-        <span class="confirm">确认注销</span>
+        <span class="confirm" @click="$emit('closeDialog')">确认注销</span>
         <span class="close" @click="$emit('closeDialog')">放弃注销</span>
         <!-- 在这里添加注销企业的内容 -->
       </div>
@@ -48,7 +48,7 @@
   }
   .tip{
     position: absolute;
-    left: 47%;
+    left: 48%;
     top:35%;
     width: 10%;
     font-size: 20px;
@@ -58,7 +58,7 @@
     width: 140px;
     height: 30px;
     color: #fff;
-    float: right;
+    text-align: center;
     font-size: 20px;
     cursor: pointer;
     background-color:#fb5b1d ;
@@ -73,7 +73,7 @@
     width: 140px;
     height: 30px;
     color: #aaa;
-    float: right;
+    text-align: center;
     font-size: 20px;
     cursor: pointer;
     border-radius: 10px; /* 设置圆角半径 */

@@ -3,7 +3,7 @@
       <div class="modal-content">
         <div class="modal-name"><img src="@/assets/img/ch_en.png" alt="Icon"> 切换企业</div>
         <div class="tip">选择切换</div>
-        <span class="confirm">确认切换</span>
+        <span class="confirm" @click="$emit('closeDialog')">确认切换</span>
         <span class="close" @click="$emit('closeDialog')">放弃切换</span>
         <!-- 在这里添加切换企业的内容 -->
         <div class="choice">
@@ -22,7 +22,7 @@
     data() {
       return {
         selectedOption: null,
-        options: ['AAA企业', 'BBB企业', 'CCC企业','DDD企业'], // 选项列表，根据实际需求修改
+        options: ['深圳大学', '软件工程', '实习企业'], // 选项列表，根据实际需求修改
       };
     },
   };
@@ -42,7 +42,7 @@
   }
   
   .modal-content {
-    height: 460px;
+    height: 420px;
     background-color: #fefefe;
     margin-top: 10%;
     margin-left: 35%;
@@ -60,8 +60,8 @@
   }
   .tip{
     position: absolute;
-    left: 36%;
-    top:35%;
+    left: 42%;
+    top:37%;
     width: 10%;
     font-size: 20px;
     font-weight: 800;
@@ -69,8 +69,8 @@
 
   .choice{
     position: absolute;
-    left: 48%;
-    top:34%;
+    left: 47%;
+    top:35%;
     width: 10%;
   }
 
@@ -79,23 +79,27 @@
   .option-0 {
     display: block; /* 让每个选项显示为块级元素，单独占据一行 */
     font-size: 20px;
+    font-weight: bold;
     margin: 20px;
   }
 
   .option-1 {
     display: block; /* 让每个选项显示为块级元素，单独占据一行 */
     font-size: 20px;
+    font-weight: bold;
     margin: 20px;
   }
 
   .option-2 {
     display: block; /* 让每个选项显示为块级元素，单独占据一行 */
     font-size: 20px;
+    font-weight: bold;
     margin: 20px;
   }
   .option-3 {
     display: block; /* 让每个选项显示为块级元素，单独占据一行 */
     font-size: 20px;
+    font-weight: bold;
     margin: 20px;
   }
 
@@ -103,7 +107,7 @@
     width: 140px;
     height: 30px;
     color: #fff;
-    float: right;
+    text-align: center;
     font-size: 20px;
     cursor: pointer;
     background-color:#fb5b1d ;
@@ -118,7 +122,7 @@
     width: 140px;
     height: 30px;
     color: #aaa;
-    float: right;
+    text-align: center;
     font-size: 20px;
     cursor: pointer;
     border-radius: 10px; /* 设置圆角半径 */

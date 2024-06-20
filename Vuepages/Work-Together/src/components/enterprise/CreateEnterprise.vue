@@ -3,7 +3,7 @@
       <div class="modal-content">
         <div class="modal-name"><img src="@/assets/img/cr_en.png" alt="Icon"> 创建企业</div>
         <div class="tip">是否创建新的企业</div>
-        <span class="confirm">确认创建</span>
+        <span class="confirm" @click="$emit('closeDialog')">确认创建</span>
         <span class="close" @click="$emit('closeDialog')">放弃创建</span>
         <!-- 在这里添加创建企业的内容 -->
       </div>
@@ -58,7 +58,7 @@
     width: 140px;
     height: 30px;
     color: #fff;
-    float: right;
+    text-align: center;
     font-size: 20px;
     cursor: pointer;
     background-color:#fb5b1d ;
@@ -73,7 +73,7 @@
     width: 140px;
     height: 30px;
     color: #aaa;
-    float: right;
+    text-align: center;
     font-size: 20px;
     cursor: pointer;
     border-radius: 10px; /* 设置圆角半径 */
