@@ -93,13 +93,13 @@
       >
         基础信息
       </button>
-      <button 
+      <!-- <button 
         :class="{ active: selectedOption === 'development' }" 
         @click="selectOption('development')"
         id="mode2"
       >
         企业发展
-      </button>
+      </button> -->
     </div>
 
     <div id="maininfo-en">
@@ -941,7 +941,7 @@ a {
   color: #B4AFAF;
 }
 #info-mode {
-  width: 240px;
+  width: 120px;
   height:40px;
   padding: 5px;
   position: absolute;
